@@ -1,27 +1,27 @@
-import type React from 'react';
-import '@/app/globals.css';
+import type React from "react";
+import "@/app/globals.css";
 // import { Inter } from "next/font/google"
-import { Roboto } from 'next/font/google';
-import { MainNav } from '@/components/main-nav';
-import { SiteFooter } from '@/components/site-footer';
-import { ThemeProvider } from '@/components/theme-provider';
-import Web3Provider from '@/components/Web3Provider';
-import ClientLayout from '@/components/ClientLayout';
-import 'primeicons/primeicons.css';
+import { Roboto } from "next/font/google";
+import { MainNav } from "@/components/main-nav";
+import { SiteFooter } from "@/components/site-footer";
+import { ThemeProvider } from "@/components/theme-provider";
+import Web3Provider from "@/components/Web3Provider";
+import ClientLayout from "@/components/ClientLayout";
+import "primeicons/primeicons.css";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 const roboto = Roboto({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '700', '900'],
-  display: 'swap',
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700", "900"],
+  display: "swap",
 });
 
 export const metadata = {
-  title: 'DeNate - Transparent Blockchain Charity Platform',
+  title: "Fundit8 - Transparent Blockchain Charity Platform",
   description:
-    'A blockchain-powered charity platform for transparent, secure donation tracking using blockchain technology and smart contracts.',
-  generator: 'v0.dev',
+    "A blockchain-powered charity platform for transparent, secure donation tracking using blockchain technology and smart contracts.",
+  generator: "v0.dev",
 };
 
 export default function RootLayout({
@@ -37,7 +37,12 @@ export default function RootLayout({
       <body className={roboto.className}>
         <ToastContainer />
         <Web3Provider>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem storageKey="denate-theme">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            storageKey="denate-theme"
+          >
             <ClientLayout>{children}</ClientLayout>
           </ThemeProvider>
         </Web3Provider>
@@ -46,4 +51,4 @@ export default function RootLayout({
   );
 }
 
-import './globals.css';
+import "./globals.css";

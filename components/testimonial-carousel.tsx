@@ -1,212 +1,107 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
-import { Typography, Card, CardBody, Rating } from "@material-tailwind/react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getTestimonials } from "@/lib/mockData";
-import type { Testimonial } from "@/lib/types";
+import React from "react"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
-// Helper function to get initials from name
-const getInitials = (name: string) => {
-  return name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase();
-};
+const testimonials = [
+  {
+    id: 1,
+    name: "Sarah Johnson",
+    role: "Donor",
+    initial: "S",
+    content: "Fundit8 has completely changed how I think about charitable giving. The transparency and real-time tracking give me confidence that my donations are making a real impact.",
+  },
+  {
+    id: 2,
+    name: "Michael Chen",
+    role: "Organization Leader",
+    initial: "M",
+    content: "As a charity organization, Fundit8's blockchain technology helps us build trust with donors. The platform makes it easy to show exactly how funds are being used.",
+  },
+  {
+    id: 3,
+    name: "Emma Rodriguez",
+    role: "Regular Donor",
+    initial: "E",
+    content: "I love how easy it is to track my donations and see the real impact. Fundit8 makes charitable giving feel more personal and meaningful.",
+  },
+  {
+    id: 4,
+    name: "David Thompson",
+    role: "Philanthropist",
+    initial: "D",
+    content: "The AI-powered donation predictions on Fundit8 are incredible. It helps me make more informed decisions about where my money will have the greatest impact.",
+  },
+  {
+    id: 5,
+    name: "Lisa Wang",
+    role: "Charity Director",
+    initial: "L",
+    content: "Fundit8's platform has revolutionized our fundraising efforts. The transparency features help us build stronger relationships with our donors.",
+  },
+]
 
 export function TestimonialCarousel() {
-  const testimonials = getTestimonials();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [avatarErrors, setAvatarErrors] = useState<Record<string, boolean>>({});
-  const [isPaused, setIsPaused] = useState(false);
-
-  // Use useCallback to prevent recreation of this function on each render
-  const handleNext = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setActiveIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
-    setTimeout(() => setIsTransitioning(false), 500);
-  }, [isTransitioning, testimonials.length]);
-
-  // Auto rotate every 5 seconds
-  useEffect(() => {
-    if (isPaused) return;
-    
-    const interval = setInterval(() => {
-      handleNext();
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [handleNext, isPaused]);
-
-  const handlePrev = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
-    setTimeout(() => setIsTransitioning(false), 500);
-  };
-
-  const goToSlide = (index: number) => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setActiveIndex(index);
-    setTimeout(() => setIsTransitioning(false), 500);
-  };
-
-  const handleImageError = (id: string) => {
-    setAvatarErrors(prev => ({
-      ...prev,
-      [id]: true
-    }));
-  };
-
-  // Generate a random background color based on the user's name
-  const getAvatarBgColor = (name: string) => {
-    const colors = [
-      "bg-blue-500", "bg-red-500", "bg-green-500", 
-      "bg-yellow-500", "bg-purple-500", "bg-pink-500", 
-      "bg-indigo-500", "bg-teal-500", "bg-orange-500"
-    ];
-    
-    // Use the sum of char codes to determine color
-    const charSum = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-    return colors[charSum % colors.length];
-  };
-
   return (
-    <div 
-      className="relative w-full overflow-hidden px-4 py-12" 
-      onMouseEnter={() => setIsPaused(false)} 
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      <div className="container mx-auto">
-        <div className="mb-12 text-center">
-          <Typography variant="h6" color="orange" className="mb-2" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-            TESTIMONIALS
-          </Typography>
-          <Typography variant="h3" color="blue-gray" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-            What People Say About Us
-          </Typography>
-          <Typography
-            variant="lead"
-            className="mt-2 mx-auto max-w-3xl text-center font-normal !text-gray-500"
-            placeholder={null}
-            onPointerEnterCapture={undefined}
-            onPointerLeaveCapture={undefined}
-          >
-            Hear from donors, organizations, and communities who have experienced the transparency and impact of our platform.
-          </Typography>
+    <section className="py-16 bg-gradient-to-br from-blue-50 to-purple-50">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text mb-4">
+            What Our Users Say
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover how Fundit8 is transforming charitable giving with transparency and impact
+          </p>
         </div>
 
-        <div className="relative h-[400px] md:h-[350px]">
-          {testimonials.map((testimonial, index) => (
-            <Card
-              key={testimonial.id}
-              className={`absolute w-full transform transition-all duration-500 ease-in-out ${
-                index === activeIndex
-                  ? "opacity-100 translate-x-0 z-10"
-                  : index === (activeIndex + 1) % testimonials.length
-                  ? "opacity-0 translate-x-full z-0"
-                  : "opacity-0 -translate-x-full z-0"
-              }`}
-              shadow={false}
-              placeholder={null}
-              onPointerEnterCapture={undefined}
-              onPointerLeaveCapture={undefined}
-            >
-              <CardBody
-                className="flex flex-col items-center p-6 text-center"
-                placeholder={null}
-                onPointerEnterCapture={undefined}
-                onPointerLeaveCapture={undefined}
-              >
-                <div className="mb-4 h-20 w-20 overflow-hidden rounded-full border-2 border-gray-900 shadow-lg flex items-center justify-center">
-                  {avatarErrors[testimonial.id] ? (
-                    <div className={`h-full w-full flex items-center justify-center text-white text-xl font-bold ${getAvatarBgColor(testimonial.name)}`}>
-                      {getInitials(testimonial.name)}
+        {/* Carousel */}
+        <div className="relative max-w-4xl mx-auto">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {testimonials.map((testimonial) => (
+                <CarouselItem key={testimonial.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                  <div className="bg-white rounded-2xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300 h-full">
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        {testimonial.initial}
+                      </div>
+                      <div className="ml-4">
+                        <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                        <p className="text-sm text-gray-500">{testimonial.role}</p>
+                      </div>
                     </div>
-                  ) : (
-                    <Image
-                      src={testimonial.avatar}
-                      alt={testimonial.name}
-                      width={80}
-                      height={80}
-                      className="h-full w-full object-cover"
-                      onError={() => handleImageError(testimonial.id)}
-                    />
-                  )}
-                </div>
-                <Typography
-                  variant="h5"
-                  color="blue-gray"
-                  className="mb-1"
-                  placeholder={null}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  {testimonial.name}
-                </Typography>
-                <Typography
-                  variant="small"
-                  className="mb-4 font-normal text-gray-700"
-                  placeholder={null}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  {testimonial.role}
-                </Typography>
-                <div className="mb-6">
-                  <Rating value={testimonial.rating} readonly placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
-                </div>
-                <Typography
-                  variant="paragraph"
-                  className="mb-8 max-w-2xl font-normal text-gray-600"
-                  placeholder={null}
-                  onPointerEnterCapture={undefined}
-                  onPointerLeaveCapture={undefined}
-                >
-                  "{testimonial.content}"
-                </Typography>
-              </CardBody>
-            </Card>
-          ))}
-        </div>
-
-        <div className="mt-6 flex justify-center gap-2">
-          {testimonials.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`h-3 w-3 rounded-full transition-all ${
-                index === activeIndex ? "bg-gray-900 w-6" : "bg-gray-300"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        <div className="absolute top-1/2 -mt-6 flex w-full justify-between px-4">
-          <button
-            onClick={handlePrev}
-            className="rounded-full bg-white p-2 shadow-lg transition-transform hover:scale-110 focus:outline-none"
-            aria-label="Previous testimonial"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-          <button
-            onClick={handleNext}
-            className="rounded-full bg-white p-2 shadow-lg transition-transform hover:scale-110 focus:outline-none"
-            aria-label="Next testimonial"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
+                    <p className="text-gray-700 leading-relaxed">
+                      "{testimonial.content}"
+                    </p>
+                    <div className="flex text-yellow-400 mt-4">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
+          </Carousel>
         </div>
       </div>
-    </div>
-  );
+    </section>
+  )
 }
-
-export default TestimonialCarousel;
