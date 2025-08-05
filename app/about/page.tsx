@@ -442,7 +442,7 @@ export default function AboutPage() {
             </Typography>
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <Link href="/donate">
-                <Button variant="gradient" color="white" className="flex items-center px-8 py-4 text-lg font-bold bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                <Button className="flex items-center px-8 py-4 text-lg font-bold bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white transition-all duration-300 transform hover:scale-105" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                   Donate Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
