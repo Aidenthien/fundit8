@@ -222,12 +222,12 @@ export default function Home() {
         <div className="text-center mb-8 md:mb-12 lg:mb-16 max-w-5xl mx-auto relative">
           {/* Animated background gradient */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl rounded-full animate-pulse"></div>
-          
+
           {/* Glowing orb effects */}
           <div className="absolute top-0 left-1/4 w-32 h-32 bg-blue-500/30 rounded-full blur-2xl animate-bounce"></div>
           <div className="absolute top-0 right-1/4 w-24 h-24 bg-purple-500/30 rounded-full blur-2xl animate-pulse"></div>
           <div className="absolute bottom-0 left-1/3 w-28 h-28 bg-pink-500/30 rounded-full blur-2xl animate-bounce"></div>
-          
+
           <div className="relative z-10">
             {/* Enhanced subtitle with Web3 styling */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 backdrop-blur-sm mb-6">
@@ -236,28 +236,25 @@ export default function Home() {
                 About the platform
               </h2>
             </div>
-            
+
             {/* Main heading with enhanced Web3 styling */}
             <h3 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-cyan-400 text-transparent bg-clip-text leading-none tracking-tight mb-6 relative">
-              <span className="relative">
-                How It Works?
-                {/* Glowing text effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 blur-lg opacity-30 animate-pulse"></div>
-              </span>
+              <span className="relative">How It Works?</span>
             </h3>
-            
+
             {/* Enhanced description with better typography */}
             <div className="mt-8 md:mt-10">
               <div className="relative">
                 <p className="text-base md:text-lg lg:text-xl xl:text-2xl text-gray-300 font-medium leading-relaxed max-w-4xl mx-auto backdrop-blur-sm">
                   <AuroraText>
-                    At Fundit8, we believe that charitable giving should be transparent,
-                    secure, and impactful. That's why we're building a platform that
-                    leverages blockchain technology to ensure that your donations are
-                    used effectively and efficiently.
+                    At Fundit8, we believe that charitable giving should be
+                    transparent, secure, and impactful. That's why we're
+                    building a platform that leverages blockchain technology to
+                    ensure that your donations are used effectively and
+                    efficiently.
                   </AuroraText>
                 </p>
-                
+
                 {/* Decorative elements */}
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent rounded-full"></div>
                 <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent rounded-full"></div>
@@ -275,24 +272,24 @@ export default function Home() {
               >
                 {/* Enhanced gradient overlay on hover */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-50/60 via-purple-50/40 to-pink-50/60 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none"></div>
-                
+
                 {/* Glowing border effect */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
-                
+
                 {/* Animated background particles */}
                 <div className="absolute inset-0 rounded-3xl overflow-hidden">
                   <div className="absolute top-4 left-4 w-2 h-2 bg-blue-400/30 rounded-full animate-pulse"></div>
                   <div className="absolute top-8 right-6 w-1 h-1 bg-purple-400/40 rounded-full animate-bounce"></div>
                   <div className="absolute bottom-6 left-8 w-1.5 h-1.5 bg-pink-400/30 rounded-full animate-pulse"></div>
                 </div>
-                
+
                 {/* Card content with enhanced spacing and responsive design */}
                 <div className="relative z-10 w-full h-full flex flex-col justify-center">
                   <div className="transform transition-transform duration-300 group-hover:scale-105">
                     <AboutCard {...props} />
                   </div>
                 </div>
-                
+
                 {/* Corner accent elements */}
                 <div className="absolute top-4 right-4 w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="absolute bottom-4 left-4 w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100"></div>
@@ -305,18 +302,18 @@ export default function Home() {
             <div className="relative rounded-3xl bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-cyan-400 p-[3px] shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.02]">
               {/* Enhanced gradient border with animation */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-cyan-400 opacity-75 blur-sm animate-pulse"></div>
-              
+
               <div className="relative bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col items-center overflow-hidden">
                 {/* Multi-layered animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50/40 via-purple-50/30 to-pink-50/40 animate-pulse"></div>
                 <div className="absolute inset-0 bg-gradient-to-tl from-cyan-50/20 via-blue-50/20 to-purple-50/20 animate-pulse delay-1000"></div>
-                
+
                 {/* Floating particles */}
                 <div className="absolute top-4 left-6 w-3 h-3 bg-blue-400/40 rounded-full animate-bounce"></div>
                 <div className="absolute top-8 right-8 w-2 h-2 bg-purple-400/50 rounded-full animate-pulse"></div>
                 <div className="absolute bottom-6 left-10 w-2.5 h-2.5 bg-pink-400/40 rounded-full animate-bounce delay-500"></div>
                 <div className="absolute bottom-8 right-6 w-1.5 h-1.5 bg-cyan-400/50 rounded-full animate-pulse delay-1000"></div>
-                
+
                 {/* Card content with enhanced responsive design */}
                 <div className="relative z-10 w-full max-w-3xl text-center">
                   <div className="transform transition-transform duration-300 hover:scale-105">
@@ -327,14 +324,13 @@ export default function Home() {
                     />
                   </div>
                 </div>
-                
+
                 {/* Corner accent elements */}
                 <div className="absolute top-4 right-4 w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-60 animate-pulse"></div>
                 <div className="absolute bottom-4 left-4 w-3 h-3 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-60 animate-pulse delay-500"></div>
               </div>
             </div>
           </div>
-          
         </div>
       </section>
 
