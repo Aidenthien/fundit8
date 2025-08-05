@@ -86,7 +86,7 @@ export function MainNav() {
         {/* Logo (retained from your current navbar) */}
         <Link href="" className="flex items-center space-x-2">
           <Image
-            src={isScrolling ? "/fundit8-light.jpeg" : "/fundit8-dark.jpeg"}
+            src={isScrolling ? "/testing.png" : "/testing.png"}
             alt="DeNate Logo"
             width={120}
             height={40}
@@ -96,9 +96,8 @@ export function MainNav() {
 
         {/* Navigation Links (About Us, Donate, Leaderboard) */}
         <ul
-          className={`ml-16 hidden items-center gap-6 lg:flex ${
-            isScrolling ? "text-gray-900" : "text-white"
-          }`}
+          className={`ml-16 hidden items-center gap-6 lg:flex ${isScrolling ? "text-gray-900" : "text-white"
+            }`}
         ></ul>
 
         {/* Wallet Connection (retained from your current navbar) */}

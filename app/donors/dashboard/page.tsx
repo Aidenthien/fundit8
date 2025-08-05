@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,6 +17,7 @@ import { ethers } from "ethers"
 import { charityCentral_ABI, charityCentral_CA, charityCampaigns_ABI } from "@/config/contractABI"
 import DonorChatbot from "@/components/dashboard/DonorChatbot"
 import axios from "axios"
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 
 interface Campaign {
   address: string;
@@ -262,7 +264,7 @@ export default function DonorDashboardPage() {
 
             // Fetch campaign details
             const details = await campaignContract.getCampaignDetails();
-            
+
             // Get donors count
             let donorsCount = 0;
             try {
@@ -271,7 +273,7 @@ export default function DonorDashboardPage() {
             } catch (error) {
               console.error("Error fetching donors for campaign:", error);
             }
-            
+
             // Get user-specific donation data if connected
             let userDonation = "0";
             if (address) {
@@ -282,11 +284,11 @@ export default function DonorDashboardPage() {
                 console.error("Error fetching user donation for campaign:", error);
               }
             }
-            
+
             // Calculate days left (mock calculation based on campaign state)
             // In a real implementation, you might store campaign end dates
-            const daysLeft = Number(details._state) === 0 ? 
-              Math.floor(30 - (parseFloat(ethers.formatEther(details._totalDonated)) / parseFloat(ethers.formatEther(details._goal))) * 30) : 
+            const daysLeft = Number(details._state) === 0 ?
+              Math.floor(30 - (parseFloat(ethers.formatEther(details._totalDonated)) / parseFloat(ethers.formatEther(details._goal))) * 30) :
               0;
 
             // Process images from IPFS if available
@@ -327,19 +329,19 @@ export default function DonorDashboardPage() {
         const activeCampaigns = detailedCampaigns.filter((campaign) => Number(campaign.state) === 0);
 
         // Filter campaigns that user has donated to
-        const userDonatedCampaigns = activeCampaigns.filter(campaign => 
+        const userDonatedCampaigns = activeCampaigns.filter(campaign =>
           parseFloat(campaign.userDonation) > 0
         );
 
         // Update state with detailed campaigns
         setCampaignDetails(activeCampaigns);
         setUserCampaigns(userDonatedCampaigns);
-        
+
         // Calculate total user donations across all campaigns
         const totalUserDonations = detailedCampaigns.reduce((total, campaign) => {
           return total + parseFloat(campaign.userDonation || "0");
         }, 0);
-        
+
         // Update user's total donation amount if not already set by leaderboard
         if (userLeaderboardInfo.amount === "0" && totalUserDonations > 0) {
           setUserLeaderboardInfo(prev => ({
@@ -347,10 +349,10 @@ export default function DonorDashboardPage() {
             amount: totalUserDonations.toString()
           }));
         }
-        
+
         console.log("Detailed Campaigns:", detailedCampaigns);
         console.log("User Donated Campaigns:", userDonatedCampaigns);
-        
+
         // Generate recent donations from real campaign data
         const userDonations: ChatbotDonation[] = detailedCampaigns
           .filter(campaign => parseFloat(campaign.userDonation) > 0)
@@ -360,7 +362,7 @@ export default function DonorDashboardPage() {
             amount: campaign.userDonation,
             date: new Date().toLocaleDateString() // Use current date as a placeholder
           }));
-          
+
         // If we have real donations from the blockchain, use them
         if (userDonations.length > 0) {
           console.log("Found user donations:", userDonations);
@@ -400,7 +402,7 @@ export default function DonorDashboardPage() {
   // Function to fetch donor donation history from The Graph
   const fetchDonationHistory = async () => {
     if (!address) return;
-    
+
     setIsLoadingDonationHistory(true);
     try {
       const response = await fetch(
@@ -439,7 +441,7 @@ export default function DonorDashboardPage() {
       if (result.data?.donor?.donations) {
         const graphDonorData = result.data.donor;
         setDonationHistory(graphDonorData.donations);
-        
+
         // Update user's total donation amount from graph data if available
         if (graphDonorData.totalDonated) {
           const totalDonated = ethers.formatEther(graphDonorData.totalDonated);
@@ -448,7 +450,7 @@ export default function DonorDashboardPage() {
             amount: totalDonated
           }));
         }
-        
+
         // Generate recentDonations for donor chatbot from real donation data
         if (graphDonorData.donations.length > 0) {
           const formattedDonations: ChatbotDonation[] = graphDonorData.donations.map((donation: GraphQLDonation) => ({
@@ -457,7 +459,7 @@ export default function DonorDashboardPage() {
             amount: ethers.formatEther(donation.amount),
             date: new Date(Number(donation.timestamp) * 1000).toLocaleDateString()
           }));
-          
+
           // Log the formatted donations
           if (formattedDonations.length > 0) {
             console.log("Found donation history:", formattedDonations);
@@ -508,7 +510,7 @@ export default function DonorDashboardPage() {
                     </AvatarFallback>
                   )}
                 </Avatar>
-                
+
                 {/* Status indicator */}
                 <span className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></span>
               </div>
@@ -534,9 +536,12 @@ export default function DonorDashboardPage() {
             {/* Actions */}
             <div className="flex items-center justify-end gap-4">
               <Link href="/donate">
-                <Button className="bg-white hover:bg-gray-100 text-black" size="lg">
-                  <Heart className="mr-2 h-4 w-4" />
-                  Donate Now
+                <Button className="bg-white hover:bg-gray-100 text-black transition-all duration-300 group" size="lg">
+                  <Heart className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                  <span className="group-hover:hidden">Donate Now</span>
+                  <AnimatedGradientText className="font-semibold hidden group-hover:inline">
+                    Donate Now
+                  </AnimatedGradientText>
                 </Button>
               </Link>
             </div>
@@ -562,7 +567,7 @@ export default function DonorDashboardPage() {
                   Donation History
                 </TabsTrigger>
               </TabsList>
-              
+
               <div className="hidden md:flex gap-3">
                 <Button variant="outline" size="sm" className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
                   <Gift className="h-4 w-4 mr-2" />
@@ -574,11 +579,11 @@ export default function DonorDashboardPage() {
                 </Button>
               </div>
             </div>
-            
+
             <TabsContent value="overview" className="space-y-6">
               {/* Stats Cards */}
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-gray-900 to-gray-800">
+                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-gray-900 to-gray-800 hover:scale-105 transition-transform duration-300 cursor-pointer">
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
                       <Wallet className="h-4 w-4 text-blue-400" />
@@ -590,8 +595,8 @@ export default function DonorDashboardPage() {
                     <p className="text-xs text-gray-500 mt-1">Lifetime contribution</p>
                   </CardContent>
                 </Card>
-                
-                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-gray-900 to-gray-800">
+
+                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-gray-900 to-gray-800 hover:scale-105 transition-transform duration-300 cursor-pointer">
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
                       <Award className="h-4 w-4 text-amber-400" />
@@ -603,8 +608,8 @@ export default function DonorDashboardPage() {
                     <p className="text-xs text-gray-500 mt-1">Among all donors</p>
                   </CardContent>
                 </Card>
-                
-                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-gray-900 to-gray-800">
+
+                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-gray-900 to-gray-800 hover:scale-105 transition-transform duration-300 cursor-pointer">
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
                       <Heart className="h-4 w-4 text-red-400" />
@@ -616,8 +621,8 @@ export default function DonorDashboardPage() {
                     <p className="text-xs text-gray-500 mt-1">Currently supporting</p>
                   </CardContent>
                 </Card>
-                
-                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-gray-900 to-gray-800">
+
+                <Card className="overflow-hidden border-none shadow-md bg-gradient-to-br from-gray-900 to-gray-800 hover:scale-105 transition-transform duration-300 cursor-pointer">
                   <CardHeader className="pb-2 pt-4">
                     <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4 text-purple-400" />
@@ -631,15 +636,15 @@ export default function DonorDashboardPage() {
                       </Badge>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      {parseFloat(userLeaderboardInfo.amount) > 0 
-                        ? "Account in good standing" 
+                      {parseFloat(userLeaderboardInfo.amount) > 0
+                        ? "Account in good standing"
                         : "Make your first donation"
                       }
                     </p>
                   </CardContent>
                 </Card>
               </div>
-              
+
               {/* Active campaigns preview */}
               <div className="grid gap-6">
                 <Card className="border-none shadow-lg overflow-hidden bg-gray-900 border border-gray-800">
@@ -662,7 +667,7 @@ export default function DonorDashboardPage() {
                         userCampaigns.slice(0, 3).map((campaign, index) => {
                           // Calculate if user has donated to this campaign
                           const hasUserDonated = parseFloat(campaign.userDonation || "0") > 0;
-                          
+
                           return (
                             <div key={index} className="flex flex-col md:flex-row gap-4 p-4 rounded-xl bg-gray-800/40 border border-gray-700 hover:bg-gray-800/70 transition-colors">
                               {/* Campaign image */}
@@ -675,7 +680,7 @@ export default function DonorDashboardPage() {
                                   </div>
                                 )}
                               </div>
-                              
+
                               <div className="flex-1 space-y-2">
                                 <div className="flex justify-between">
                                   <div>
@@ -692,7 +697,7 @@ export default function DonorDashboardPage() {
                                     <p className="text-sm text-gray-400">Your donation</p>
                                   </div>
                                 </div>
-                                
+
                                 <div className="space-y-1">
                                   <div className="flex justify-between text-xs">
                                     <span className="flex items-center gap-1">
@@ -702,11 +707,11 @@ export default function DonorDashboardPage() {
                                     </span>
                                     <span className="text-gray-400">{campaign.totalDonated}/{campaign.goal} ETH</span>
                                   </div>
-                                  <Progress 
-                                    value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100} 
-                                    className="h-2 bg-gray-700" 
+                                  <Progress
+                                    value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100}
+                                    className="h-2 bg-gray-700"
                                   />
-                                  
+
                                   {/* Additional campaign stats */}
                                   <div className="flex gap-4 pt-2 text-xs text-gray-400">
                                     <span className="flex items-center gap-1">
@@ -733,14 +738,17 @@ export default function DonorDashboardPage() {
                   </CardContent>
                   <CardFooter className="bg-gray-800/30 border-t border-gray-800 px-6 py-4">
                     <Link href="/donate" className="w-full">
-                      <Button variant="default" className="w-full bg-white text-black hover:bg-gray-100">
-                        <Heart className="mr-2 h-4 w-4" />
-                        Donate to More Campaigns
+                      <Button variant="default" className="w-full bg-white text-black hover:bg-gray-100 transition-all duration-300 group" size="lg">
+                        <Heart className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                        <span className="group-hover:hidden">Donate to More Campaigns</span>
+                        <AnimatedGradientText className="font-semibold hidden group-hover:inline">
+                          Donate to More Campaigns
+                        </AnimatedGradientText>
                       </Button>
                     </Link>
                   </CardFooter>
                 </Card>
-                
+
                 {/* Recent Donations Preview */}
                 <Card className="border-none shadow-lg overflow-hidden bg-gray-900 border border-gray-800">
                   <CardHeader className="bg-gray-800/50 border-b border-gray-800 pb-3">
@@ -749,9 +757,9 @@ export default function DonorDashboardPage() {
                         <CardTitle className="text-white">Recent Donations</CardTitle>
                         <CardDescription className="text-gray-400">Your latest contributions</CardDescription>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         className="text-gray-300 hover:text-white hover:bg-gray-800"
                         onClick={() => setActiveTab("history")}
                       >
@@ -799,9 +807,9 @@ export default function DonorDashboardPage() {
                   {donationHistory && donationHistory.length > 0 && (
                     <CardFooter className="bg-gray-800/30 border-t border-gray-800 px-6 py-3 justify-between flex text-sm text-gray-400">
                       <span>Recent activity</span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         className="h-8 px-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
                         onClick={() => setActiveTab("history")}
                       >
@@ -813,7 +821,7 @@ export default function DonorDashboardPage() {
                 </Card>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="campaigns">
               <Card className="border-none shadow-lg overflow-hidden bg-gray-900 border border-gray-800">
                 <CardHeader className="bg-gray-800/50 border-b border-gray-800">
@@ -826,7 +834,7 @@ export default function DonorDashboardPage() {
                       userCampaigns.map((campaign, index) => {
                         // Calculate contribution percentage
                         const userContributionPercentage = Math.round((parseFloat(campaign.userDonation) / parseFloat(campaign.totalDonated)) * 100);
-                          
+
                         return (
                           <div key={index} className="flex flex-col md:flex-row gap-4 p-4 rounded-xl bg-gray-800/40 border border-gray-700 hover:bg-gray-800/70 transition-colors">
                             {/* Campaign image */}
@@ -839,7 +847,7 @@ export default function DonorDashboardPage() {
                                 </div>
                               )}
                             </div>
-                            
+
                             <div className="flex-1 space-y-2">
                               <div className="flex justify-between">
                                 <div>
@@ -857,18 +865,18 @@ export default function DonorDashboardPage() {
                                 <div className="text-right">
                                   <p className="font-medium text-white">{campaign.userDonation} ETH</p>
                                   <p className="text-sm text-gray-400">
-                                    {userContributionPercentage > 0 ? 
-                                      `${userContributionPercentage}% of total` : 
+                                    {userContributionPercentage > 0 ?
+                                      `${userContributionPercentage}% of total` :
                                       'Your contribution'
                                     }
                                   </p>
                                 </div>
                               </div>
-                              
+
                               <p className="text-sm text-gray-400 max-w-md line-clamp-2">
                                 {campaign.description || "No description available for this campaign."}
                               </p>
-                              
+
                               <div className="space-y-1">
                                 <div className="flex justify-between text-xs text-gray-400">
                                   <span>
@@ -876,11 +884,11 @@ export default function DonorDashboardPage() {
                                   </span>
                                   <span>{campaign.totalDonated}/{campaign.goal} ETH</span>
                                 </div>
-                                <Progress 
-                                  value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100} 
-                                  className="h-2 bg-gray-700" 
+                                <Progress
+                                  value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100}
+                                  className="h-2 bg-gray-700"
                                 />
-                                
+
                                 {/* Additional campaign stats */}
                                 <div className="flex justify-between pt-2 text-xs text-gray-400">
                                   <div className="flex items-center gap-4">
@@ -922,7 +930,7 @@ export default function DonorDashboardPage() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="history">
               <Card className="border-none shadow-lg overflow-hidden bg-gray-900 border border-gray-800">
                 <CardHeader className="bg-gray-800/50 border-b border-gray-800">
@@ -1006,19 +1014,19 @@ export default function DonorDashboardPage() {
           walletAddress={address}
           totalDonated={userLeaderboardInfo.amount}
           donationsCount={donationHistory.length || recentDonations.length}
-          recentDonations={donationHistory.length > 0 
+          recentDonations={donationHistory.length > 0
             ? donationHistory.map(donation => ({
-                campaignId: donation.campaign.id,
-                campaignName: donation.campaign.name,
-                amount: formatAmount(donation.amount),
-                date: formatDate(donation.timestamp)
-              }))
+              campaignId: donation.campaign.id,
+              campaignName: donation.campaign.name,
+              amount: formatAmount(donation.amount),
+              date: formatDate(donation.timestamp)
+            }))
             : recentDonations.map(donation => ({
-                campaignId: donation.campaignId || "",
-                campaignName: donation.campaignTitle || "",
-                amount: donation.amount.toString(),
-                date: donation.date
-              }))
+              campaignId: donation.campaignId || "",
+              campaignName: donation.campaignTitle || "",
+              amount: donation.amount.toString(),
+              date: donation.date
+            }))
           }
         />
       )}
