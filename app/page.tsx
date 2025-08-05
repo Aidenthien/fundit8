@@ -261,7 +261,7 @@ export default function Home() {
             </div>
 
             {/* Main heading with enhanced Web3 styling */}
-            <h3 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-blue-400 via-purple-500 via-pink-500 to-cyan-400 text-transparent bg-clip-text leading-none tracking-tight mb-6 relative">
+            <h3 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-white text-black leading-none tracking-tight mb-6 relative">
               <span className="relative">How It Works?</span>
             </h3>
 
