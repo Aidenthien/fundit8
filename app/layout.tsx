@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/denate-single-logo.png"></link>
+        <link rel="icon" href="/fundit8-single-logo.png"></link>
       </head>
       <body className={roboto.className}>
         <ToastContainer />

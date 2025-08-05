@@ -10,28 +10,34 @@ import "swiper/css/autoplay";
 
 const testimonials = [
   {
-    name: "Sarah Johnson",
+    name: "Johnson Chin",
     role: "Donor",
     initial: "S",
     text: "Fundit8 has completely changed how I think about charitable giving. The transparency and real-time tracking give me confidence that my donations are making a real impact.",
   },
   {
-    name: "Michael Chen",
+    name: "Michael Wong",
     role: "Organization Leader",
     initial: "M",
     text: "As a charity organization, Fundit8's blockchain technology helps us build trust with donors. The platform makes it easy to show exactly how funds are being used.",
   },
   {
-    name: "Emma Rodriguez",
+    name: "Lisa Rodriguez",
     role: "Regular Donor",
     initial: "E",
     text: "I love how easy it is to track my donations and see the real impact. Fundit8 makes charitable giving feel more personal and meaningful.",
   },
   {
-    name: "Michael Chen",
-    role: "Organization Leader",
-    initial: "M",
-    text: "As a charity organization, Fundit8's blockchain technology helps us build trust with donors. The platform makes it easy to show exactly how funds are being used.",
+    name: "David Kim",
+    role: "Philanthropist",
+    initial: "D",
+    text: "The AI-powered donation predictions on Fundit8 are incredible. It helps me make more informed decisions about where my money will have the greatest impact.",
+  },
+  {
+    name: "Kendrick Wang",
+    role: "Charity Director",
+    initial: "L",
+    text: "Fundit8's platform has revolutionized our fundraising efforts. The transparency features help us build stronger relationships with our donors.",
   },
 ];
 

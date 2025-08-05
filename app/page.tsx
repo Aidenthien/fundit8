@@ -7,7 +7,6 @@ import { ArrowRight, Heart, Shield, BarChart3, Zap, User } from "lucide-react";
 import { IconButton, Button, Typography } from "@material-tailwind/react";
 import AboutCard from "@/components/about-card";
 import React, { useEffect, useState } from "react";
-import { TestimonialCarousel } from "@/components/testimonial-carousel";
 import { getLeaderboard } from "@/lib/mockData";
 import ChatBot from "@/components/chatbot";
 import { Marquee } from "@/components/magicui/marquee";
@@ -122,7 +121,7 @@ export default function Home() {
 
   return (
     <div className="bg-white">
-      <div className="relative min-h-screen w-full bg-[url('/landing-page2-bg2.jpg')] bg-cover bg-no-repeat">
+      <div className="relative min-h-screen w-full bg-[url('/landing-page2-bg2.png')] bg-cover bg-no-repeat">
         {/* Hero Section */}
         <div className="absolute inset-0 h-full w-full bg-gray-900/60" />
         <div className="grid min-h-screen px-8">
@@ -205,6 +204,7 @@ export default function Home() {
               <Marquee reverse pauseOnHover className="[--duration:20s]">
                 {SPONSORS.map((logo) => (
                   <Image
+                    key={logo}
                     width={256}
                     height={256}
                     src={`/logos/logo-${logo}.svg`}
@@ -217,7 +217,7 @@ export default function Home() {
           </div>
         </section>
       </div>
-      <section className="container mx-auto flex flex-col items-center px-4 py-16 md:py-24 lg:py-32">
+      <section className="container mx-auto flex flex-col items-center px-4 py-14 md:py-14 lg:py-8">
         {/* Enhanced Gradient Heading with better responsive design */}
         <div className="text-center mb-8 md:mb-12 lg:mb-16 max-w-5xl mx-auto relative">
           {/* Animated background gradient */}

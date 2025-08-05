@@ -80,7 +80,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Story Section */}
-      <section className="relative w-full py-24 md:py-32 lg:py-40 bg-gradient-to-b from-black via-gray-900 to-black">
+      <section className="relative w-full py-14 md:py-14 lg:py-14 bg-gradient-to-b from-black via-gray-900 to-black">
         {/* Cosmic background elements */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20"></div>
@@ -116,7 +116,7 @@ export default function AboutPage() {
                 subtitle: "The Problem We Identified",
                 description: "Our founders witnessed firsthand the challenges faced by both donors and charitable organizations: donors often lacked visibility into how their contributions were being used, while organizations struggled to build trust and demonstrate impact.",
                 year: "2024",
-                image: "/about-us.jpg" 
+                image: "/about-us.jpg"
               },
               {
                 icon: Zap,
@@ -125,7 +125,7 @@ export default function AboutPage() {
                 subtitle: "Our Blockchain Innovation",
                 description: "By leveraging blockchain technology, we've created a platform that provides unprecedented transparency, security, and efficiency in the donation process. Smart contracts ensure that funds are only released when predefined milestones are met.",
                 year: "2025",
-                image: "/about-us-2.webp" 
+                image: "/about-us-2.png"
               },
               {
                 icon: Globe,
@@ -142,7 +142,7 @@ export default function AboutPage() {
                   <div className="relative rounded-3xl overflow-hidden shadow-2xl group">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-transparent to-blue-500/20 z-5"></div>
-                    
+
                     <Image
                       src={item.image}
                       width={600}
@@ -150,7 +150,7 @@ export default function AboutPage() {
                       alt={`${item.title} - Fundit8's Journey`}
                       className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    
+
                     <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
                       <div className="flex items-center justify-between mb-3">
                         <Typography variant="h4" color="white" className="font-bold" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
@@ -174,7 +174,7 @@ export default function AboutPage() {
                   <div className="group relative bg-gradient-to-r from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-3xl p-8 md:p-10 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-105 h-full">
                     {/* Glowing border effect */}
                     <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
-                    
+
                     {/* Enhanced content layout */}
                     <div className="relative z-10">
                       <div className="flex items-start mb-6">
@@ -190,11 +190,11 @@ export default function AboutPage() {
                           </Typography>
                         </div>
                       </div>
-                      
+
                       {/* Progress indicator */}
                       <div className="flex items-center mt-6">
                         <div className="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className={`h-full bg-gradient-to-r from-${item.color}-500 to-${item.color}-400 rounded-full transition-all duration-1000`}
                             style={{ width: `${(index + 1) * 33.33}%` }}
                           ></div>
@@ -215,7 +215,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Values Section */}
-      <section className="relative w-full py-24 md:py-32 lg:py-40 bg-gradient-to-b from-black via-gray-900 to-black">
+      <section className="relative w-full py-14 md:py-14 lg:py-14 bg-gradient-to-b from-black via-gray-900 to-black">
         {/* Cosmic background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-purple-900/20"></div>
@@ -245,7 +245,7 @@ export default function AboutPage() {
               The core principles that guide our platform and mission
             </Typography>
           </div>
-          
+
           {/* Restructured Values Layout */}
           <div className="space-y-16">
             {/* Core Values Row 1 */}
@@ -258,7 +258,7 @@ export default function AboutPage() {
                 <div key={index} className="group relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-white/10 hover:border-white/20">
                   {/* Glowing border effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
-                  
+
                   {/* Enhanced Header */}
                   <div className="relative p-8 md:p-10">
                     <div className="flex items-start justify-between mb-6">
@@ -271,7 +271,7 @@ export default function AboutPage() {
                         </Typography>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div>
                         <Typography variant="h4" color="white" className="mb-2 font-bold" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
@@ -300,7 +300,7 @@ export default function AboutPage() {
                 <div key={index} className="group relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-white/10 hover:border-white/20">
                   {/* Glowing border effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
-                  
+
                   {/* Enhanced Header */}
                   <div className="relative p-8 md:p-10">
                     <div className="flex items-start justify-between mb-6">
@@ -313,7 +313,7 @@ export default function AboutPage() {
                         </Typography>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div>
                         <Typography variant="h4" color="white" className="mb-2 font-bold" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
@@ -347,7 +347,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Team Section */}
-      <section className="relative w-full py-24 md:py-32 lg:py-40 bg-gradient-to-b from-black via-gray-900 to-black">
+      <section className="relative w-full py-14 md:py-14 lg:py-14 bg-gradient-to-b from-black via-gray-900 to-black">
         {/* Cosmic background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20"></div>
@@ -376,17 +376,17 @@ export default function AboutPage() {
               Meet the passionate individuals behind DeNate
             </Typography>
           </div>
-          
+
           <div className="grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-3">
             {[
-              { name: "AidenTheinTV", role: "Co-Founder & CEO", image: "/aiden-notion.png" },
-              { name: "John Paulose", role: "Co-Founder & CTO", image: "/john-notion.png" },
-              { name: "Ivan Wong", role: "Head of Partnerships", image: "/my-notion-face-transparent.png" },
+              { name: "Aiden Thien", role: "Co-Founder & CEO", image: "/aiden-notion.png" },
+              { name: "John Paulose", role: "CTO of FundIt8", image: "/john-notion.png" },
+              { name: "Choo Choo", role: "Head of Partnerships", image: "/choo-notion.png" },
             ].map((member, index) => (
               <Card key={index} className="group relative overflow-hidden text-center shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-white/10 hover:border-white/20" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                 {/* Glowing border effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"></div>
-                
+
                 <CardHeader floated={false} className="h-72 flex items-center justify-center bg-gradient-to-br from-blue-900/50 via-purple-900/50 to-indigo-900/50 backdrop-blur-sm" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
                   <div className="relative overflow-hidden rounded-full border-4 border-white/20 shadow-2xl group-hover:border-white/40 transition-all duration-500">
                     <Image

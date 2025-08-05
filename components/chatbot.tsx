@@ -15,8 +15,8 @@ export default function ChatBotToggle() {
     // Predefined list of keywords and their corresponding responses
     const keywordResponses = [
         {
-            keywords: ["DeNate", "about denate", "what is this website about"],
-            response: "DeNate is a platform that helps connect donors with charitable organizations. We facilitate easy and secure donations to various causes."
+            keywords: ["FundIt8", "about FundIt8", "what is this website about"],
+            response: "FundIt8 is a platform that helps connect donors with charitable organizations. We facilitate easy and secure donations to various causes."
         },
         {
             keywords: ["campaign", "campaigns", "see campaigns", "active campaign"],
@@ -36,11 +36,11 @@ export default function ChatBotToggle() {
         },
         {
             keywords: ["contact", "support", "help", "need help", "message", "inquiry", "ask"],
-            response: "You may reach out to us via email: admin@denate.com or drop us a message at our telegram: @denate_admin."
+            response: "You may reach out to us via email: admin@fundit8.com or drop us a message at our telegram: @fundit8_admin."
         },
         {
             keywords: ["hi", "hello"],
-            response: "Hi, Welcome to DeNate! How can I assist you today?"
+            response: "Hi, Welcome to FundIt8! How can I assist you today?"
         }
     ];
 
