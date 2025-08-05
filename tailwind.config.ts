@@ -86,6 +86,11 @@ const config: Config = withMT({
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
         },
+        aurora: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -94,6 +99,7 @@ const config: Config = withMT({
         "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
         gradient: "gradient 3s ease infinite",
         "marquee-infinite": "marquee-infinite 20s linear infinite",
+        aurora: "aurora 8s ease-in-out infinite alternate",
       },
     },
   },

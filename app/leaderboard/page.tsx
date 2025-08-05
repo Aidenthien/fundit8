@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -9,17 +10,18 @@ import Image from "next/image"
 import { useAccount } from "wagmi"
 import { useEffect, useState } from "react"
 import { convertEthToMYR } from "@/utils/ethToMYR";
+import { AuroraText } from "@/components/magicui/aurora-text";
 
 // Helper function to format WEI to ETH with proper decimal display
 function formatToEth(wei: number): string {
   // Convert wei to ETH (1 ETH = 10^18 wei)
   const ethValue = wei / 1000000000000000000;
-  
+
   // Use toLocaleString to ensure it doesn't use scientific notation
   // and displays the full decimal value up to 18 places
-  return ethValue.toLocaleString('fullwide', { 
+  return ethValue.toLocaleString('fullwide', {
     useGrouping: false,
-    maximumFractionDigits: 18 
+    maximumFractionDigits: 18
   }) + " ETH";
 }
 
@@ -55,14 +57,24 @@ export default function LeaderboardPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      <section className="w-full py-16 px-4 md:px-6 bg-gradient-to-r from-blue-900/80 to-purple-900/80">
-        <div className="container mx-auto max-w-5xl">
+      <section className="w-full py-16 px-4 md:px-6 relative overflow-hidden">
+        {/* Banner Image Background */}
+        <div className="absolute inset-0">
+          <Image
+            src="/banner-image.png"
+            alt="Leaderboard Banner"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-purple-900/90"></div>
+        </div>
+
+        <div className="container mx-auto max-w-5xl relative z-10">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                  Donation Leaderboard
-                </span>
+              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl lg:text-6xl">
+                <AuroraText>Donation</AuroraText> Leaderboard
               </h1>
               <p className="max-w-[700px] text-gray-300 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 Recognizing the greatest impact makers in our ecosystem
@@ -84,20 +96,20 @@ export default function LeaderboardPage() {
                   </div>
                 )} */}
               </div>
-              
+
               <div className="flex items-center gap-4">
                 <div className="flex bg-gray-900 rounded-lg p-1 border border-gray-700">
-                  <Button 
-                    variant={timeframe === "all-time" ? "secondary" : "ghost"} 
-                    size="sm" 
+                  <Button
+                    variant={timeframe === "all-time" ? "secondary" : "ghost"}
+                    size="sm"
                     onClick={() => setTimeframe("all-time")}
                     className={timeframe === "all-time" ? "text-white" : "text-gray-400"}
                   >
                     <TrendingUp className="mr-2 h-4 w-4" />
                     All Time
                   </Button>
-                  <Button 
-                    variant={timeframe === "monthly" ? "secondary" : "ghost"} 
+                  <Button
+                    variant={timeframe === "monthly" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setTimeframe("monthly")}
                     className={timeframe === "monthly" ? "text-white" : "text-gray-400"}
@@ -111,7 +123,7 @@ export default function LeaderboardPage() {
                 </Button>
               </div>
             </div>
-            
+
             {loading ? (
               <div className="flex justify-center py-16">
                 <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
@@ -126,22 +138,21 @@ export default function LeaderboardPage() {
                 <div className="divide-y divide-gray-700/50">
                   {donors.map((donor) => {
                     // Check if this is the current user's entry
-                    const isCurrentUser = isConnected && address && 
+                    const isCurrentUser = isConnected && address &&
                       donor.address && donor.address.toLowerCase() === address.toLowerCase();
-                      
+
                     return (
-                      <div 
-                        key={donor.rank} 
-                        className={`grid grid-cols-3 px-6 py-4 items-center transition-colors hover:bg-gray-700/20 ${
-                          isCurrentUser ? 'bg-green-900/20 border-l-4 border-green-500' : ''
-                        }`}
+                      <div
+                        key={donor.rank}
+                        className={`grid grid-cols-3 px-6 py-4 items-center transition-colors hover:bg-gray-700/20 ${isCurrentUser ? 'bg-green-900/20 border-l-4 border-green-500' : ''
+                          }`}
                       >
                         <div className="flex items-center">
                           {donor.rank <= 3 ? (
                             <div className={`flex items-center justify-center h-8 w-8 rounded-full 
-                              ${donor.rank === 1 ? "bg-yellow-500/20 text-yellow-500 border border-yellow-500/50" : 
-                                donor.rank === 2 ? "bg-gray-400/20 text-gray-300 border border-gray-400/50" : 
-                                "bg-amber-600/20 text-amber-500 border border-amber-600/50"}`}>
+                              ${donor.rank === 1 ? "bg-yellow-500/20 text-yellow-500 border border-yellow-500/50" :
+                                donor.rank === 2 ? "bg-gray-400/20 text-gray-300 border border-gray-400/50" :
+                                  "bg-amber-600/20 text-amber-500 border border-amber-600/50"}`}>
                               {donor.rank}
                             </div>
                           ) : (
@@ -152,8 +163,8 @@ export default function LeaderboardPage() {
                         </div>
                         <div className="flex items-center gap-3">
                           {donor.avatar ? (
-                            <Image 
-                              src={donor.avatar} 
+                            <Image
+                              src={donor.avatar}
                               alt={donor.name || "Anonymous"}
                               width={36}
                               height={36}
@@ -185,7 +196,7 @@ export default function LeaderboardPage() {
                 </div>
               </div>
             )}
-            
+
             <div className="flex items-center justify-between px-6 py-4 border-t border-gray-700 bg-gray-800/80">
               <div className="text-sm text-gray-400">
                 Showing {donors.length} donors
