@@ -26,6 +26,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import DonorChatbot from "@/components/dashboard/DonorChatbot";
 import { toast } from "react-toastify";
+import { convertEthToMYR } from '@/utils/ethToMYR';
 
 interface Campaign {
   address: string;
@@ -207,7 +208,8 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   const [combinedTransactions, setCombinedTransactions] = useState<Transaction[]>([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [copiedAddresses, setCopiedAddresses] = useState<{ [key: string]: boolean }>({});
-
+  const [ethToMYRRate, setEthToMYRRate] = useState<number | null>(null);
+  const [donationMYR, setDonationMYR] = useState<number | null>(null);
   const router = useRouter();
   const { isConnected, address } = useAccount();
 
@@ -326,7 +328,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
       const addressToNameMap = donors.reduce((map: Record<string, string>, donor: any) => {
         map[donor.walletAddress.toLowerCase()] = donor.name || "Anonymous";
-        return map;
+          return map;
       }, {});
 
       return addresses.map((address) => ({
@@ -457,26 +459,26 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
         // Process donations
         const processedDonations = campaignData.donations.map((donation: any) => {
-          const donationInWei = BigInt(donation.amount);
-          const date = new Date(Number(donation.timestamp) * 1000); // Convert to milliseconds
+            const donationInWei = BigInt(donation.amount);
+            const date = new Date(Number(donation.timestamp) * 1000); // Convert to milliseconds
 
-          return {
-            ...donation,
-            formattedAmount: ethers.formatEther(donationInWei),
+            return {
+              ...donation,
+              formattedAmount: ethers.formatEther(donationInWei),
             formattedDate: date.toLocaleString()
-          };
+            };
         });
 
         // Process fund releases
         const processedReleases = campaignData.fundsReleased.map((release: any) => {
-          const amountInWei = BigInt(release.amount);
-          const date = new Date(Number(release.timestamp) * 1000);
+            const amountInWei = BigInt(release.amount);
+            const date = new Date(Number(release.timestamp) * 1000);
 
-          return {
-            ...release,
-            formattedAmount: ethers.formatEther(amountInWei),
+            return {
+              ...release,
+              formattedAmount: ethers.formatEther(amountInWei),
             formattedDate: date.toLocaleString()
-          };
+            };
         });
 
         // Create combined transactions list
@@ -544,6 +546,15 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
     fetchOrganizations();
   }, []);
 
+  // Fetch ETH to MYR conversion rate
+  useEffect(() => {
+    async function fetchRate() {
+      const rate = await convertEthToMYR(1);
+      setEthToMYRRate(rate);
+    }
+    fetchRate();
+  }, []);
+
   // Handle donation
   const handleDonate = async () => {
     if (!donationAmount || parseFloat(donationAmount) <= 0) {
@@ -583,11 +594,11 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
       setDonationAmount("");
       toast.success("🎉 Donation successful! Thank you for your contribution.", {
         position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
       });
     } catch (error: any) {
       console.error("Error donating:", error);
@@ -626,11 +637,11 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   const copyToClipboard = (address: string) => {
     navigator.clipboard.writeText(address)
       .then(() => {
-        setCopiedAddresses({ ...copiedAddresses, [address]: true });
-        setTimeout(() => {
-          setCopiedAddresses({ ...copiedAddresses, [address]: false });
-        }, 2000);
-      });
+      setCopiedAddresses({ ...copiedAddresses, [address]: true });
+      setTimeout(() => {
+        setCopiedAddresses({ ...copiedAddresses, [address]: false });
+      }, 2000);
+    });
   };
 
   const formatAddress = (address: string) => {
@@ -643,7 +654,33 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   };
 
   const isCurrentUserAddress = (donorAddress: string) => {
-    return isConnected && address && donorAddress.toLowerCase() === address.toLowerCase();
+    return (
+      isConnected &&
+      address &&
+      donorAddress.toLowerCase() === address.toLowerCase()
+    );
+  };
+
+  // Update donation MYR amount when donation amount or rate changes
+  useEffect(() => {
+    async function updateDonationMYR() {
+      if (donationAmount && parseFloat(donationAmount) > 0) {
+        const myr = await convertEthToMYR(parseFloat(donationAmount));
+        setDonationMYR(myr);
+      } else {
+        setDonationMYR(null);
+      }
+    }
+    updateDonationMYR();
+  }, [donationAmount, ethToMYRRate]);
+
+  // Helper to display ETH and MYR
+  const displayEthAndMYR = (eth: string | number) => {
+    const ethValue = typeof eth === 'string' ? parseFloat(eth) : eth;
+    if (ethToMYRRate) {
+      return `${ethValue} ETH (~RM${(ethValue * ethToMYRRate).toFixed(4)})`;
+    }
+    return `${ethValue} ETH`;
   };
 
   return (
@@ -672,8 +709,12 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
               <p className="text-muted-foreground">{campaignDetails.description}</p>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="font-medium">{campaignDetails.totalDonated} ETH raised</span>
-                  <span className="text-muted-foreground">of {campaignDetails.goal} ETH goal</span>
+                  <span className="font-medium">
+                    {displayEthAndMYR(campaignDetails.totalDonated)} raised
+                  </span>
+                  <span className="text-muted-foreground">
+                    of {displayEthAndMYR(campaignDetails.goal)} goal
+                  </span>
                 </div>
                 <Progress value={calculateProgressPercentage()} className="h-2" />
               </div>
@@ -716,6 +757,11 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                         disabled={isDonating}
                       />
                       <span>ETH</span>
+                      {donationMYR !== null && (
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          (~RM{donationMYR.toFixed(4)})
+                        </span>
+                      )}
                     </div>
                     {donationError && (
                       <p className="text-red-500 text-sm">{donationError}</p>
@@ -809,34 +855,34 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                 </p>
                 <div className="space-y-4">
                   {milestones && milestones.targets.map((target: string, index: number) => {
-                    const targetValue = parseFloat(target);
+                      const targetValue = parseFloat(target);
                     const totalDonated = parseFloat(campaignDetails.totalDonated || "0");
                     const progress = Math.min((totalDonated / targetValue) * 100, 100);
-                    const isReached = milestones.reached[index];
-                    const isFundsReleased = milestones.fundsReleased[index];
+                      const isReached = milestones.reached[index];
+                      const isFundsReleased = milestones.fundsReleased[index];
 
-                    return (
+                      return (
                       <Card key={index} className={isReached ? "border-primary" : ""}>
-                        <CardHeader>
-                          <div className="flex items-center justify-between">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
                             <CardTitle className="text-lg">Milestone {index + 1}</CardTitle>
                             <Badge variant={isReached ? "default" : "outline"}>
                               {isReached ? "Reached" : "Pending"}
-                            </Badge>
-                          </div>
-                          <CardDescription>
+                              </Badge>
+                            </div>
+                            <CardDescription>
                             Target: {targetValue.toFixed(18)} ETH {isFundsReleased ? "(Funds Released)" : ""}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <Progress value={progress} className="h-2" />
-                          <p className="text-sm text-muted-foreground mt-2">
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <Progress value={progress} className="h-2" />
+                            <p className="text-sm text-muted-foreground mt-2">
                             {totalDonated.toFixed(18)} / {targetValue.toFixed(18)} ETH ({progress.toFixed(2)}%)
-                          </p>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   {(!milestones || (milestones.targets.length === 0)) && (
                     <p className="text-muted-foreground">No milestones defined for this campaign.</p>
                   )}
@@ -926,6 +972,16 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                     </TableCell>
                                     <TableCell className="text-right font-mono">
                                       {tx.formattedAmount} ETH
+                                      {ethToMYRRate && (
+                                        <span className="ml-1 text-xs text-muted-foreground">
+                                          (~RM
+                                          {(
+                                            parseFloat(tx.formattedAmount) *
+                                            ethToMYRRate
+                                          ).toFixed(4)}
+                                          )
+                                        </span>
+                                      )}
                                     </TableCell>
                                   </TableRow>
                                 ))
@@ -962,6 +1018,17 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                     </div>
                                     <div className="font-mono text-green-600">
                                       +{donation.formattedAmount} ETH
+                                      {ethToMYRRate && (
+                                        <span className="ml-1 text-xs text-muted-foreground">
+                                          (~RM
+                                          {(
+                                            parseFloat(
+                                              donation.formattedAmount ?? '0'
+                                            ) * ethToMYRRate
+                                          ).toFixed(4)}
+                                          )
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
                                 ))}
@@ -1017,6 +1084,17 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                     </div>
                                     <div className="font-mono text-red-600">
                                       -{release.formattedAmount} ETH
+                                      {ethToMYRRate && (
+                                        <span className="ml-1 text-xs text-muted-foreground">
+                                          (~RM
+                                          {(
+                                            parseFloat(
+                                              release.formattedAmount ?? '0'
+                                            ) * ethToMYRRate
+                                          ).toFixed(4)}
+                                          )
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
                                 ))}
@@ -1109,7 +1187,19 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                     <span className="text-xs text-muted-foreground">{formatAddress(donor.address)}</span>
                                   </div>
                                 </TableCell>
-                                <TableCell className="text-right font-medium">{formatDonation(donor.totalDonated)} ETH</TableCell>
+                                <TableCell className="text-right font-medium">
+                                  {formatDonation(donor.totalDonated)} ETH
+                                  {ethToMYRRate && (
+                                    <span className="ml-1 text-xs text-muted-foreground">
+                                      (~RM
+                                      {(
+                                        parseFloat(donor.totalDonated) *
+                                        ethToMYRRate
+                                      ).toFixed(4)}
+                                      )
+                                    </span>
+                                  )}
+                                </TableCell>
                               </TableRow>
                             );
                           })
