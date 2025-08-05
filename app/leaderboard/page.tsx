@@ -8,6 +8,7 @@ import { getLeaderboard } from "@/lib/mockData"
 import Image from "next/image"
 import { useAccount } from "wagmi"
 import { useEffect, useState } from "react"
+import { convertEthToMYR } from "@/utils/ethToMYR";
 
 // Helper function to format WEI to ETH with proper decimal display
 function formatToEth(wei: number): string {
@@ -27,6 +28,7 @@ export default function LeaderboardPage() {
   const [donors, setDonors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState("all-time");
+  const [ethToMYRRate, setEthToMYRRate] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -42,6 +44,14 @@ export default function LeaderboardPage() {
 
     fetchLeaderboard();
   }, [timeframe]);
+
+  useEffect(() => {
+    async function fetchRate() {
+      const rate = await convertEthToMYR(1);
+      setEthToMYRRate(rate);
+    }
+    fetchRate();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
@@ -165,6 +175,9 @@ export default function LeaderboardPage() {
                         </div>
                         <div className="text-center font-mono text-sm font-medium">
                           {formatToEth(donor.amount)}
+                          {ethToMYRRate && (
+                            <span className="ml-1 text-xs text-gray-400">(~RM{((donor.amount / 1e18) * ethToMYRRate).toFixed(4)})</span>
+                          )}
                         </div>
                       </div>
                     );
