@@ -6,6 +6,7 @@ import {
 } from "@material-tailwind/react";
 import Link from "next/link";
 import React from "react";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 
 interface AboutCardProp {
   title: string;
@@ -73,8 +74,19 @@ export function AboutCard({ title, description, subTitle }: AboutCardProp) {
             {description}
           </div>
           <Link href={buttonLink} passHref>
-            <Button color="white" size="sm" placeholder={null} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
-              {buttonText}
+            <Button
+              color="white"
+              size="sm"
+              className="group relative overflow-hidden"
+              placeholder={null}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              <span className="relative z-10">
+                <AnimatedGradientText className="font-semibold">
+                  {buttonText}
+                </AnimatedGradientText>
+              </span>
             </Button>
           </Link>
         </div>

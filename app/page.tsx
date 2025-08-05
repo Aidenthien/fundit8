@@ -13,6 +13,7 @@ import { Marquee } from "@/components/magicui/marquee";
 import { AuroraText } from "@/components/magicui/aurora-text";
 import TestimonialsCarousel from "@/components/Testimonial";
 import { TypingAnimation } from "@/components/magicui/typing-animation";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 
 // Helper function to format WEI to ETH with proper decimal display
 function formatToEth(wei: number): string {
@@ -162,23 +163,32 @@ export default function Home() {
                 <Button
                   variant="gradient"
                   color="white"
-                  className="flex items-center"
+                  className="flex items-center group relative overflow-hidden"
                   placeholder={null}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
                 >
-                  Donate Now <ArrowRight className="ml-2 h-4 w-4" />
+                  <span className="relative z-10 flex items-center">
+                    <AnimatedGradientText className="font-semibold">
+                      Donate Now
+                    </AnimatedGradientText>
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
                 </Button>
               </Link>
               <Link href="/kyb-form">
                 <Button
                   variant="outlined"
-                  className="rounded-full bg-white p-4"
+                  className="rounded-full bg-white border-white text-black hover:bg-gray-50 transition-all duration-300 group"
                   placeholder={null}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
                 >
-                  Register Organization
+                  <span className="relative z-10">
+                    <AnimatedGradientText className="font-semibold">
+                      Register Organization
+                    </AnimatedGradientText>
+                  </span>
                 </Button>
               </Link>
             </div>
@@ -201,18 +211,31 @@ export default function Home() {
             </Typography>
 
             <div className="flex flex-wrap items-center justify-center gap-6">
-              <Marquee reverse pauseOnHover className="[--duration:20s]">
-                {SPONSORS.map((logo) => (
-                  <Image
-                    key={logo}
-                    width={256}
-                    height={256}
-                    src={`/logos/logo-${logo}.svg`}
-                    alt={logo}
-                    className="w-40"
-                  />
-                ))}
-              </Marquee>
+              <div className="relative overflow-hidden w-full">
+                <div className="flex items-center gap-8 animate-marquee-infinite">
+                  {SPONSORS.map((logo) => (
+                    <Image
+                      key={logo}
+                      width={256}
+                      height={256}
+                      src={`/logos/logo-${logo}.svg`}
+                      alt={logo}
+                      className="w-40 flex-shrink-0"
+                    />
+                  ))}
+                  {/* Duplicate for seamless loop */}
+                  {SPONSORS.map((logo) => (
+                    <Image
+                      key={`duplicate-${logo}`}
+                      width={256}
+                      height={256}
+                      src={`/logos/logo-${logo}.svg`}
+                      alt={logo}
+                      className="w-40 flex-shrink-0"
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
