@@ -1,18 +1,21 @@
 "use client";
 
+import React from "react";
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Heart, Clock, Users, ChevronLeft, ChevronRight } from "lucide-react"
+import { Heart, Clock, Users, ChevronLeft, ChevronRight, Search, Filter, Sparkles, TrendingUp, Shield, Eye } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
 import { charityCentral_ABI, charityCentral_CA, charityCampaigns_ABI } from "@/config/contractABI"
 import axios from "axios"
 import DonorChatbot from "@/components/dashboard/DonorChatbot"
 import { useAccount } from "wagmi"
+import { AuroraText } from "@/components/magicui/aurora-text";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 
 interface Campaign {
   address: string;
@@ -47,15 +50,15 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
   };
 
   return (
-    <div className="relative w-full h-[200px] overflow-hidden">
-      <div className="absolute inset-0 bg-gray-900/20 z-10"></div>
+    <div className="relative w-full h-[250px] overflow-hidden rounded-t-xl">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
       <div className="relative h-full w-full">
         <Image
           src={getDisplayUrl(images[currentImageIndex])}
           alt="Campaign image"
           fill
           style={{ objectFit: 'cover' }}
-          className="transition-opacity duration-300"
+          className="transition-all duration-500 hover:scale-105"
         />
       </div>
       {images.length > 1 && (
@@ -63,24 +66,27 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/30 text-white hover:bg-black/50 rounded-full h-8 w-8"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 text-white hover:bg-black/60 rounded-full h-10 w-10 backdrop-blur-sm"
             onClick={prevImage}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/30 text-white hover:bg-black/50 rounded-full h-8 w-8"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-black/40 text-white hover:bg-black/60 rounded-full h-10 w-10 backdrop-blur-sm"
             onClick={nextImage}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </Button>
-          <div className="absolute bottom-2 left-0 right-0 z-20 flex justify-center gap-1">
+          <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center gap-2">
             {images.map((_, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full ${currentImageIndex === index ? 'bg-white' : 'bg-white/60'}`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${currentImageIndex === index
+                  ? 'bg-white scale-125'
+                  : 'bg-white/60 hover:bg-white/80'
+                  }`}
                 onClick={() => setCurrentImageIndex(index)}
               />
             ))}
@@ -108,6 +114,7 @@ export default function DonatePage() {
   const [campaignDetails, setCampaignDetails] = useState<Campaign[]>([]);
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("all");
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -218,85 +225,180 @@ export default function DonatePage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50 relative bg-[url('/donate-banner.png')] bg-cover bg-center">
-        <div className="absolute inset-0 bg-black/50"></div>
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      {/* Hero Section with Enhanced Web3 Design */}
+      <section className="w-full py-20 md:py-32 lg:py-40 relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl animate-pulse"></div>
+          <div className="absolute top-0 left-1/4 w-32 h-32 bg-blue-500/30 rounded-full blur-2xl animate-bounce"></div>
+          <div className="absolute top-0 right-1/4 w-24 h-24 bg-purple-500/30 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute bottom-0 left-1/3 w-28 h-28 bg-pink-500/30 rounded-full blur-2xl animate-bounce"></div>
+        </div>
+
         <div className="container px-4 md:px-6 relative z-10">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl">
-                Make a Difference Today
+          <div className="flex flex-col items-center justify-center space-y-8 text-center">
+            <div className="space-y-6">
+              {/* Enhanced Title with AuroraText */}
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white">
+                Make a <AuroraText>Difference</AuroraText> Today
               </h1>
-              <p className="max-w-[700px] text-white md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+
+              {/* Enhanced Description */}
+              <p className="max-w-3xl text-xl md:text-2xl text-gray-300 font-medium leading-relaxed">
                 Browse active campaigns and donate to causes you care about. Track your impact in real-time with blockchain transparency.
               </p>
+
+              {/* Web3 Stats */}
+              <div className="flex flex-wrap justify-center gap-8 mt-8">
+                <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
+                  <Shield className="h-5 w-5 text-blue-400" />
+                  <span className="text-white font-medium">Blockchain Verified</span>
+                </div>
+                <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
+                  <Eye className="h-5 w-5 text-green-400" />
+                  <span className="text-white font-medium">Transparent Tracking</span>
+                </div>
+                <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
+                  <TrendingUp className="h-5 w-5 text-purple-400" />
+                  <span className="text-white font-medium">Real-time Impact</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32">
+      {/* Enhanced Campaigns Section */}
+      <section className="w-full py-16 md:py-24 bg-black">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:justify-between gap-4 md:items-center">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight">Active Campaigns</h2>
-              <p className="text-muted-foreground">
+          {/* Enhanced Header */}
+          <div className="flex flex-col md:flex-row md:justify-between gap-6 md:items-center mb-12">
+            <div className="space-y-2">
+              <h2 className="text-3xl md:text-4xl font-bold text-white">
+                <AnimatedGradientText className="text-3xl md:text-4xl font-bold">
+                  Active Campaigns
+                </AnimatedGradientText>
+              </h2>
+              <p className="text-gray-300 text-lg">
                 Support these verified organizations and track your impact through blockchain.
               </p>
             </div>
-            <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-auto">
-              <input
-                type="text"
-                placeholder="Search campaigns..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full md:w-64"
-              />
-              <Button variant="outline">Filter</Button>
-              <Button variant="outline">Sort</Button>
+
+            {/* Enhanced Search and Filter */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+              <div className="relative w-full sm:w-80">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Search campaigns..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                >
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filter
+                </Button>
+                <Button
+                  variant="outline"
+                  className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                >
+                  Sort
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="grid gap-6 pt-8 md:grid-cols-2 lg:grid-cols-3">
+
+          {/* Enhanced Campaign Grid */}
+          <div className="grid gap-8 pt-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredCampaigns.map((campaign, index) => (
-              <Card key={index} className="overflow-hidden">
+              <Card key={index} className="group relative overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+                {/* Enhanced Image Section */}
                 <div className="relative">
                   {campaign.images && campaign.images.length > 0 ? (
                     <ImageCarousel images={campaign.images} />
                   ) : (
-                    <Image
-                      src="/placeholder.svg"
-                      alt={campaign.name}
-                      width={400}
-                      height={200}
-                      className="w-full object-cover h-[200px]"
-                    />
-                  )}
-                </div>
-                <CardHeader>
-                  <CardTitle>{campaign.name}</CardTitle>
-                  <CardDescription>{getOrgNameByAddress(campaign.charityAddress)}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">{campaign.description}</p>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium">{campaign.totalDonated} ETH raised</span>
-                      <span className="text-muted-foreground">of {campaign.goal} ETH goal</span>
+                    <div className="relative h-[250px] overflow-hidden rounded-t-xl">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20"></div>
+                      <Image
+                        src="/placeholder.svg"
+                        alt={campaign.name}
+                        fill
+                        className="object-cover transition-all duration-500 group-hover:scale-110"
+                      />
                     </div>
-                    <Progress value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100} className="h-2" />
+                  )}
+
+                  {/* Campaign Status Badge */}
+                  <div className="absolute top-4 left-4 z-20">
+                    <Badge className="bg-green-500/90 backdrop-blur-sm text-white border-0">
+                      <Sparkles className="mr-1 h-3 w-3" />
+                      Active
+                    </Badge>
                   </div>
-                  <div className="flex justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center ml-auto">
-                      <Clock className="mr-1 h-4 w-4" />
-                      <span>{campaign.daysLeft} days left</span>
+                </div>
+
+                <CardHeader className="space-y-3">
+                  <CardTitle className="text-xl text-white group-hover:text-blue-400 transition-colors duration-300">
+                    {campaign.name}
+                  </CardTitle>
+                  <CardDescription className="text-gray-300">
+                    {getOrgNameByAddress(campaign.charityAddress)}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-6">
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {campaign.description}
+                  </p>
+
+                  {/* Enhanced Progress Section */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium text-white">
+                        {parseFloat(campaign.totalDonated) > 0.0001
+                          ? parseFloat(campaign.totalDonated).toFixed(4)
+                          : parseFloat(campaign.totalDonated).toFixed(6)
+                        } ETH raised
+                      </span>
+                      <span className="text-gray-400">
+                        of {parseFloat(campaign.goal) > 0.0001
+                          ? parseFloat(campaign.goal).toFixed(4)
+                          : parseFloat(campaign.goal).toFixed(6)
+                        } ETH goal
+                      </span>
+                    </div>
+                    <Progress
+                      value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100}
+                      className="h-3 bg-gray-700"
+                    />
+                    <div className="flex justify-between text-sm text-gray-400">
+                      <div className="flex items-center">
+                        <Users className="mr-1 h-4 w-4" />
+                        <span>{campaign.donors} donors</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="mr-1 h-4 w-4" />
+                        <span>{campaign.daysLeft} days left</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
+
                 <CardFooter>
                   <Link href={`/donate/${campaign.address}`} className="w-full">
-                    <Button className="w-full">
-                      <Heart className="mr-2 h-4 w-4" />
-                      Donate Now
+                    <Button className="w-full bg-black hover:bg-gray-900 text-white border border-white/20 transition-all duration-300 group">
+                      <Heart className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      <span className="group-hover:hidden">Donate Now</span>
+                      <AnimatedGradientText className="font-semibold hidden group-hover:inline">
+                        Donate Now
+                      </AnimatedGradientText>
                     </Button>
                   </Link>
                 </CardFooter>
@@ -305,8 +407,8 @@ export default function DonatePage() {
           </div>
         </div>
       </section>
-      
-      {/* Add DonorChatbot */}
+
+      {/* Enhanced Chatbot */}
       {isConnected && address && (
         <DonorChatbot
           donorName="Donor"
