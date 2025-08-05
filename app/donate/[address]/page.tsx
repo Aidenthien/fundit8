@@ -27,6 +27,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import DonorChatbot from "@/components/dashboard/DonorChatbot";
 import { toast } from "react-toastify";
 import { convertEthToMYR } from '@/utils/ethToMYR';
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import { AuroraText } from "@/components/magicui/aurora-text";
+import DarkVeil from "@/components/ui/dark-veil";
 
 interface Campaign {
   address: string;
@@ -186,8 +189,8 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
     totalDonated: '0',
     state: 0,
     charityAddress: '',
-    donors: 0,
     daysLeft: 30,
+    donors: 0,
     images: []
   });
   const [donationAmount, setDonationAmount] = useState<string>("");
@@ -328,7 +331,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
       const addressToNameMap = donors.reduce((map: Record<string, string>, donor: any) => {
         map[donor.walletAddress.toLowerCase()] = donor.name || "Anonymous";
-          return map;
+        return map;
       }, {});
 
       return addresses.map((address) => ({
@@ -459,26 +462,26 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
         // Process donations
         const processedDonations = campaignData.donations.map((donation: any) => {
-            const donationInWei = BigInt(donation.amount);
-            const date = new Date(Number(donation.timestamp) * 1000); // Convert to milliseconds
+          const donationInWei = BigInt(donation.amount);
+          const date = new Date(Number(donation.timestamp) * 1000); // Convert to milliseconds
 
-            return {
-              ...donation,
-              formattedAmount: ethers.formatEther(donationInWei),
+          return {
+            ...donation,
+            formattedAmount: ethers.formatEther(donationInWei),
             formattedDate: date.toLocaleString()
-            };
+          };
         });
 
         // Process fund releases
         const processedReleases = campaignData.fundsReleased.map((release: any) => {
-            const amountInWei = BigInt(release.amount);
-            const date = new Date(Number(release.timestamp) * 1000);
+          const amountInWei = BigInt(release.amount);
+          const date = new Date(Number(release.timestamp) * 1000);
 
-            return {
-              ...release,
-              formattedAmount: ethers.formatEther(amountInWei),
+          return {
+            ...release,
+            formattedAmount: ethers.formatEther(amountInWei),
             formattedDate: date.toLocaleString()
-            };
+          };
         });
 
         // Create combined transactions list
@@ -594,11 +597,11 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
       setDonationAmount("");
       toast.success("🎉 Donation successful! Thank you for your contribution.", {
         position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
     } catch (error: any) {
       console.error("Error donating:", error);
@@ -637,11 +640,11 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   const copyToClipboard = (address: string) => {
     navigator.clipboard.writeText(address)
       .then(() => {
-      setCopiedAddresses({ ...copiedAddresses, [address]: true });
-      setTimeout(() => {
-        setCopiedAddresses({ ...copiedAddresses, [address]: false });
-      }, 2000);
-    });
+        setCopiedAddresses({ ...copiedAddresses, [address]: true });
+        setTimeout(() => {
+          setCopiedAddresses({ ...copiedAddresses, [address]: false });
+        }, 2000);
+      });
   };
 
   const formatAddress = (address: string) => {
@@ -684,280 +687,460 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12">
-            <div>
-              {imageCarouselImages.length > 0 ? (
-                <ImageCarousel images={imageCarouselImages} />
-              ) : (
-                <Image
-                  src="/placeholder.svg"
-                  alt={campaignDetails.name}
-                  width={800}
-                  height={400}
-                  className="rounded-lg object-cover w-full aspect-video"
-                />
-              )}
+    <div className="flex flex-col min-h-screen bg-black relative">
+      <div style={{ width: '100%', height: '100vh', position: 'absolute', top: 0, left: 0 }}>
+        <DarkVeil />
+      </div>
+
+      {/* Hero Section */}
+      <section className="w-full py-12 md:py-24 lg:py-32 relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 animate-pulse"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+
+        <div className="container px-4 md:px-6 relative z-10">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
+            {/* Campaign Image */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+              <div className="relative rounded-2xl overflow-hidden border border-gray-700/50 backdrop-blur-sm">
+                {imageCarouselImages.length > 0 ? (
+                  <ImageCarousel images={imageCarouselImages} />
+                ) : (
+                  <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                    <Heart className="h-16 w-16 text-gray-600" />
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col space-y-4">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">{campaignDetails.name}</h1>
-              <p className="text-sm text-muted-foreground">
-                {getOrgNameByAddress(campaignDetails.charityAddress)}
-              </p>
-              <p className="text-muted-foreground">{campaignDetails.description}</p>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">
-                    {displayEthAndMYR(campaignDetails.totalDonated)} raised
+
+            {/* Campaign Info */}
+            <div className="flex flex-col space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">
+                    Active Campaign
+                  </Badge>
+                  <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20">
+                    {campaignDetails.daysLeft} days left
+                  </Badge>
+                </div>
+
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
+                  {campaignDetails.name}
+                </h1>
+
+                <div className="flex items-center gap-3 text-gray-400">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                    <Heart className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="font-medium">{getOrgNameByAddress(campaignDetails.charityAddress)}</span>
+                </div>
+
+                <p className="text-lg text-gray-300 leading-relaxed max-w-2xl">
+                  {campaignDetails.description}
+                </p>
+              </div>
+
+              {/* Progress Section */}
+              <div className="space-y-4 p-6 rounded-2xl bg-gray-800/30 border border-gray-700/50 backdrop-blur-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-white">
+                    {displayEthAndMYR(campaignDetails.totalDonated)}
                   </span>
-                  <span className="text-muted-foreground">
+                  <span className="text-gray-400">
                     of {displayEthAndMYR(campaignDetails.goal)} goal
                   </span>
                 </div>
-                <Progress value={calculateProgressPercentage()} className="h-2" />
-              </div>
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <div className="flex items-center">
-                  <Users className="mr-1 h-4 w-4" />
-                  <span>{campaignDetails.donors || 0} donors</span>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="mr-1 h-4 w-4" />
-                  <span>{campaignDetails.daysLeft} days left</span>
-                </div>
-              </div>
-              <Card className="mt-4">
-                <CardHeader>
-                  <CardTitle>Make a Donation</CardTitle>
-                  <CardDescription>Your donation will be securely processed via blockchain</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button variant="outline" onClick={() => setDonationAmount("5")}>
-                        5 ETH
-                      </Button>
-                      <Button variant="outline" onClick={() => setDonationAmount("10")}>
-                        10 ETH
-                      </Button>
-                      <Button variant="outline" onClick={() => setDonationAmount("25")}>
-                        25 ETH
-                      </Button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        placeholder="Custom amount"
-                        min="0.1"
-                        step="0.1"
-                        value={donationAmount}
-                        onChange={(e) => setDonationAmount(e.target.value)}
-                        disabled={isDonating}
-                      />
-                      <span>ETH</span>
-                      {donationMYR !== null && (
-                        <span className="ml-2 text-xs text-muted-foreground">
-                          (~RM{donationMYR.toFixed(4)})
-                        </span>
-                      )}
-                    </div>
-                    {donationError && (
-                      <p className="text-red-500 text-sm">{donationError}</p>
-                    )}
+
+                <div className="space-y-2">
+                  <Progress
+                    value={calculateProgressPercentage()}
+                    className="h-3 bg-gray-700/50"
+                  />
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">
+                      {calculateProgressPercentage().toFixed(1)}% funded
+                    </span>
+                    <span className="text-gray-400">
+                      {campaignDetails.donors || 0} donors
+                    </span>
                   </div>
-                </CardContent>
-                <CardFooter>
-                  {isConnected ? (
-                    <Button
-                      className="w-full"
-                      onClick={handleDonate}
-                      disabled={isDonating || !donationAmount}
-                    >
-                      <Heart className="mr-2 h-4 w-4" />
-                      {isDonating ? "Donating..." : "Donate Now"}
-                    </Button>
-                  ) : (
-                    <Button className="w-full" onClick={() => router.push("/login")}>
-                      Connect Wallet to Donate
-                    </Button>
-                  )}
-                </CardFooter>
-              </Card>
-              <div className="flex gap-2 mt-4">
-                <Button variant="outline" size="sm">
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Share
-                </Button>
-                <Button variant="outline" size="sm">
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  View on Blockchain
-                </Button>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-4 rounded-xl bg-gray-800/30 border border-gray-700/50">
+                  <div className="text-2xl font-bold text-white">{campaignDetails.donors || 0}</div>
+                  <div className="text-sm text-gray-400">Donors</div>
+                </div>
+                <div className="text-center p-4 rounded-xl bg-gray-800/30 border border-gray-700/50">
+                  <div className="text-2xl font-bold text-white">{campaignDetails.daysLeft}</div>
+                  <div className="text-sm text-gray-400">Days Left</div>
+                </div>
+                <div className="text-center p-4 rounded-xl bg-gray-800/30 border border-gray-700/50">
+                  <div className="text-2xl font-bold text-white">
+                    {milestones?.targets.length || 0}
+                  </div>
+                  <div className="text-sm text-gray-400">Milestones</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container px-4 md:px-6">
-          <Tabs defaultValue="about">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="about">About</TabsTrigger>
-              <TabsTrigger value="milestones">Milestones</TabsTrigger>
-              <TabsTrigger value="transactions">Transactions</TabsTrigger>
-              <TabsTrigger value="donors">Donors</TabsTrigger>
-            </TabsList>
+      {/* Donation Section */}
+      <section className="w-full py-12 bg-black/20 relative">
+        <div className="container px-4 md:px-6 relative z-10">
+          <div className="max-w-2xl mx-auto">
+            <Card className="border-none shadow-2xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+              <CardHeader className="text-center pb-6">
+                <CardTitle className="text-2xl font-bold text-white">
+                  <AuroraText>Make a Donation</AuroraText>
+                </CardTitle>
+                <CardDescription className="text-gray-400 text-lg">
+                  Your donation will be securely processed via blockchain technology
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Quick Amount Buttons */}
+                <div className="grid grid-cols-3 gap-3">
+                  {[0.1, 0.5, 1].map((amount) => (
+                    <Button
+                      key={amount}
+                      variant="outline"
+                      onClick={() => setDonationAmount(amount.toString())}
+                      className="h-12 border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
+                    >
+                      {amount} ETH
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Custom Amount Input */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Input
+                      type="number"
+                      placeholder="Enter custom amount"
+                      min="0.01"
+                      step="0.01"
+                      value={donationAmount}
+                      onChange={(e) => setDonationAmount(e.target.value)}
+                      disabled={isDonating}
+                      className="h-12 bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-500 focus:border-blue-500"
+                    />
+                    <span className="text-gray-400 font-medium">ETH</span>
+                  </div>
+                  {donationMYR !== null && (
+                    <div className="text-center p-3 rounded-lg bg-gray-800/30 border border-gray-700/50">
+                      <span className="text-sm text-gray-400">
+                        ≈ RM {donationMYR.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {donationError && (
+                  <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+                    <p className="text-red-400 text-sm">{donationError}</p>
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter className="pt-6">
+                {isConnected ? (
+                  <Button
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold transition-all duration-300 group"
+                    onClick={handleDonate}
+                    disabled={isDonating || !donationAmount}
+                  >
+                    <Heart className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                    {isDonating ? (
+                      <span>Processing Donation...</span>
+                    ) : (
+                      <span>Donate Now</span>
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full h-12 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold"
+                    onClick={() => router.push("/login")}
+                  >
+                    <Heart className="mr-2 h-5 w-5" />
+                    Connect Wallet to Donate
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 mt-6 justify-center">
+              <Button variant="outline" size="lg" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">
+                <Share2 className="mr-2 h-4 w-4" />
+                Share Campaign
+              </Button>
+              <Button variant="outline" size="lg" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                View on Blockchain
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Content Tabs */}
+      <section className="w-full py-12 md:py-14 lg:py-14 bg-black/10 relative">
+        <div className="container px-6 md:px-6 relative z-10">
+          <Tabs defaultValue="about" className="w-full">
+            <div className="flex justify-center mb-8">
+              <TabsList className="bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 p-1 rounded-xl">
+                <TabsTrigger value="about" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg">
+                  About
+                </TabsTrigger>
+                <TabsTrigger value="milestones" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg">
+                  Milestones
+                </TabsTrigger>
+                <TabsTrigger value="transactions" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg">
+                  Transactions
+                </TabsTrigger>
+                <TabsTrigger value="donors" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg">
+                  Donors
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
             <TabsContent value="about" className="pt-6">
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold">About This Campaign</h2>
-                <p>{campaignDetails.description}</p>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Impact</CardTitle>
+              <div className="space-y-8">
+                <div className="text-center space-y-4">
+                  <h2 className="text-3xl font-bold text-white">
+                    <AuroraText>About This Campaign</AuroraText>
+                  </h2>
+                  <p className="text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                    {campaignDetails.description}
+                  </p>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-3">
+                  <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/50 transition-all duration-300">
+                    <CardHeader className="pb-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center mb-4">
+                        <Heart className="h-6 w-6 text-white" />
+                      </div>
+                      <CardTitle className="text-xl text-white">Impact</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        This project will provide clean water access to over 5,000 people across multiple communities.
+                      <p className="text-gray-300 leading-relaxed">
+                        This project will provide clean water access to over 5,000 people across multiple communities, creating lasting positive change.
                       </p>
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Sustainability</CardTitle>
+
+                  <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/50 transition-all duration-300">
+                    <CardHeader className="pb-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mb-4">
+                        <Users className="h-6 w-6 text-white" />
+                      </div>
+                      <CardTitle className="text-xl text-white">Sustainability</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Local communities will be trained to maintain the water systems, ensuring long-term sustainability.
+                      <p className="text-gray-300 leading-relaxed">
+                        Local communities will be trained to maintain the water systems, ensuring long-term sustainability and self-reliance.
                       </p>
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg">Transparency</CardTitle>
+
+                  <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/50 transition-all duration-300">
+                    <CardHeader className="pb-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mb-4">
+                        <Trophy className="h-6 w-6 text-white" />
+                      </div>
+                      <CardTitle className="text-xl text-white">Transparency</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        All funds are managed through smart contracts, ensuring complete transparency and accountability.
+                      <p className="text-gray-300 leading-relaxed">
+                        All funds are managed through smart contracts, ensuring complete transparency and accountability in every transaction.
                       </p>
                     </CardContent>
                   </Card>
                 </div>
               </div>
             </TabsContent>
+
             <TabsContent value="milestones" className="pt-6">
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold">Project Milestones</h2>
-                <p className="text-muted-foreground">
-                  Funds are released to the organization as each milestone is completed and verified.
-                </p>
-                <div className="space-y-4">
+              <div className="space-y-6">
+                <div className="text-center space-y-4">
+                  <h2 className="text-3xl font-bold text-white">
+                    <AuroraText>Project Milestones</AuroraText>
+                  </h2>
+                  <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                    Funds are released to the organization as each milestone is completed and verified through blockchain technology.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
                   {milestones && milestones.targets.map((target: string, index: number) => {
-                      const targetValue = parseFloat(target);
+                    const targetValue = parseFloat(target);
                     const totalDonated = parseFloat(campaignDetails.totalDonated || "0");
                     const progress = Math.min((totalDonated / targetValue) * 100, 100);
-                      const isReached = milestones.reached[index];
-                      const isFundsReleased = milestones.fundsReleased[index];
+                    const isReached = milestones.reached[index];
+                    const isFundsReleased = milestones.fundsReleased[index];
 
-                      return (
-                      <Card key={index} className={isReached ? "border-primary" : ""}>
-                          <CardHeader>
-                            <div className="flex items-center justify-between">
-                            <CardTitle className="text-lg">Milestone {index + 1}</CardTitle>
-                            <Badge variant={isReached ? "default" : "outline"}>
-                              {isReached ? "Reached" : "Pending"}
-                              </Badge>
+                    return (
+                      <Card key={index} className={`border-none shadow-xl overflow-hidden transition-all duration-300 ${isReached
+                        ? "bg-green-900/20 border-green-500/30"
+                        : "bg-gray-900/50 border-gray-700/50"
+                        } backdrop-blur-sm border`}>
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isReached
+                                ? "bg-green-500/20 border border-green-500/50"
+                                : "bg-gray-700/50 border border-gray-600/50"
+                                }`}>
+                                <span className={`text-lg font-bold ${isReached ? "text-green-400" : "text-gray-400"
+                                  }`}>
+                                  {index + 1}
+                                </span>
+                              </div>
+                              <div>
+                                <CardTitle className="text-xl text-white">Milestone {index + 1}</CardTitle>
+                                <CardDescription className="text-gray-400">
+                                  Target: {targetValue.toFixed(6)} ETH
+                                  {isFundsReleased && (
+                                    <span className="ml-2 text-green-400">✓ Funds Released</span>
+                                  )}
+                                </CardDescription>
+                              </div>
                             </div>
-                            <CardDescription>
-                            Target: {targetValue.toFixed(18)} ETH {isFundsReleased ? "(Funds Released)" : ""}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <Progress value={progress} className="h-2" />
-                            <p className="text-sm text-muted-foreground mt-2">
-                            {totalDonated.toFixed(18)} / {targetValue.toFixed(18)} ETH ({progress.toFixed(2)}%)
-                            </p>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
+                            <Badge variant={isReached ? "default" : "outline"} className={
+                              isReached
+                                ? "bg-green-500/20 text-green-400 border-green-500/50"
+                                : "bg-gray-700/50 text-gray-400 border-gray-600/50"
+                            }>
+                              {isReached ? "✓ Reached" : "Pending"}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <Progress
+                            value={progress}
+                            className={`h-3 ${isReached ? "bg-green-900/50" : "bg-gray-700/50"
+                              }`}
+                          />
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">
+                              {totalDonated.toFixed(6)} / {targetValue.toFixed(6)} ETH
+                            </span>
+                            <span className={`font-medium ${isReached ? "text-green-400" : "text-gray-400"
+                              }`}>
+                              {progress.toFixed(1)}% complete
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                   {(!milestones || (milestones.targets.length === 0)) && (
-                    <p className="text-muted-foreground">No milestones defined for this campaign.</p>
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-4">
+                        <Trophy className="h-8 w-8 text-gray-500" />
+                      </div>
+                      <p className="text-gray-400 text-lg">No milestones defined for this campaign.</p>
+                    </div>
                   )}
                 </div>
               </div>
             </TabsContent>
             <TabsContent value="transactions" className="pt-6">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold">Campaign Transaction History</h2>
-                  <p className="text-muted-foreground mb-4">All financial activity for this campaign</p>
+              <div className="space-y-8">
+                <div className="text-center space-y-4">
+                  <h2 className="text-3xl font-bold text-white">
+                    <AuroraText>Campaign Transaction History</AuroraText>
+                  </h2>
+                  <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                    All financial activity for this campaign, tracked transparently on the blockchain
+                  </p>
+                </div>
 
-                  {isLoadingTransactions ? (
-                    <div className="flex justify-center py-8">
-                      <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+                {isLoadingTransactions ? (
+                  <div className="flex justify-center py-12">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+                      <p className="text-gray-400">Loading transaction history...</p>
                     </div>
-                  ) : (
-                    <div className="space-y-6">
-                      {/* Combined transaction history */}
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="text-lg">All Transactions</CardTitle>
-                          <CardDescription>Combined chronological transaction history</CardDescription>
-                        </CardHeader>
-                        <CardContent>
+                  </div>
+                ) : (
+                  <div className="space-y-8">
+                    {/* Combined transaction history */}
+                    <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+                      <CardHeader className="bg-gray-800/30 border-b border-gray-700/50">
+                        <CardTitle className="text-xl text-white">All Transactions</CardTitle>
+                        <CardDescription className="text-gray-400">
+                          Combined chronological transaction history from the blockchain
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <div className="overflow-hidden">
                           <Table>
                             <TableHeader>
-                              <TableRow>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Address</TableHead>
-                                <TableHead className="text-right">Amount</TableHead>
+                              <TableRow className="border-gray-700/50 hover:bg-gray-800/30">
+                                <TableHead className="text-gray-300 font-semibold">Type</TableHead>
+                                <TableHead className="text-gray-300 font-semibold">Date</TableHead>
+                                <TableHead className="text-gray-300 font-semibold">Address</TableHead>
+                                <TableHead className="text-right text-gray-300 font-semibold">Amount</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
                               {combinedTransactions.length > 0 ? (
                                 combinedTransactions.map((tx, index) => (
-                                  <TableRow key={index}>
+                                  <TableRow key={index} className="border-gray-700/30 hover:bg-gray-800/30 transition-colors">
                                     <TableCell>
-                                      <div className="flex items-center gap-2">
+                                      <div className="flex items-center gap-3">
                                         {tx.type === 'donation' ? (
                                           <>
-                                            <ArrowDownCircle className="h-4 w-4 text-green-500" />
-                                            <span className="text-green-500 font-medium">Donation</span>
+                                            <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                                              <ArrowDownCircle className="h-4 w-4 text-green-400" />
+                                            </div>
+                                            <span className="text-green-400 font-medium">Donation</span>
                                           </>
                                         ) : (
                                           <>
-                                            <ArrowUpCircle className="h-4 w-4 text-red-500" />
-                                            <span className="text-red-500 font-medium">Funds Released</span>
-                                            <Badge variant="outline">Milestone {(tx.milestoneIndex !== undefined ? tx.milestoneIndex + 1 : '?')}</Badge>
+                                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                                              <ArrowUpCircle className="h-4 w-4 text-red-400" />
+                                            </div>
+                                            <span className="text-red-400 font-medium">Funds Released</span>
+                                            <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/30">
+                                              Milestone {(tx.milestoneIndex !== undefined ? tx.milestoneIndex + 1 : '?')}
+                                            </Badge>
                                           </>
                                         )}
                                       </div>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="text-gray-300">
                                       {tx.formattedDate}
                                     </TableCell>
                                     <TableCell>
                                       <div className="flex flex-col">
-                                        <span>{tx.type === 'donation' ? 'From' : 'To'}</span>
+                                        <span className="text-gray-400 text-sm">
+                                          {tx.type === 'donation' ? 'From' : 'To'}
+                                        </span>
                                         {tx.type === 'donation' ? (
-                                          <span className="text-xs font-mono">{formatAddress(tx.address)}</span>
+                                          <span className="text-sm font-mono text-gray-300">{formatAddress(tx.address)}</span>
                                         ) : (
                                           <div className="group flex items-center">
-                                            <span className="text-xs font-mono">{formatAddress(tx.address)}</span>
+                                            <span className="text-sm font-mono text-gray-300">{formatAddress(tx.address)}</span>
                                             <TooltipProvider>
                                               <Tooltip>
                                                 <TooltipTrigger asChild>
                                                   <button
                                                     onClick={() => copyToClipboard(tx.address)}
-                                                    className="ml-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
                                                   >
                                                     {copiedAddresses[tx.address] ?
-                                                      <Check className="h-3.5 w-3.5 text-green-500" /> :
-                                                      <Copy className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600" />
+                                                      <Check className="h-3.5 w-3.5 text-green-400" /> :
+                                                      <Copy className="h-3.5 w-3.5 text-gray-500 hover:text-gray-400" />
                                                     }
                                                   </button>
                                                 </TooltipTrigger>
@@ -970,248 +1153,287 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                         )}
                                       </div>
                                     </TableCell>
-                                    <TableCell className="text-right font-mono">
-                                      {tx.formattedAmount} ETH
-                                      {ethToMYRRate && (
-                                        <span className="ml-1 text-xs text-muted-foreground">
-                                          (~RM
-                                          {(
-                                            parseFloat(tx.formattedAmount) *
-                                            ethToMYRRate
-                                          ).toFixed(4)}
-                                          )
+                                    <TableCell className="text-right">
+                                      <div className="font-mono">
+                                        <span className={`font-medium ${tx.type === 'donation' ? 'text-green-400' : 'text-red-400'
+                                          }`}>
+                                          {tx.type === 'donation' ? '+' : '-'}{tx.formattedAmount} ETH
                                         </span>
-                                      )}
+                                        {ethToMYRRate && (
+                                          <div className="text-xs text-gray-500 mt-1">
+                                            ≈ RM {(
+                                              parseFloat(tx.formattedAmount) * ethToMYRRate
+                                            ).toFixed(2)}
+                                          </div>
+                                        )}
+                                      </div>
                                     </TableCell>
                                   </TableRow>
                                 ))
                               ) : (
                                 <TableRow>
-                                  <TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
-                                    No transaction history available
+                                  <TableCell colSpan={4} className="text-center py-12">
+                                    <div className="flex flex-col items-center space-y-3">
+                                      <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center">
+                                        <ArrowDownCircle className="h-6 w-6 text-gray-500" />
+                                      </div>
+                                      <p className="text-gray-400">No transaction history available</p>
+                                    </div>
                                   </TableCell>
                                 </TableRow>
                               )}
                             </TableBody>
                           </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Summary Cards */}
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+                        <CardHeader className="bg-green-900/20 border-b border-green-500/30">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                              <ArrowDownCircle className="h-5 w-5 text-green-400" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-lg text-white">Incoming Donations</CardTitle>
+                              <CardDescription className="text-green-400">
+                                Money received from donors
+                              </CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                          {donations.length > 0 ? (
+                            <div className="space-y-4">
+                              {donations.map((donation, index) => (
+                                <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-gray-800/30 border border-gray-700/30">
+                                  <div className="flex flex-col">
+                                    <span className="font-medium text-gray-300">{formatAddress(donation.donor.address)}</span>
+                                    <span className="text-xs text-gray-500">{donation.formattedDate}</span>
+                                  </div>
+                                  <div className="font-mono text-green-400 font-medium">
+                                    +{donation.formattedAmount} ETH
+                                    {ethToMYRRate && (
+                                      <div className="text-xs text-gray-500 mt-1">
+                                        ≈ RM {(
+                                          parseFloat(donation.formattedAmount ?? '0') * ethToMYRRate
+                                        ).toFixed(2)}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-8">
+                              <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-3">
+                                <ArrowDownCircle className="h-6 w-6 text-gray-500" />
+                              </div>
+                              <p className="text-gray-400">No donations yet</p>
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
 
-                      {/* Incoming Donations Section */}
-                      <div className="grid gap-6 md:grid-cols-2">
-                        <Card>
-                          <CardHeader>
-                            <div className="flex items-center gap-2">
-                              <ArrowDownCircle className="h-5 w-5 text-green-500" />
-                              <CardTitle className="text-lg">Incoming Donations</CardTitle>
+                      <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+                        <CardHeader className="bg-red-900/20 border-b border-red-500/30">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                              <ArrowUpCircle className="h-5 w-5 text-red-400" />
                             </div>
-                            <CardDescription>Money received from donors</CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            {donations.length > 0 ? (
-                              <div className="space-y-4">
-                                {donations.map((donation, index) => (
-                                  <div key={index} className="flex justify-between items-center border-b pb-2 last:border-0 last:pb-0">
-                                    <div className="flex flex-col">
-                                      <span className="font-medium">{formatAddress(donation.donor.address)}</span>
-                                      <span className="text-xs text-muted-foreground">{donation.formattedDate}</span>
+                            <div>
+                              <CardTitle className="text-lg text-white">Funds Released</CardTitle>
+                              <CardDescription className="text-red-400">
+                                Money sent to campaign recipients
+                              </CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                          {fundsReleased.length > 0 ? (
+                            <div className="space-y-4">
+                              {fundsReleased.map((release, index) => (
+                                <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-gray-800/30 border border-gray-700/30">
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-gray-300">{formatAddress(release.recipient)}</span>
+                                      <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-xs">
+                                        Milestone {release.milestoneIndex + 1}
+                                      </Badge>
                                     </div>
-                                    <div className="font-mono text-green-600">
-                                      +{donation.formattedAmount} ETH
-                                      {ethToMYRRate && (
-                                        <span className="ml-1 text-xs text-muted-foreground">
-                                          (~RM
-                                          {(
-                                            parseFloat(
-                                              donation.formattedAmount ?? '0'
-                                            ) * ethToMYRRate
-                                          ).toFixed(4)}
-                                          )
-                                        </span>
-                                      )}
-                                    </div>
+                                    <span className="text-xs text-gray-500">{release.formattedDate}</span>
                                   </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <div className="text-center py-4 text-muted-foreground">
-                                No donations yet
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-
-                        {/* Outgoing Funds Section */}
-                        <Card>
-                          <CardHeader>
-                            <div className="flex items-center gap-2">
-                              <ArrowUpCircle className="h-5 w-5 text-red-500" />
-                              <CardTitle className="text-lg">Funds Released</CardTitle>
-                            </div>
-                            <CardDescription>Money sent to campaign recipients</CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            {fundsReleased.length > 0 ? (
-                              <div className="space-y-4">
-                                {fundsReleased.map((release, index) => (
-                                  <div key={index} className="flex justify-between items-center border-b pb-2 last:border-0 last:pb-0">
-                                    <div className="flex flex-col">
-                                      <div className="flex items-center gap-2">
-                                        <div className="group flex items-center">
-                                          <span className="font-medium">{formatAddress(release.recipient)}</span>
-                                          <TooltipProvider>
-                                            <Tooltip>
-                                              <TooltipTrigger asChild>
-                                                <button
-                                                  onClick={() => copyToClipboard(release.recipient)}
-                                                  className="ml-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                >
-                                                  {copiedAddresses[release.recipient] ?
-                                                    <Check className="h-3.5 w-3.5 text-green-500" /> :
-                                                    <Copy className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600" />
-                                                  }
-                                                </button>
-                                              </TooltipTrigger>
-                                              <TooltipContent side="top" align="center" className="px-3 py-1.5 text-xs">
-                                                <p>{copiedAddresses[release.recipient] ? 'Copied!' : 'Copy address'}</p>
-                                              </TooltipContent>
-                                            </Tooltip>
-                                          </TooltipProvider>
-                                        </div>
-                                        <Badge variant="outline">Milestone {release.milestoneIndex + 1}</Badge>
+                                  <div className="font-mono text-red-400 font-medium">
+                                    -{release.formattedAmount} ETH
+                                    {ethToMYRRate && (
+                                      <div className="text-xs text-gray-500 mt-1">
+                                        ≈ RM {(
+                                          parseFloat(release.formattedAmount ?? '0') * ethToMYRRate
+                                        ).toFixed(2)}
                                       </div>
-                                      <span className="text-xs text-muted-foreground">{release.formattedDate}</span>
-                                    </div>
-                                    <div className="font-mono text-red-600">
-                                      -{release.formattedAmount} ETH
-                                      {ethToMYRRate && (
-                                        <span className="ml-1 text-xs text-muted-foreground">
-                                          (~RM
-                                          {(
-                                            parseFloat(
-                                              release.formattedAmount ?? '0'
-                                            ) * ethToMYRRate
-                                          ).toFixed(4)}
-                                          )
-                                        </span>
-                                      )}
-                                    </div>
+                                    )}
                                   </div>
-                                ))}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-8">
+                              <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-3">
+                                <ArrowUpCircle className="h-6 w-6 text-gray-500" />
                               </div>
-                            ) : (
-                              <div className="text-center py-4 text-muted-foreground">
-                                No funds released yet
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </TabsContent>
-            <TabsContent value="donors" className="pt-6">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold">Recent Donors</h2>
-                  <div className="rounded-lg border mt-4">
-                    <div className="p-4 grid grid-cols-3 font-medium">
-                      <div>Donor</div>
-                      <div className="text-center">Amount</div>
-                      <div className="text-right">Date</div>
-                    </div>
-                    <div className="divide-y">
-                      {donorsData.slice(0, 5).map((donor, index) => (
-                        <div key={index} className="p-4 grid grid-cols-3">
-                          <div>{donor.donorName}</div>
-                          <div className="text-center">{donor.totalDonated} ETH</div>
-                          <div className="text-right">{donor.date}</div>
-                        </div>
-                      ))}
-                      {donorsData.length === 0 && (
-                        <div className="p-4 text-center text-muted-foreground">No donors yet.</div>
-                      )}
+                              <p className="text-gray-400">No funds released yet</p>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
                     </div>
                   </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="donors" className="pt-6">
+              <div className="space-y-8">
+                <div className="text-center space-y-4">
+                  <h2 className="text-3xl font-bold text-white">
+                    <AuroraText>Campaign Community</AuroraText>
+                  </h2>
+                  <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                    Meet the generous donors who are making this campaign possible
+                  </p>
+                </div>
+
+                {/* Recent Donors */}
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-6">Recent Donors</h3>
+                  <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+                    <CardContent className="p-0">
+                      <div className="overflow-hidden">
+                        <div className="p-6 grid grid-cols-3 font-medium text-gray-300 border-b border-gray-700/50">
+                          <div>Donor</div>
+                          <div className="text-center">Amount</div>
+                          <div className="text-right">Date</div>
+                        </div>
+                        <div className="divide-y divide-gray-700/30">
+                          {donorsData.slice(0, 5).map((donor, index) => (
+                            <div key={index} className="p-6 grid grid-cols-3 hover:bg-gray-800/30 transition-colors">
+                              <div className="text-gray-300">{donor.donorName}</div>
+                              <div className="text-center text-gray-300">{donor.totalDonated} ETH</div>
+                              <div className="text-right text-gray-400">{donor.date}</div>
+                            </div>
+                          ))}
+                          {donorsData.length === 0 && (
+                            <div className="p-12 text-center">
+                              <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-3">
+                                <Users className="h-6 w-6 text-gray-500" />
+                              </div>
+                              <p className="text-gray-400">No donors yet.</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                   {donorsData.length > 5 && (
-                    <div className="flex justify-center mt-4">
-                      <Button variant="outline">View All Donors</Button>
+                    <div className="flex justify-center mt-6">
+                      <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">
+                        View All Donors
+                      </Button>
                     </div>
                   )}
                 </div>
 
+                {/* Leaderboard */}
                 <div>
-                  <h2 className="text-2xl font-bold flex items-center">
-                    <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
+                  <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                    <Trophy className="mr-3 h-6 w-6 text-yellow-500" />
                     Campaign Leaderboard
-                  </h2>
-                  <p className="text-muted-foreground mb-4">Top donors for this campaign</p>
+                  </h3>
+                  <p className="text-gray-400 mb-6">Top donors for this campaign</p>
 
                   {isLoadingLeaderboard ? (
-                    <div className="text-center py-8">Loading leaderboard data...</div>
+                    <div className="text-center py-12">
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+                        <p className="text-gray-400">Loading leaderboard data...</p>
+                      </div>
+                    </div>
                   ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[100px]">Rank</TableHead>
-                          <TableHead>Donor</TableHead>
-                          <TableHead className="text-right">Total Donated</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {leaderboardDonors.length > 0 ? (
-                          leaderboardDonors.map((donor, index) => {
-                            const isCurrentUser = isConnected && address && donor.address.toLowerCase() === address.toLowerCase();
-
-                            return (
-                              <TableRow key={index} className={isCurrentUser ? "bg-green-900/20" : ""}>
-                                <TableCell className="font-medium">
-                                  {index < 3 ? (
-                                    <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full 
-                                      ${index === 0 ? 'bg-yellow-100 text-yellow-800' :
-                                        index === 1 ? 'bg-gray-100 text-gray-800' :
-                                          'bg-amber-100 text-amber-800'}`}>
-                                      {index + 1}
-                                    </span>
-                                  ) : (
-                                    index + 1
-                                  )}
-                                </TableCell>
-                                <TableCell>
-                                  <div className="flex flex-col">
-                                    <span className={isCurrentUser ? "text-green-400 font-medium" : ""}>
-                                      {donor.name || "Anonymous"}{isCurrentUser ? " (You)" : ""}
-                                    </span>
-                                    <span className="text-xs text-muted-foreground">{formatAddress(donor.address)}</span>
-                                  </div>
-                                </TableCell>
-                                <TableCell className="text-right font-medium">
-                                  {formatDonation(donor.totalDonated)} ETH
-                                  {ethToMYRRate && (
-                                    <span className="ml-1 text-xs text-muted-foreground">
-                                      (~RM
-                                      {(
-                                        parseFloat(donor.totalDonated) *
-                                        ethToMYRRate
-                                      ).toFixed(4)}
-                                      )
-                                    </span>
-                                  )}
-                                </TableCell>
+                    <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+                      <CardContent className="p-0">
+                        <div className="overflow-hidden">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="border-gray-700/50 hover:bg-gray-800/30">
+                                <TableHead className="w-[100px] text-gray-300 font-semibold">Rank</TableHead>
+                                <TableHead className="text-gray-300 font-semibold">Donor</TableHead>
+                                <TableHead className="text-right text-gray-300 font-semibold">Total Donated</TableHead>
                               </TableRow>
-                            );
-                          })
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={3} className="text-center py-6 text-muted-foreground">
-                              No leaderboard data available
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                              {leaderboardDonors.length > 0 ? (
+                                leaderboardDonors.map((donor, index) => {
+                                  const isCurrentUser = isConnected && address && donor.address.toLowerCase() === address.toLowerCase();
+
+                                  return (
+                                    <TableRow key={index} className={`border-gray-700/30 transition-colors ${isCurrentUser ? "bg-green-900/20 hover:bg-green-900/30" : "hover:bg-gray-800/30"
+                                      }`}>
+                                      <TableCell className="font-medium">
+                                        {index < 3 ? (
+                                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full 
+                                            ${index === 0 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50' :
+                                              index === 1 ? 'bg-gray-500/20 text-gray-400 border border-gray-500/50' :
+                                                'bg-amber-500/20 text-amber-400 border border-amber-500/50'}`}>
+                                            {index + 1}
+                                          </span>
+                                        ) : (
+                                          <span className="text-gray-400">{index + 1}</span>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="flex flex-col">
+                                          <span className={`${isCurrentUser ? "text-green-400 font-medium" : "text-gray-300"}`}>
+                                            {donor.name || "Anonymous"}{isCurrentUser ? " (You)" : ""}
+                                          </span>
+                                          <span className="text-xs text-gray-500">{formatAddress(donor.address)}</span>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="text-right">
+                                        <div className="font-mono">
+                                          <span className="font-medium text-gray-300">
+                                            {formatDonation(donor.totalDonated)} ETH
+                                          </span>
+                                          {ethToMYRRate && (
+                                            <div className="text-xs text-gray-500 mt-1">
+                                              ≈ RM {(
+                                                parseFloat(donor.totalDonated) * ethToMYRRate
+                                              ).toFixed(2)}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </TableCell>
+                                    </TableRow>
+                                  );
+                                })
+                              ) : (
+                                <TableRow>
+                                  <TableCell colSpan={3} className="text-center py-12">
+                                    <div className="flex flex-col items-center space-y-3">
+                                      <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center">
+                                        <Trophy className="h-6 w-6 text-gray-500" />
+                                      </div>
+                                      <p className="text-gray-400">No leaderboard data available</p>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
                 </div>
               </div>
