@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { CampaignPredictionChart } from "@/components/dashboard/CampaignPredictionChart";
 import OrgChatbot from "@/components/dashboard/OrgChatbot";
-import  {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 // Campaign interface based on the contract structure
 interface Campaign {
@@ -501,7 +501,7 @@ export default function OrganizationDashboardPage() {
             </div>
           )}
           {isConnected && !orgData && (
-            <Button className="bg-primary hover:bg-primary/90 mt-4" onClick={() => window.location.href = "/register"}>
+            <Button className="bg-primary hover:bg-primary/90 mt-4" onClick={() => window.location.href = "/kyb-form"}>
               Register Your Organization
             </Button>
           )}
@@ -993,8 +993,8 @@ export default function OrganizationDashboardPage() {
                                   <div
                                     key={index}
                                     className={`border text-center p-4 rounded-lg ${milestone.status === 'completed'
-                                        ? 'bg-green-950/10 border-green-800/30 text-green-500'
-                                        : 'bg-red-950/5 border-red-800/20 text-red-400'
+                                      ? 'bg-green-950/10 border-green-800/30 text-green-500'
+                                      : 'bg-red-950/5 border-red-800/20 text-red-400'
                                       }`}
                                   >
                                     <div className="font-medium mb-1">{milestone.title}</div>
@@ -1116,8 +1116,8 @@ export default function OrganizationDashboardPage() {
                                     <div
                                       key={index}
                                       className={`border text-center p-4 rounded-lg ${milestone.status === 'completed'
-                                          ? 'bg-green-950/10 border-green-800/30 text-green-500'
-                                          : 'bg-red-950/5 border-red-800/20 text-red-400'
+                                        ? 'bg-green-950/10 border-green-800/30 text-green-500'
+                                        : 'bg-red-950/5 border-red-800/20 text-red-400'
                                         }`}
                                     >
                                       <div className="font-medium mb-1">{milestone.title}</div>
