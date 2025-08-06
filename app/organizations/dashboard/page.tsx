@@ -2,24 +2,58 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, PlusCircle, Users, Clock, ChevronRight, BarChart3, Award, X, Upload, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
+import {
+  Loader2,
+  PlusCircle,
+  Users,
+  Clock,
+  ChevronRight,
+  BarChart3,
+  Award,
+  X,
+  Upload,
+  ChevronLeft,
+  ChevronRight as ChevronRightIcon,
+} from "lucide-react";
 import { Organization } from "@/lib/types";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 import { useAccount } from "wagmi";
-import { charityCentral_CA, charityCentral_ABI, charityCampaigns_ABI } from "@/config/contractABI";
+import {
+  charityCentral_CA,
+  charityCentral_ABI,
+  charityCampaigns_ABI,
+} from "@/config/contractABI";
 import { ethers } from "ethers";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { CampaignPredictionChart } from "@/components/dashboard/CampaignPredictionChart";
 import OrgChatbot from "@/components/dashboard/OrgChatbot";
-import  {toast} from "react-toastify";
+import { toast } from "react-toastify";
+
+import Swal from "sweetalert2";
+
 
 // Campaign interface based on the contract structure
 interface Campaign {
@@ -62,8 +96,8 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
   };
 
   const getDisplayUrl = (ipfsUrl: string) => {
-    if (!ipfsUrl) return '';
-    return ipfsUrl.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
+    if (!ipfsUrl) return "";
+    return ipfsUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
   };
 
   return (
@@ -74,7 +108,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
           src={getDisplayUrl(images[currentImageIndex])}
           alt="Campaign image"
           fill
-          style={{ objectFit: 'cover' }}
+          style={{ objectFit: "cover" }}
           className="transition-opacity duration-300"
         />
       </div>
@@ -102,7 +136,9 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
             {images.map((_, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full ${currentImageIndex === index ? 'bg-white' : 'bg-white/60'}`}
+                className={`w-2 h-2 rounded-full ${
+                  currentImageIndex === index ? "bg-white" : "bg-white/60"
+                }`}
                 onClick={() => setCurrentImageIndex(index)}
               />
             ))}
@@ -115,14 +151,14 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
 
 // Fetch and parse IPFS data
 const fetchIPFSData = async (uri: string) => {
-  if (!uri || !uri.startsWith('ipfs://')) return null;
+  if (!uri || !uri.startsWith("ipfs://")) return null;
 
   try {
-    const url = uri.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
+    const url = uri.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
-    console.error('Error fetching IPFS data:', error);
+    console.error("Error fetching IPFS data:", error);
     return null;
   }
 };
@@ -141,17 +177,27 @@ export default function OrganizationDashboardPage() {
   const [campaignFormData, setCampaignFormData] = useState({
     name: "",
     description: "",
-    goal: ""
+    goal: "",
   });
   const [campaignImages, setCampaignImages] = useState<File[]>([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
 
+  // Gemini input verification
+  const [scores, setScores] = useState<null | {
+    name: number;
+    description: number;
+    average: number;
+  }>(null);
+  const [message, setMessage] = useState("");
+
   // Handle campaign form input change
-  const handleCampaignInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleCampaignInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setCampaignFormData(prev => ({
+    setCampaignFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -165,14 +211,14 @@ export default function OrganizationDashboardPage() {
       return;
     }
 
-    setCampaignImages(prev => [...prev, ...files]);
+    setCampaignImages((prev) => [...prev, ...files]);
 
-    const newPreviewUrls = files.map(file => URL.createObjectURL(file));
-    setImagePreviewUrls(prev => [...prev, ...newPreviewUrls]);
+    const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
+    setImagePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
 
     setCreateCampaignError("");
 
-    e.target.value = '';
+    e.target.value = "";
   };
 
   // Remove an image
@@ -180,8 +226,8 @@ export default function OrganizationDashboardPage() {
     URL.revokeObjectURL(imagePreviewUrls[index]);
 
     // Remove the image and its preview URL
-    setCampaignImages(prev => prev.filter((_, i) => i !== index));
-    setImagePreviewUrls(prev => prev.filter((_, i) => i !== index));
+    setCampaignImages((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviewUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Reset form when dialog closes
@@ -189,9 +235,9 @@ export default function OrganizationDashboardPage() {
     setCampaignFormData({
       name: "",
       description: "",
-      goal: ""
+      goal: "",
     });
-    imagePreviewUrls.forEach(url => URL.revokeObjectURL(url));
+    imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
     setCampaignImages([]);
     setImagePreviewUrls([]);
     setCreateCampaignError("");
@@ -200,43 +246,56 @@ export default function OrganizationDashboardPage() {
 
   // Upload file to Pinata and get IPFS hash
   const uploadToPinata = async (file: File): Promise<string> => {
-    const url = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
+    const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
       const response = await axios.post(url, formData, {
         headers: {
           pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
           pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET,
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       const ipfsHash = response.data.IpfsHash;
       return `ipfs://${ipfsHash}`;
     } catch (error) {
-      console.error('Pinata upload error:', error);
-      throw new Error('Failed to upload image to Pinata');
+      console.error("Pinata upload error:", error);
+      throw new Error("Failed to upload image to Pinata");
     }
   };
 
   // Upload JSON metadata to Pinata
   const uploadJSONToPinata = async (jsonData: any): Promise<string> => {
-    const url = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
+    const url = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
 
     try {
       const response = await axios.post(url, jsonData, {
         headers: {
           pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
           pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
       const ipfsHash = response.data.IpfsHash;
       return `ipfs://${ipfsHash}`;
     } catch (error) {
-      console.error('Pinata JSON upload error:', error);
-      throw new Error('Failed to upload metadata to Pinata');
+      console.error("Pinata JSON upload error:", error);
+      throw new Error("Failed to upload metadata to Pinata");
+    }
+  };
+
+  const verifyInput = async (name: string, description: string) => {
+    try {
+      const response = await axios.post("/api/ai/inputValidator", {
+        name: name,
+        description: description,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error verifying input:", error);
+      throw new Error("Failed to verify input");
     }
   };
 
@@ -249,74 +308,103 @@ export default function OrganizationDashboardPage() {
 
     setCreateCampaignLoading(true);
     setCreateCampaignError("");
-
     try {
-      let imagesIpfsLink = null;
-
-      // Upload images to IPFS if any are provided
-      if (campaignImages.length > 0) {
+      const response = await verifyInput(
+        campaignFormData.name,
+        campaignFormData.description
+      );
+      if (response.status === 200) {
+        setScores(response.scores);
+        setMessage(response.message);
+        const { name, description, average } = response.scores;
+        if (average < 80) {
+          Swal.fire({
+            title: "Campaign Verification Results",
+            html: `
+        <strong>Safety Scores:</strong><br />
+        Average: <strong>${average}%</strong><br /><br />
+        <em>${response.message}</em>
+      `,
+            icon: average >= 50 ? "success" : "error",
+            confirmButtonText: "OK",
+          });
+          setDialogOpen(false);
+          resetCampaignForm();
+        }
         try {
-          const imageUploadPromises = campaignImages.map(uploadToPinata);
-          const imageIPFSHashes = await Promise.all(imageUploadPromises);
+          let imagesIpfsLink = null;
 
-          imagesIpfsLink = await uploadJSONToPinata({
-            images: imageIPFSHashes
+          // Upload images to IPFS if any are provided
+          if (campaignImages.length > 0) {
+            try {
+              const imageUploadPromises = campaignImages.map(uploadToPinata);
+              const imageIPFSHashes = await Promise.all(imageUploadPromises);
+
+              imagesIpfsLink = await uploadJSONToPinata({
+                images: imageIPFSHashes,
+              });
+
+              console.log("Campaign images uploaded to IPFS:", imagesIpfsLink);
+            } catch (error) {
+              console.error("Error uploading images to IPFS:", error);
+              setCreateCampaignError(
+                "Failed to upload images. Please try again."
+              );
+              setCreateCampaignLoading(false);
+              return;
+            }
+          }
+
+          // Connect to provider and contract
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const signer = await provider.getSigner();
+          const contract = new ethers.Contract(
+            charityCentral_CA,
+            charityCentral_ABI,
+            signer
+          );
+
+          // Convert goal to wei
+          const goalInWei = ethers.parseEther(campaignFormData.goal);
+
+          // Call createCampaign function
+          const tx = await contract.createCampaign(
+            campaignFormData.name,
+            campaignFormData.description,
+            goalInWei,
+            imagesIpfsLink || ""
+          );
+
+          console.log("Transaction sent:", tx);
+          const receipt = await tx.wait();
+          console.log("Transaction confirmed:", receipt);
+          toast.success("Campaign created successfully!", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
           });
 
-          console.log("Campaign images uploaded to IPFS:", imagesIpfsLink);
-        } catch (error) {
-          console.error("Error uploading images to IPFS:", error);
-          setCreateCampaignError("Failed to upload images. Please try again.");
+          setDialogOpen(false);
+          resetCampaignForm();
+
+          // Refresh campaign data
+          if (address && isConnected && orgData) {
+            fetchCampaignData(address);
+          }
+        } catch (err: any) {
+          console.error("Error creating campaign:", err);
+          setCreateCampaignError(
+            err instanceof Error ? err.message : "Failed to create campaign"
+          );
+        } finally {
           setCreateCampaignLoading(false);
-          return;
         }
       }
-
-      // Connect to provider and contract
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(
-        charityCentral_CA,
-        charityCentral_ABI,
-        signer
-      );
-
-      // Convert goal to wei
-      const goalInWei = ethers.parseEther(campaignFormData.goal);
-
-      // Call createCampaign function
-      const tx = await contract.createCampaign(
-        campaignFormData.name,
-        campaignFormData.description,
-        goalInWei,
-        imagesIpfsLink || "" // Pass empty string if no images
-      );
-
-      console.log("Transaction sent:", tx);
-      const receipt = await tx.wait();
-      console.log("Transaction confirmed:", receipt);
-      toast.success('Campaign created successfully!', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-
-      // Close dialog and reset form
-      setDialogOpen(false);
-      resetCampaignForm();
-
-      // Refresh campaign data
-      if (address && isConnected && orgData) {
-        fetchCampaignData(address);
-      }
-    } catch (err: any) {
-      console.error("Error creating campaign:", err);
-      setCreateCampaignError(err instanceof Error ? err.message : "Failed to create campaign");
-    } finally {
-      setCreateCampaignLoading(false);
+    } catch (error) {
+      console.log("Input verification error: ", error);
     }
   };
 
@@ -332,7 +420,9 @@ export default function OrganizationDashboardPage() {
     // Fetch organization data by wallet address
     const fetchOrgData = async () => {
       try {
-        const response = await fetch(`/api/organizations/getByWallet?walletAddress=${address}`);
+        const response = await fetch(
+          `/api/organizations/getByWallet?walletAddress=${address}`
+        );
         const data = await response.json();
 
         if (!response.ok) {
@@ -342,7 +432,11 @@ export default function OrganizationDashboardPage() {
         setOrgData(data);
       } catch (err) {
         console.error("Error fetching organization data:", err);
-        setError(err instanceof Error ? err.message : "Failed to fetch organization data");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to fetch organization data"
+        );
       } finally {
         setLoading(false);
       }
@@ -353,7 +447,7 @@ export default function OrganizationDashboardPage() {
 
   // Update activeCampaigns whenever campaigns changes
   useEffect(() => {
-    const filtered = campaigns.filter(campaign => campaign.state === 0);
+    const filtered = campaigns.filter((campaign) => campaign.state === 0);
     setActiveCampaigns(filtered);
   }, [campaigns]);
 
@@ -372,7 +466,9 @@ export default function OrganizationDashboardPage() {
       );
 
       // Get charity campaigns
-      const campaignAddresses = await centralContract.getCharityCampaigns(walletAddress);
+      const campaignAddresses = await centralContract.getCharityCampaigns(
+        walletAddress
+      );
 
       if (campaignAddresses.length === 0) {
         setCampaigns([]);
@@ -384,78 +480,87 @@ export default function OrganizationDashboardPage() {
       const campaignInterface = new ethers.Interface(charityCampaigns_ABI);
 
       // Fetch details for each campaign
-      const campaignDetailsPromises = campaignAddresses.map(async (campaignAddress: string) => {
-        const campaignContract = new ethers.Contract(
-          campaignAddress,
-          campaignInterface,
-          provider
-        );
+      const campaignDetailsPromises = campaignAddresses.map(
+        async (campaignAddress: string) => {
+          const campaignContract = new ethers.Contract(
+            campaignAddress,
+            campaignInterface,
+            provider
+          );
 
-        // Call getCampaignDetails
-        const details = await campaignContract.getCampaignDetails();
+          // Call getCampaignDetails
+          const details = await campaignContract.getCampaignDetails();
 
-        // Create a campaign object with the retrieved data
-        return {
-          id: campaignAddress,
-          address: campaignAddress,
-          title: details._name,
-          description: details._description,
-          goal: ethers.formatEther(details._goal),
-          raised: ethers.formatEther(details._totalDonated),
-          daysLeft: 30, // Default value
-          donors: 0, // Will fetch separately
-          state: parseInt(details._state),
-          imageURI: details._campaignImageURI || "" // Get the campaign image URI
-        };
-      });
+          // Create a campaign object with the retrieved data
+          return {
+            id: campaignAddress,
+            address: campaignAddress,
+            title: details._name,
+            description: details._description,
+            goal: ethers.formatEther(details._goal),
+            raised: ethers.formatEther(details._totalDonated),
+            daysLeft: 30, // Default value
+            donors: 0, // Will fetch separately
+            state: parseInt(details._state),
+            imageURI: details._campaignImageURI || "", // Get the campaign image URI
+          };
+        }
+      );
 
       let campaignDetails = await Promise.all(campaignDetailsPromises);
 
       // Fetch additional details for each campaign
-      const enhancedCampaignsPromises = campaignDetails.map(async (campaign) => {
-        const campaignContract = new ethers.Contract(
-          campaign.address,
-          campaignInterface,
-          provider
-        );
+      const enhancedCampaignsPromises = campaignDetails.map(
+        async (campaign) => {
+          const campaignContract = new ethers.Contract(
+            campaign.address,
+            campaignInterface,
+            provider
+          );
 
-        // Get donor count
-        try {
-          const donors = await campaignContract.getAllDonors();
-          campaign.donors = donors.length;
-
-          campaign.donations = [];
-        } catch (error) {
-          console.error("Error fetching donors for campaign:", error);
-          campaign.donations = [];
-        }
-
-        // Get milestones
-        try {
-          const milestones = await campaignContract.getMilestones();
-          campaign.milestones = milestones.targets.map((target: bigint, index: number) => ({
-            title: `Milestone ${index + 1}`,
-            amount: ethers.formatEther(target),
-            status: milestones.reached[index] ? "completed" : "pending"
-          }));
-        } catch (error) {
-          console.error("Error fetching milestones for campaign:", error);
-        }
-
-        // Fetch images from IPFS if available
-        if (campaign.imageURI) {
+          // Get donor count
           try {
-            const imageData = await fetchIPFSData(campaign.imageURI);
-            if (imageData && Array.isArray(imageData.images)) {
-              campaign.images = imageData.images;
-            }
-          } catch (error) {
-            console.error(`Error fetching images for campaign ${campaign.id}:`, error);
-          }
-        }
+            const donors = await campaignContract.getAllDonors();
+            campaign.donors = donors.length;
 
-        return campaign;
-      });
+            campaign.donations = [];
+          } catch (error) {
+            console.error("Error fetching donors for campaign:", error);
+            campaign.donations = [];
+          }
+
+          // Get milestones
+          try {
+            const milestones = await campaignContract.getMilestones();
+            campaign.milestones = milestones.targets.map(
+              (target: bigint, index: number) => ({
+                title: `Milestone ${index + 1}`,
+                amount: ethers.formatEther(target),
+                status: milestones.reached[index] ? "completed" : "pending",
+              })
+            );
+          } catch (error) {
+            console.error("Error fetching milestones for campaign:", error);
+          }
+
+          // Fetch images from IPFS if available
+          if (campaign.imageURI) {
+            try {
+              const imageData = await fetchIPFSData(campaign.imageURI);
+              if (imageData && Array.isArray(imageData.images)) {
+                campaign.images = imageData.images;
+              }
+            } catch (error) {
+              console.error(
+                `Error fetching images for campaign ${campaign.id}:`,
+                error
+              );
+            }
+          }
+
+          return campaign;
+        }
+      );
 
       const enhancedCampaigns = await Promise.all(enhancedCampaignsPromises);
       setCampaigns(enhancedCampaigns);
@@ -477,7 +582,9 @@ export default function OrganizationDashboardPage() {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <h1 className="text-2xl font-bold text-foreground">Loading organization data...</h1>
+        <h1 className="text-2xl font-bold text-foreground">
+          Loading organization data...
+        </h1>
       </div>
     );
   }
@@ -491,17 +598,24 @@ export default function OrganizationDashboardPage() {
             <span className="text-red-500 text-3xl">!</span>
           </div>
           <h1 className="text-2xl font-bold text-red-500 mb-2">Error</h1>
-          <p className="text-muted-foreground mb-6">{error || "Failed to load organization data"}</p>
+          <p className="text-muted-foreground mb-6">
+            {error || "Failed to load organization data"}
+          </p>
           {!isConnected && (
             <div className="mt-4 text-center">
-              <p className="mb-4 text-muted-foreground">Please connect your wallet first</p>
-              <Button className="bg-primary hover:bg-primary/90" onClick={() => window.location.href = "/"}>
+              <p className="mb-4 text-muted-foreground">
+                Please connect your wallet first
+              </p>
+              <Button
+                className="bg-primary hover:bg-primary/90"
+                onClick={() => (window.location.href = "/")}
+              >
                 Return to Home
               </Button>
             </div>
           )}
           {isConnected && !orgData && (
-            <Button className="bg-primary hover:bg-primary/90 mt-4" onClick={() => window.location.href = "/register"}>
+            <Button className="bg-primary hover:bg-primary/90 mt-4" onClick={() => window.location.href = "/kyb-form"}>
               Register Your Organization
             </Button>
           )}
@@ -511,12 +625,19 @@ export default function OrganizationDashboardPage() {
   }
 
   // Calculate the total funding raised across all campaigns
-  const totalRaised = campaigns.reduce((sum, campaign) => sum + parseFloat(campaign.raised), 0).toFixed(8);
+  const totalRaised = campaigns
+    .reduce((sum, campaign) => sum + parseFloat(campaign.raised), 0)
+    .toFixed(8);
   // Calculate the total goal amount across all campaigns
-  const totalGoal = campaigns.reduce((sum, campaign) => sum + parseFloat(campaign.goal), 0).toFixed(8);
+  const totalGoal = campaigns
+    .reduce((sum, campaign) => sum + parseFloat(campaign.goal), 0)
+    .toFixed(8);
   console.log("Check goal: ", totalGoal);
   // Calculate the total donor count
-  const totalDonors = campaigns.reduce((sum, campaign) => sum + campaign.donors, 0);
+  const totalDonors = campaigns.reduce(
+    (sum, campaign) => sum + campaign.donors,
+    0
+  );
 
   // Format ETH amount with more decimal places
   const formatEthAmount = (amount: string) => {
@@ -547,7 +668,9 @@ export default function OrganizationDashboardPage() {
 
             <div className="space-y-6">
               <div className="grid gap-2">
-                <Label htmlFor="name" className="text-base">Campaign Name</Label>
+                <Label htmlFor="name" className="text-base">
+                  Campaign Name
+                </Label>
                 <Input
                   id="name"
                   name="name"
@@ -560,7 +683,9 @@ export default function OrganizationDashboardPage() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="description" className="text-base">Description</Label>
+                <Label htmlFor="description" className="text-base">
+                  Description
+                </Label>
                 <Textarea
                   id="description"
                   name="description"
@@ -573,7 +698,9 @@ export default function OrganizationDashboardPage() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="goal" className="text-base">Funding Goal (ETH)</Label>
+                <Label htmlFor="goal" className="text-base">
+                  Funding Goal (ETH)
+                </Label>
                 <Input
                   id="goal"
                   name="goal"
@@ -593,9 +720,12 @@ export default function OrganizationDashboardPage() {
 
               {/* Campaign Images Upload */}
               <div className="grid gap-2">
-                <Label htmlFor="images" className="text-base">Campaign Images</Label>
+                <Label htmlFor="images" className="text-base">
+                  Campaign Images
+                </Label>
                 <p className="text-xs text-muted-foreground mb-3">
-                  Upload up to 5 high-quality images related to your campaign (PNG, JPG)
+                  Upload up to 5 high-quality images related to your campaign
+                  (PNG, JPG)
                 </p>
 
                 {/* Image previews */}
@@ -611,7 +741,7 @@ export default function OrganizationDashboardPage() {
                             src={url}
                             alt={`Preview ${index}`}
                             fill
-                            style={{ objectFit: 'cover' }}
+                            style={{ objectFit: "cover" }}
                           />
                         </div>
                         <div className="flex-1 overflow-hidden">
@@ -653,7 +783,7 @@ export default function OrganizationDashboardPage() {
                     />
                     <Button
                       variant="outline"
-                      onClick={() => document.getElementById('images')?.click()}
+                      onClick={() => document.getElementById("images")?.click()}
                       disabled={
                         createCampaignLoading || imagePreviewUrls.length >= 5
                       }
@@ -661,7 +791,9 @@ export default function OrganizationDashboardPage() {
                       className="w-full"
                     >
                       <Upload className="mr-2 h-4 w-4" />
-                      {imagePreviewUrls.length === 0 ? "Upload Images" : "Add More Images"}
+                      {imagePreviewUrls.length === 0
+                        ? "Upload Images"
+                        : "Add More Images"}
                     </Button>
                   </div>
                 )}
@@ -694,7 +826,7 @@ export default function OrganizationDashboardPage() {
                   Creating...
                 </>
               ) : (
-                'Create Campaign'
+                "Create Campaign"
               )}
             </Button>
           </DialogFooter>
@@ -706,8 +838,8 @@ export default function OrganizationDashboardPage() {
         className="relative w-full py-16 md:py-24 text-white overflow-hidden"
         style={{
           backgroundImage: "url('/Org-dashboard.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         {/* Overlay to ensure text readability */}
@@ -727,7 +859,7 @@ export default function OrganizationDashboardPage() {
                 )}
               </div>
               <p className="text-xl text-slate-200 max-w-2xl drop-shadow-md">
-                {orgData.description || 'No description available.'}
+                {orgData.description || "No description available."}
               </p>
               {/* <div className="flex items-center gap-2 text-sm text-slate-300">
                 <span className="font-medium">Wallet:</span>
@@ -993,8 +1125,8 @@ export default function OrganizationDashboardPage() {
                                   <div
                                     key={index}
                                     className={`border text-center p-4 rounded-lg ${milestone.status === 'completed'
-                                        ? 'bg-green-950/10 border-green-800/30 text-green-500'
-                                        : 'bg-red-950/5 border-red-800/20 text-red-400'
+                                      ? 'bg-green-950/10 border-green-800/30 text-green-500'
+                                      : 'bg-red-950/5 border-red-800/20 text-red-400'
                                       }`}
                                   >
                                     <div className="font-medium mb-1">{milestone.title}</div>
@@ -1036,11 +1168,14 @@ export default function OrganizationDashboardPage() {
                             <div className="flex flex-col md:flex-row overflow-hidden">
                               {/* Image section - takes 40% width on desktop */}
                               <div className="md:w-2/5 relative">
-                                {campaign.images && campaign.images.length > 0 ? (
+                                {campaign.images &&
+                                campaign.images.length > 0 ? (
                                   <ImageCarousel images={campaign.images} />
                                 ) : (
-                                  <div className="h-48 md:h-full min-h-[200px] bg-gradient-to-br from-amber-500/10 to-amber-500/5 flex items-center justify-center">
-                                    <div className="text-amber-500/50 text-4xl font-bold">{campaign.title?.charAt(0) || "C"}</div>
+                                  <div className="h-48 md:h-full min-h-[200px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                                    <div className="text-primary/50 text-4xl font-bold">
+                                      {campaign.title?.charAt(0) || "C"}
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -1049,11 +1184,12 @@ export default function OrganizationDashboardPage() {
                               <div className="flex-1 p-6 flex flex-col h-full justify-between">
                                 <div>
                                   <div className="flex justify-between items-start mb-3">
-                                    <h3 className="font-bold text-xl text-foreground">{campaign.title}</h3>
-                                    <div className="flex items-center text-amber-500 text-sm">
-                                      <div className="flex items-center text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-500">
-                                        Completed
-                                      </div>
+                                    <h3 className="font-bold text-xl text-foreground">
+                                      {campaign.title}
+                                    </h3>
+                                    <div className="flex items-center text-muted-foreground text-sm">
+                                      <Clock className="h-3.5 w-3.5 mr-1" />
+                                      <span>{campaign.daysLeft} days left</span>
                                     </div>
                                   </div>
 
@@ -1064,27 +1200,60 @@ export default function OrganizationDashboardPage() {
                                   <div className="mb-4">
                                     <div className="flex justify-between text-sm mb-2">
                                       <span className="font-medium text-foreground">
-                                        {formatEthAmount(campaign.raised)} ETH raised
+                                        {formatEthAmount(campaign.raised)} ETH
+                                        raised
                                       </span>
                                       <span className="text-muted-foreground">
-                                        of {formatEthAmount(campaign.goal)} ETH goal
+                                        of {formatEthAmount(campaign.goal)} ETH
+                                        goal
                                       </span>
                                     </div>
-                                    <div className="h-2.5 w-full bg-amber-500/10 rounded-full overflow-hidden">
+                                    <div className="h-2.5 w-full bg-primary/10 rounded-full overflow-hidden">
                                       <div
-                                        className="h-full bg-gradient-to-r from-amber-500 to-amber-500/80 rounded-full transition-all duration-500"
+                                        className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
                                         style={{
-                                          width: `${Math.min((parseFloat(campaign.raised) / parseFloat(campaign.goal)) * 100, 100)}%`,
+                                          width: `${Math.min(
+                                            (parseFloat(campaign.raised) /
+                                              parseFloat(campaign.goal)) *
+                                              100,
+                                            100
+                                          )}%`,
                                         }}
                                       />
                                     </div>
                                   </div>
 
                                   <div className="flex flex-wrap gap-3 mb-4">
-                                    <div className="flex items-center bg-amber-500/10 text-amber-500 rounded-full px-3 py-1.5 text-xs">
+                                    <div className="flex items-center bg-primary/10 text-primary rounded-full px-3 py-1.5 text-xs">
                                       <Users className="mr-1.5 h-3.5 w-3.5" />
-                                      <span className="font-medium">{campaign.donors} donors</span>
+                                      <span className="font-medium">
+                                        {campaign.donors} donors
+                                      </span>
                                     </div>
+
+                                    <div className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                      Active
+                                    </div>
+
+                                    <div className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                      Malaysia
+                                    </div>
+
+                                    {/* Conditional milestone summary badge */}
+                                    {campaign.milestones &&
+                                      campaign.milestones.length > 0 && (
+                                        <div className="flex items-center bg-amber-500/10 text-amber-500 rounded-full px-3 py-1.5 text-xs">
+                                          <span className="font-medium">
+                                            {
+                                              campaign.milestones.filter(
+                                                (m) => m.status === "completed"
+                                              ).length
+                                            }{" "}
+                                            of {campaign.milestones.length}{" "}
+                                            milestones completed
+                                          </span>
+                                        </div>
+                                      )}
                                   </div>
                                 </div>
 
@@ -1093,9 +1262,25 @@ export default function OrganizationDashboardPage() {
                                     href={`/organizations/campaigns/${campaign.id}`}
                                     className="flex-1"
                                   >
-                                    <Button variant="default" size="sm" className="w-full">
+                                    <Button
+                                      variant="default"
+                                      size="sm"
+                                      className="w-full"
+                                    >
                                       View Details
                                       <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
+                                    </Button>
+                                  </Link>
+                                  <Link
+                                    href={`/organizations/campaigns/${campaign.id}/edit`}
+                                    className="flex-1"
+                                  >
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="w-full"
+                                    >
+                                      Manage Campaign
                                     </Button>
                                   </Link>
                                 </div>
@@ -1103,43 +1288,184 @@ export default function OrganizationDashboardPage() {
                             </div>
 
                             {/* Milestone section - conditionally rendered */}
-                            {campaign.milestones && campaign.milestones.length > 0 && (
-                              <div>
-                                <div className="flex items-center px-6 py-4 mb-2">
-                                  <Award className="h-4 w-4 mr-1.5 text-amber-500" />
-                                  <h4 className="text-sm font-medium text-foreground">
-                                    Project Milestones
-                                  </h4>
+                            {campaign.milestones &&
+                              campaign.milestones.length > 0 && (
+                                <div>
+                                  <div className="flex items-center px-6 py-4 mb-2">
+                                    <Award className="h-4 w-4 mr-1.5 text-amber-500" />
+                                    <h4 className="text-sm font-medium text-foreground">
+                                      Project Milestones
+                                    </h4>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-4 px-6 pb-6">
+                                    {campaign.milestones.map(
+                                      (milestone, index) => (
+                                        <div
+                                          key={index}
+                                          className={`border text-center p-4 rounded-lg ${
+                                            milestone.status === "completed"
+                                              ? "bg-green-950/10 border-green-800/30 text-green-500"
+                                              : "bg-red-950/5 border-red-800/20 text-red-400"
+                                          }`}
+                                        >
+                                          <div className="font-medium mb-1">
+                                            {milestone.title}
+                                          </div>
+                                          <div className="text-sm font-bold mb-2">
+                                            {formatEthAmount(milestone.amount)}{" "}
+                                            ETH
+                                          </div>
+                                          {milestone.status === "completed" ? (
+                                            <div className="text-xs text-green-500 bg-green-950/20 inline-block px-2 py-0.5 rounded">
+                                              Completed
+                                            </div>
+                                          ) : (
+                                            <div className="text-xs text-red-400 bg-red-950/10 inline-block px-2 py-0.5 rounded">
+                                              Pending
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
                                 </div>
                                 <div className="grid grid-cols-3 gap-4 px-6 pb-6">
                                   {campaign.milestones.map((milestone, index) => (
                                     <div
                                       key={index}
                                       className={`border text-center p-4 rounded-lg ${milestone.status === 'completed'
-                                          ? 'bg-green-950/10 border-green-800/30 text-green-500'
-                                          : 'bg-red-950/5 border-red-800/20 text-red-400'
+                                        ? 'bg-green-950/10 border-green-800/30 text-green-500'
+                                        : 'bg-red-950/5 border-red-800/20 text-red-400'
                                         }`}
                                     >
                                       <div className="font-medium mb-1">{milestone.title}</div>
                                       <div className="text-sm font-bold mb-2">
                                         {formatEthAmount(milestone.amount)} ETH
                                       </div>
-                                      {milestone.status === 'completed' ? (
-                                        <div className="text-xs text-green-500 bg-green-950/20 inline-block px-2 py-0.5 rounded">
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Content section - takes 60% width on desktop */}
+                                <div className="flex-1 p-6 flex flex-col h-full justify-between">
+                                  <div>
+                                    <div className="flex justify-between items-start mb-3">
+                                      <h3 className="font-bold text-xl text-foreground">
+                                        {campaign.title}
+                                      </h3>
+                                      <div className="flex items-center text-amber-500 text-sm">
+                                        <div className="flex items-center text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-500">
                                           Completed
                                         </div>
-                                      ) : (
-                                        <div className="text-xs text-red-400 bg-red-950/10 inline-block px-2 py-0.5 rounded">
-                                          Pending
-                                        </div>
-                                      )}
+                                      </div>
                                     </div>
-                                  ))}
+
+                                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                                      {campaign.description}
+                                    </p>
+
+                                    <div className="mb-4">
+                                      <div className="flex justify-between text-sm mb-2">
+                                        <span className="font-medium text-foreground">
+                                          {formatEthAmount(campaign.raised)} ETH
+                                          raised
+                                        </span>
+                                        <span className="text-muted-foreground">
+                                          of {formatEthAmount(campaign.goal)}{" "}
+                                          ETH goal
+                                        </span>
+                                      </div>
+                                      <div className="h-2.5 w-full bg-amber-500/10 rounded-full overflow-hidden">
+                                        <div
+                                          className="h-full bg-gradient-to-r from-amber-500 to-amber-500/80 rounded-full transition-all duration-500"
+                                          style={{
+                                            width: `${Math.min(
+                                              (parseFloat(campaign.raised) /
+                                                parseFloat(campaign.goal)) *
+                                                100,
+                                              100
+                                            )}%`,
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-3 mb-4">
+                                      <div className="flex items-center bg-amber-500/10 text-amber-500 rounded-full px-3 py-1.5 text-xs">
+                                        <Users className="mr-1.5 h-3.5 w-3.5" />
+                                        <span className="font-medium">
+                                          {campaign.donors} donors
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                                    <Link
+                                      href={`/organizations/campaigns/${campaign.id}`}
+                                      className="flex-1"
+                                    >
+                                      <Button
+                                        variant="default"
+                                        size="sm"
+                                        className="w-full"
+                                      >
+                                        View Details
+                                        <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
+                                      </Button>
+                                    </Link>
+                                  </div>
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        ))}
+
+                              {/* Milestone section - conditionally rendered */}
+                              {campaign.milestones &&
+                                campaign.milestones.length > 0 && (
+                                  <div>
+                                    <div className="flex items-center px-6 py-4 mb-2">
+                                      <Award className="h-4 w-4 mr-1.5 text-amber-500" />
+                                      <h4 className="text-sm font-medium text-foreground">
+                                        Project Milestones
+                                      </h4>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4 px-6 pb-6">
+                                      {campaign.milestones.map(
+                                        (milestone, index) => (
+                                          <div
+                                            key={index}
+                                            className={`border text-center p-4 rounded-lg ${
+                                              milestone.status === "completed"
+                                                ? "bg-green-950/10 border-green-800/30 text-green-500"
+                                                : "bg-red-950/5 border-red-800/20 text-red-400"
+                                            }`}
+                                          >
+                                            <div className="font-medium mb-1">
+                                              {milestone.title}
+                                            </div>
+                                            <div className="text-sm font-bold mb-2">
+                                              {formatEthAmount(
+                                                milestone.amount
+                                              )}{" "}
+                                              ETH
+                                            </div>
+                                            {milestone.status ===
+                                            "completed" ? (
+                                              <div className="text-xs text-green-500 bg-green-950/20 inline-block px-2 py-0.5 rounded">
+                                                Completed
+                                              </div>
+                                            ) : (
+                                              <div className="text-xs text-red-400 bg-red-950/10 inline-block px-2 py-0.5 rounded">
+                                                Pending
+                                              </div>
+                                            )}
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}
@@ -1171,4 +1497,3 @@ export default function OrganizationDashboardPage() {
     </div>
   );
 }
-
