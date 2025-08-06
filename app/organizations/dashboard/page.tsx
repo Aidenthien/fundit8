@@ -54,7 +54,6 @@ import { toast } from "react-toastify";
 
 import Swal from "sweetalert2";
 
-
 // Campaign interface based on the contract structure
 interface Campaign {
   id: string;
