@@ -51,7 +51,9 @@ import axios from "axios";
 import { CampaignPredictionChart } from "@/components/dashboard/CampaignPredictionChart";
 import OrgChatbot from "@/components/dashboard/OrgChatbot";
 import { toast } from "react-toastify";
+
 import Swal from "sweetalert2";
+
 
 // Campaign interface based on the contract structure
 interface Campaign {
@@ -613,10 +615,7 @@ export default function OrganizationDashboardPage() {
             </div>
           )}
           {isConnected && !orgData && (
-            <Button
-              className="bg-primary hover:bg-primary/90 mt-4"
-              onClick={() => (window.location.href = "/register")}
-            >
+            <Button className="bg-primary hover:bg-primary/90 mt-4" onClick={() => window.location.href = "/kyb-form"}>
               Register Your Organization
             </Button>
           )}
@@ -1014,9 +1013,154 @@ export default function OrganizationDashboardPage() {
                       Active Campaigns
                     </h3>
                     <div className="space-y-8">
-                      {campaigns
-                        .filter((campaign) => campaign.state === 0)
-                        .map((campaign) => (
+                      {campaigns.filter(campaign => campaign.state === 0).map((campaign) => (
+                        <div
+                          key={campaign.id}
+                          className="border border-border bg-gradient-to-br from-card/80 to-card/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
+                        >
+                          <div className="flex flex-col md:flex-row overflow-hidden">
+                            {/* Image section - takes 40% width on desktop */}
+                            <div className="md:w-2/5 relative">
+                              {campaign.images && campaign.images.length > 0 ? (
+                                <ImageCarousel images={campaign.images} />
+                              ) : (
+                                <div className="h-48 md:h-full min-h-[200px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                                  <div className="text-primary/50 text-4xl font-bold">{campaign.title?.charAt(0) || "C"}</div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Content section - takes 60% width on desktop */}
+                            <div className="flex-1 p-6 flex flex-col h-full justify-between">
+                              <div>
+                                <div className="flex justify-between items-start mb-3">
+                                  <h3 className="font-bold text-xl text-foreground">{campaign.title}</h3>
+                                  <div className="flex items-center text-muted-foreground text-sm">
+                                    <Clock className="h-3.5 w-3.5 mr-1" />
+                                    <span>{campaign.daysLeft} days left</span>
+                                  </div>
+                                </div>
+
+                                <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                                  {campaign.description}
+                                </p>
+
+                                <div className="mb-4">
+                                  <div className="flex justify-between text-sm mb-2">
+                                    <span className="font-medium text-foreground">
+                                      {formatEthAmount(campaign.raised)} ETH raised
+                                    </span>
+                                    <span className="text-muted-foreground">
+                                      of {formatEthAmount(campaign.goal)} ETH goal
+                                    </span>
+                                  </div>
+                                  <div className="h-2.5 w-full bg-primary/10 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
+                                      style={{
+                                        width: `${Math.min((parseFloat(campaign.raised) / parseFloat(campaign.goal)) * 100, 100)}%`,
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-3 mb-4">
+                                  <div className="flex items-center bg-primary/10 text-primary rounded-full px-3 py-1.5 text-xs">
+                                    <Users className="mr-1.5 h-3.5 w-3.5" />
+                                    <span className="font-medium">{campaign.donors} donors</span>
+                                  </div>
+
+                                  <div className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                    Active
+                                  </div>
+
+                                  <div className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                    Malaysia
+                                  </div>
+
+                                  {/* Conditional milestone summary badge */}
+                                  {campaign.milestones && campaign.milestones.length > 0 && (
+                                    <div className="flex items-center bg-amber-500/10 text-amber-500 rounded-full px-3 py-1.5 text-xs">
+                                      <span className="font-medium">
+                                        {campaign.milestones.filter(m => m.status === 'completed').length} of {campaign.milestones.length} milestones completed
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                                <Link
+                                  href={`/organizations/campaigns/${campaign.id}`}
+                                  className="flex-1"
+                                >
+                                  <Button variant="default" size="sm" className="w-full">
+                                    View Details
+                                    <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
+                                  </Button>
+                                </Link>
+                                <Link
+                                  href={`/organizations/campaigns/${campaign.id}/edit`}
+                                  className="flex-1"
+                                >
+                                  <Button variant="outline" size="sm" className="w-full">
+                                    Manage Campaign
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Milestone section - conditionally rendered */}
+                          {campaign.milestones && campaign.milestones.length > 0 && (
+                            <div>
+                              <div className="flex items-center px-6 py-4 mb-2">
+                                <Award className="h-4 w-4 mr-1.5 text-amber-500" />
+                                <h4 className="text-sm font-medium text-foreground">
+                                  Project Milestones
+                                </h4>
+                              </div>
+                              <div className="grid grid-cols-3 gap-4 px-6 pb-6">
+                                {campaign.milestones.map((milestone, index) => (
+                                  <div
+                                    key={index}
+                                    className={`border text-center p-4 rounded-lg ${milestone.status === 'completed'
+                                      ? 'bg-green-950/10 border-green-800/30 text-green-500'
+                                      : 'bg-red-950/5 border-red-800/20 text-red-400'
+                                      }`}
+                                  >
+                                    <div className="font-medium mb-1">{milestone.title}</div>
+                                    <div className="text-sm font-bold mb-2">
+                                      {formatEthAmount(milestone.amount)} ETH
+                                    </div>
+                                    {milestone.status === 'completed' ? (
+                                      <div className="text-xs text-green-500 bg-green-950/20 inline-block px-2 py-0.5 rounded">
+                                        Completed
+                                      </div>
+                                    ) : (
+                                      <div className="text-xs text-red-400 bg-red-950/10 inline-block px-2 py-0.5 rounded">
+                                        Pending
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Completed Campaigns Section */}
+                  {campaigns.filter(campaign => campaign.state !== 0).length > 0 && (
+                    <div className="mt-10">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center">
+                        <div className="mr-2 w-2 h-2 rounded-full bg-amber-500"></div>
+                        Completed Campaigns
+                      </h3>
+                      <div className="space-y-8">
+                        {campaigns.filter(campaign => campaign.state !== 0).map((campaign) => (
                           <div
                             key={campaign.id}
                             className="border border-border bg-gradient-to-br from-card/80 to-card/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
@@ -1185,38 +1329,18 @@ export default function OrganizationDashboardPage() {
                                     )}
                                   </div>
                                 </div>
-                              )}
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-
-                  {/* Completed Campaigns Section */}
-                  {campaigns.filter((campaign) => campaign.state !== 0).length >
-                    0 && (
-                    <div className="mt-10">
-                      <h3 className="text-lg font-semibold mb-4 flex items-center">
-                        <div className="mr-2 w-2 h-2 rounded-full bg-amber-500"></div>
-                        Completed Campaigns
-                      </h3>
-                      <div className="space-y-8">
-                        {campaigns
-                          .filter((campaign) => campaign.state !== 0)
-                          .map((campaign) => (
-                            <div
-                              key={campaign.id}
-                              className="border border-border bg-gradient-to-br from-card/80 to-card/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
-                            >
-                              <div className="flex flex-col md:flex-row overflow-hidden">
-                                {/* Image section - takes 40% width on desktop */}
-                                <div className="md:w-2/5 relative">
-                                  {campaign.images &&
-                                  campaign.images.length > 0 ? (
-                                    <ImageCarousel images={campaign.images} />
-                                  ) : (
-                                    <div className="h-48 md:h-full min-h-[200px] bg-gradient-to-br from-amber-500/10 to-amber-500/5 flex items-center justify-center">
-                                      <div className="text-amber-500/50 text-4xl font-bold">
-                                        {campaign.title?.charAt(0) || "C"}
+                                <div className="grid grid-cols-3 gap-4 px-6 pb-6">
+                                  {campaign.milestones.map((milestone, index) => (
+                                    <div
+                                      key={index}
+                                      className={`border text-center p-4 rounded-lg ${milestone.status === 'completed'
+                                        ? 'bg-green-950/10 border-green-800/30 text-green-500'
+                                        : 'bg-red-950/5 border-red-800/20 text-red-400'
+                                        }`}
+                                    >
+                                      <div className="font-medium mb-1">{milestone.title}</div>
+                                      <div className="text-sm font-bold mb-2">
+                                        {formatEthAmount(milestone.amount)} ETH
                                       </div>
                                     </div>
                                   )}
