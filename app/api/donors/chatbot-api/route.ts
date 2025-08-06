@@ -26,29 +26,29 @@ You'll receive a message with a [CONTEXT] section containing information about t
 
     console.log('Sending request to OpenRouter API for donor chatbot...');
     
-    // Call OpenRouter API with DeepSeek R1 model
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
+      'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: "deepseek/deepseek-r1:free",
+        model: 'moonshotai/kimi-k2:free',
         messages: [
           {
-            role: "system",
-            content: systemMessage
+            role: 'system',
+            content: systemMessage,
           },
           {
-            role: "user",
-            content: query
-          }
-        ]
+            role: 'user',
+            content: query,
+          },
+        ],
       },
       {
         headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "https://de-nate.vercel.app/",
-          "X-Title": "DeNate Charity Platform",
-          "Content-Type": "application/json"
-        }
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer':
+            process.env.NEXT_PUBLIC_SITE_URL || 'https://de-nate.vercel.app/',
+          'X-Title': 'DeNate Charity Platform',
+          'Content-Type': 'application/json',
+        },
       }
     );
 

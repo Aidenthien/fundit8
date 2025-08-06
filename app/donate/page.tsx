@@ -236,7 +236,7 @@ export default function DonatePage() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       {/* Hero Section with Enhanced Web3 Design */}
-      <section className="w-full py-20 md:py-32 lg:py-40 relative overflow-hidden">
+      <section className="w-full py-10 md:py-16 lg:py-20 relative overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-3xl animate-pulse"></div>
@@ -279,7 +279,7 @@ export default function DonatePage() {
       </section>
 
       {/* Enhanced Campaigns Section */}
-      <section className="w-full py-16 md:py-24 bg-black">
+      <section className="w-full py-10 md:py-16 bg-black">
         <div className="container px-4 md:px-6">
           {/* Enhanced Header */}
           <div className="flex flex-col md:flex-row md:justify-between gap-6 md:items-center mb-12">
