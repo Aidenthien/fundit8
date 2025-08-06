@@ -171,6 +171,15 @@ export default function DonatePage() {
 
             const details = await campaignContract.getCampaignDetails();
 
+            // Get donors count
+            let donorsCount = 0;
+            try {
+              const donorsList = await campaignContract.getAllDonors();
+              donorsCount = donorsList.length;
+            } catch (error) {
+              console.error("Error fetching donors for campaign:", error);
+            }
+
             const campaign: Campaign = {
               address,
               name: details._name,
@@ -180,7 +189,7 @@ export default function DonatePage() {
               totalDonated: ethers.formatEther(details._totalDonated),
               state: Number(details._state),
               charityAddress: details._charityAddress,
-              donors: Math.floor(Math.random() * 100),
+              donors: donorsCount,
               daysLeft: Math.floor(Math.random() * 50),
               images: [],
             };
