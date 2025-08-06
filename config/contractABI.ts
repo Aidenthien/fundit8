@@ -1,5 +1,5 @@
 // Variables for Charity Central Contract
-const charityCentral_CA = '0x9D77E4ECeA7763cB826BF90E2226cB666bc04B66';
+const charityCentral_CA = '0x0928823D8B60D0f442b3a04b946948c2880f8C53';
 const charityCentral_ABI = [
   {
     inputs: [
@@ -781,6 +781,5 @@ const charityCampaigns_ABI = [
     type: 'receive',
   },
 ];
-
 
 export { charityCentral_CA, charityCentral_ABI, charityCampaigns_ABI };
