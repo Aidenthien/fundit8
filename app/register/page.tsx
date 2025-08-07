@@ -114,7 +114,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Aurora background */}
+      <div className="absolute inset-0 -z-10">
+        <div className="w-full h-full bg-gradient-to-br from-[#e0e7ff] via-[#f8fafc] to-[#f1f5f9] opacity-90" />
+        <div className="absolute left-1/4 top-0 w-2/3 h-2/3 bg-gradient-to-tr from-[#fbc2eb] via-[#a6c1ee] to-[#fdc2e8] rounded-full blur-3xl opacity-40 animate-pulse" />
+        <div className="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-br from-[#fcb69f] via-[#ffecd2] to-[#a1c4fd] rounded-full blur-2xl opacity-30 animate-pulse" />
+      </div>
       <div className="absolute top-4 left-4">
         <IconButton
           variant="text"
@@ -128,9 +134,9 @@ export default function RegisterPage() {
         >
           <ArrowLeft className="h-5 w-5" />
         </IconButton>
-          </div>
+      </div>
       <motion.div
-        className="max-w-lg w-full bg-white shadow-lg rounded-xl p-8"
+        className="max-w-lg w-full bg-white/95 shadow-2xl rounded-2xl p-10 border border-gray-100"
         initial="hidden"
         animate="visible"
         variants={fadeIn}
@@ -140,7 +146,7 @@ export default function RegisterPage() {
           <Typography
             variant="h4"
             color="blue-gray"
-            className="mb-2 font-bold"
+            className="mb-2 font-bold text-gray-900"
             placeholder={null}
             onPointerEnterCapture={undefined}
             onPointerLeaveCapture={undefined}
@@ -157,13 +163,12 @@ export default function RegisterPage() {
             Join DeNate to start creating impactful campaigns
           </Typography>
         </div>
-
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Error/Success Messages */}
           {error && (
             <motion.div
-              className="flex items-center gap-2 p-4 bg-red-50 text-red-600 rounded-lg"
+              className="flex items-center gap-2 p-4 bg-red-50 text-red-600 rounded-lg border border-red-200"
               initial="hidden"
               animate="visible"
               variants={messageAnimation}
@@ -174,7 +179,7 @@ export default function RegisterPage() {
           )}
           {success && (
             <motion.div
-              className="flex items-center gap-2 p-4 bg-green-50 text-green-600 rounded-lg"
+              className="flex items-center gap-2 p-4 bg-green-50 text-green-600 rounded-lg border border-green-200"
               initial="hidden"
               animate="visible"
               variants={messageAnimation}
@@ -183,7 +188,6 @@ export default function RegisterPage() {
               <span>{success}</span>
             </motion.div>
           )}
-
           {/* Form Fields */}
           <div className="space-y-5">
             <Input
@@ -192,13 +196,12 @@ export default function RegisterPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+              className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg bg-white text-gray-900"
               crossOrigin={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
               icon={<i className="pi pi-building text-gray-400" />}
             />
-
             <Input
               label="Email"
               name="email"
@@ -206,48 +209,44 @@ export default function RegisterPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+              className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg bg-white text-gray-900"
               crossOrigin={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
               icon={<i className="pi pi-envelope text-gray-400" />}
             />
-
             <Input
               label="Wallet Address"
               name="walletAddress"
               value={formData.walletAddress}
               onChange={handleChange}
               required
-              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+              className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg bg-white text-gray-900"
               crossOrigin={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
               icon={<i className="pi pi-wallet text-gray-400" />}
             />
-
             <Input
               label="Website (optional)"
               name="website"
               value={formData.website}
               onChange={handleChange}
-              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+              className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg bg-white text-gray-900"
               crossOrigin={undefined}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
               icon={<i className="pi pi-globe text-gray-400" />}
             />
-
             <Textarea
               label="Description (optional)"
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="min-h-[100px] border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+              className="min-h-[100px] border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg bg-white text-gray-900"
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
             />
-
             <div className="flex items-center gap-3">
               <Checkbox
                 id="agree-terms"
@@ -259,21 +258,20 @@ export default function RegisterPage() {
                 className="border-gray-300 checked:bg-blue-500"
               />
               <label htmlFor="agree-terms" className="text-sm text-gray-700">
-                  I agree to the{" "}
+                I agree to the{" "}
                 <Link href="/terms" className="text-blue-500 hover:underline">
-                    terms of service
-                  </Link>{" "}
-                  and{" "}
+                  terms of service
+                </Link>{" "}
+                and{" "}
                 <Link href="/privacy" className="text-blue-500 hover:underline">
-                    privacy policy
-                  </Link>
-                </label>
-              </div>
-
+                  privacy policy
+                </Link>
+              </label>
+            </div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 transition-all"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 transition-all font-bold text-lg shadow-md"
                 disabled={loading}
                 placeholder={null}
                 onPointerEnterCapture={undefined}
@@ -302,15 +300,14 @@ export default function RegisterPage() {
                       />
                     </svg>
                     Registering...
-              </div>
+                  </div>
                 ) : (
                   "Register Organization"
                 )}
               </Button>
             </motion.div>
-
             <CardFooter
-              className="pt-0 text-center"
+              className="pt-0 text-center bg-transparent"
               placeholder={null}
               onPointerEnterCapture={undefined}
               onPointerLeaveCapture={undefined}
@@ -322,7 +319,7 @@ export default function RegisterPage() {
                 </Link>
               </Typography>
             </CardFooter>
-        </div>
+          </div>
         </form>
       </motion.div>
     </div>

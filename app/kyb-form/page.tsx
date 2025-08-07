@@ -137,7 +137,13 @@ export default function KYBForm() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+            {/* Aurora background */}
+            <div className="absolute inset-0 -z-10">
+                <div className="w-full h-full bg-gradient-to-br from-[#e0e7ff] via-[#f8fafc] to-[#f1f5f9] opacity-90" />
+                <div className="absolute left-1/4 top-0 w-2/3 h-2/3 bg-gradient-to-tr from-[#fbc2eb] via-[#a6c1ee] to-[#fdc2e8] rounded-full blur-3xl opacity-40 animate-pulse" />
+                <div className="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-br from-[#fcb69f] via-[#ffecd2] to-[#a1c4fd] rounded-full blur-2xl opacity-30 animate-pulse" />
+            </div>
             <div className="absolute top-4 left-4">
                 <IconButton
                     variant="text"
@@ -145,15 +151,15 @@ export default function KYBForm() {
                     size="lg"
                     onClick={() => router.push("/")}
                     className="rounded-full"
-                    placeholder={null}  // Removed the placeholder error
-                    onPointerEnterCapture={undefined}  // Removed the onPointerEnterCapture error
-                    onPointerLeaveCapture={undefined}  // Removed the onPointerLeaveCapture error
+                    placeholder={null}
+                    onPointerEnterCapture={undefined}
+                    onPointerLeaveCapture={undefined}
                 >
                     <ArrowLeft className="h-5 w-5" />
                 </IconButton>
             </div>
             <motion.div
-                className="max-w-lg w-full bg-white shadow-lg rounded-xl p-8"
+                className="max-w-lg w-full bg-white/95 shadow-2xl rounded-2xl p-10 border border-gray-100"
                 initial="hidden"
                 animate="visible"
                 variants={fadeIn}
@@ -163,7 +169,7 @@ export default function KYBForm() {
                     <Typography
                         variant="h4"
                         color="blue-gray"
-                        className="mb-2 font-bold"
+                        className="mb-2 font-bold text-gray-900"
                         placeholder={null}
                         onPointerEnterCapture={undefined}
                         onPointerLeaveCapture={undefined}
@@ -180,7 +186,6 @@ export default function KYBForm() {
                         Verify your organization by providing the required details before creating your account
                     </Typography>
                 </div>
-
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-5">
@@ -191,13 +196,12 @@ export default function KYBForm() {
                             value={formData.registrationNumber}
                             onChange={handleChange}
                             required
-                            className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                            className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg bg-white text-gray-900"
                             placeholder=""
                             crossOrigin={undefined}
                             onPointerEnterCapture={undefined}
                             onPointerLeaveCapture={undefined}
                         />
-
                         {/* Country of Incorporation Dropdown */}
                         <Select
                             label="Country of Incorporation"
@@ -211,13 +215,13 @@ export default function KYBForm() {
                                 setIsMalaysia(selectedCountry === "MY");
                             }}
                             placeholder=""
+                            className="bg-white text-gray-900 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
                             onPointerEnterCapture={undefined}
                             onPointerLeaveCapture={undefined}
                         >
                             <Option value="MY">Malaysia</Option>
                             {/* <Option value="NG">Nigeria</Option> */}
                         </Select>
-
                         {/* Company Registration Proof File Upload */}
                         <div className="space-y-2">
                             <label className="block text-gray-700 font-medium">Company Registration Proof</label>
@@ -228,11 +232,11 @@ export default function KYBForm() {
                                 accept="image/*,application/pdf"
                                 onChange={handleFileChange}
                                 required={isMalaysia}
-                                className="border border-gray-300 rounded-lg p-2 w-full mt-2"
+                                className="border border-gray-200 rounded-lg p-2 w-full mt-2 bg-white text-gray-900"
                             />
                             {/* Display File Name and Remove Button */}
                             {formData.companyRegistrationProof && (
-                                <div className="flex items-center justify-between bg-gray-100 p-3 mt-3 rounded-lg">
+                                <div className="flex items-center justify-between bg-gray-50 p-3 mt-3 rounded-lg border border-gray-100">
                                     <div className="text-sm font-medium text-gray-800">
                                         File: {formData.companyRegistrationProof.name}
                                     </div>
@@ -247,13 +251,11 @@ export default function KYBForm() {
                                 </div>
                             )}
                         </div>
-
                         {/* Submit Button */}
                         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                             <Button
                                 type="submit"
-                                className={`w-full rounded-lg py-3 transition-all ${isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                                    }`}
+                                className={`w-full rounded-lg py-3 transition-all font-bold text-white text-lg shadow-md ${isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
                                 disabled={isLoading}
                                 placeholder={null}
                                 onPointerEnterCapture={undefined}
@@ -262,9 +264,8 @@ export default function KYBForm() {
                                 {isLoading ? "Processing..." : "Submit Form"}
                             </Button>
                         </motion.div>
-
                         {/* Footer */}
-                        <CardFooter className="pt-0 text-center"
+                        <CardFooter className="pt-0 text-center bg-transparent"
                             placeholder={null}
                             onPointerEnterCapture={undefined}
                             onPointerLeaveCapture={undefined}>
