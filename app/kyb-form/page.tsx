@@ -85,7 +85,7 @@ export default function KYBForm() {
                 const { match, extractedText } = await ocrRes.json();
 
                 if (match) {
-                    toast.success("✅ Organization Verified and Approved!", {
+                    toast.success("Organization Verified and Approved!", {
                         position: "top-center",
                         autoClose: 1500,
                         hideProgressBar: true,
