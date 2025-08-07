@@ -25,8 +25,15 @@ export default function CreateDonorProfile() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
+    const [avatarAnim, setAvatarAnim] = useState(false);
 
-    const changeAvatar = () => setAvatarSeed(Math.random().toString(36).substring(7));
+    const changeAvatar = () => {
+        setAvatarAnim(true);
+        setTimeout(() => {
+            setAvatarSeed(Math.random().toString(36).substring(7));
+            setAvatarAnim(false);
+        }, 350);
+    };
     const avatarUrl = `https://api.dicebear.com/7.x/croodles/svg?seed=${avatarSeed}`;
 
     const handleSubmit = async () => {
@@ -70,7 +77,13 @@ export default function CreateDonorProfile() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+            {/* Aurora background */}
+            <div className="absolute inset-0 -z-10">
+                <div className="w-full h-full bg-gradient-to-br from-[#a1c4fd] via-[#c2e9fb] to-[#fbc2eb] opacity-80" />
+                <div className="absolute left-1/4 top-0 w-2/3 h-2/3 bg-gradient-to-tr from-[#fbc2eb] via-[#a6c1ee] to-[#fdc2e8] rounded-full blur-3xl opacity-60 animate-pulse" />
+                <div className="absolute right-0 bottom-0 w-1/2 h-1/2 bg-gradient-to-br from-[#fcb69f] via-[#ffecd2] to-[#a1c4fd] rounded-full blur-2xl opacity-50 animate-pulse" />
+            </div>
             <motion.div
                 className="max-w-lg w-full bg-white shadow-lg rounded-xl p-8"
                 initial="hidden"
@@ -120,10 +133,13 @@ export default function CreateDonorProfile() {
                     </div>
 
                     <div className="flex flex-col items-center space-y-4">
-                        <img
+                        <motion.img
+                            key={avatarSeed}
                             src={avatarUrl}
                             alt="Avatar"
                             className="w-32 h-32 rounded-full border bg-white p-1 shadow-sm"
+                            animate={avatarAnim ? { scale: [1, 1.25, 0.9, 1] } : {}}
+                            transition={{ duration: 0.35, times: [0, 0.3, 0.7, 1] }}
                         />
                         <Button
                             variant="outlined"
