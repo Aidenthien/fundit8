@@ -1,23 +1,45 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart, History, Wallet, TrendingUp, AlertCircle, Gift, Users, Award, ChevronLeft, ChevronRight } from "lucide-react"
-import { getDonorDashboardData, getLeaderboard } from "@/lib/mockData"
-import { Donor } from "@/lib/types";
-import { useEffect, useState } from "react"
-import { useAccount } from "wagmi";
-import { ethers } from "ethers"
-import { charityCentral_ABI, charityCentral_CA, charityCampaigns_ABI } from "@/config/contractABI"
-import DonorChatbot from "@/components/dashboard/DonorChatbot"
-import axios from "axios"
-import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Heart,
+  History,
+  Wallet,
+  TrendingUp,
+  AlertCircle,
+  Gift,
+  Users,
+  Award,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import { getDonorDashboardData, getLeaderboard } from '@/lib/mockData';
+import { Donor } from '@/lib/types';
+import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { ethers } from 'ethers';
+import {
+  charityCentral_ABI,
+  charityCentral_CA,
+  charityCampaigns_ABI,
+} from '@/config/contractABI';
+import DonorChatbot from '@/components/dashboard/DonorChatbot';
+import axios from 'axios';
+import { AnimatedGradientText } from '@/components/magicui/animated-gradient-text';
 
 interface Campaign {
   address: string;
@@ -51,7 +73,7 @@ interface DonorDonationHistory {
 }
 
 // For demo purposes, using a static donor ID - in a real app, this would come from authentication
-const DEMO_DONOR_ID = "d1"
+const DEMO_DONOR_ID = 'd1';
 
 // Add the ImageCarousel component from the donate page
 const ImageCarousel = ({ images }: { images: string[] }) => {
@@ -104,7 +126,9 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
             {images.map((_, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full ${currentImageIndex === index ? 'bg-white' : 'bg-white/60'}`}
+                className={`w-2 h-2 rounded-full ${
+                  currentImageIndex === index ? 'bg-white' : 'bg-white/60'
+                }`}
                 onClick={() => setCurrentImageIndex(index)}
               />
             ))}
@@ -139,18 +163,22 @@ interface ChatbotDonation {
 
 export default function DonorDashboardPage() {
   const { address, isConnected } = useAccount();
-  const [campaignDetails, setCampaignDetails] = useState<Campaign[]>([])
-  const [userCampaigns, setUserCampaigns] = useState<Campaign[]>([])
+  const [campaignDetails, setCampaignDetails] = useState<Campaign[]>([]);
+  const [userCampaigns, setUserCampaigns] = useState<Campaign[]>([]);
   const [orgData, setOrgData] = useState<Partial<Donor> | null>(null);
   const [organizations, setOrganizations] = useState<any[]>([]);
-  const [timeframe, setTimeframe] = useState("all-time");
-  const [userLeaderboardInfo, setUserLeaderboardInfo] = useState<{ rank: number | string; amount: string }>({
-    rank: "unranked",
-    amount: "0",
+  const [timeframe, setTimeframe] = useState('all-time');
+  const [userLeaderboardInfo, setUserLeaderboardInfo] = useState<{
+    rank: number | string;
+    amount: string;
+  }>({
+    rank: 'unranked',
+    amount: '0',
   });
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
   const [donationHistory, setDonationHistory] = useState<GraphQLDonation[]>([]);
-  const [isLoadingDonationHistory, setIsLoadingDonationHistory] = useState(false);
+  const [isLoadingDonationHistory, setIsLoadingDonationHistory] =
+    useState(false);
 
   const contractAddress = charityCentral_CA;
   const contractABI = charityCentral_ABI;
@@ -160,8 +188,8 @@ export default function DonorDashboardPage() {
       try {
         const leaderboardData = await getLeaderboard();
         // Find if current user is in leaderboard
-        const found = leaderboardData.find((donor: any) =>
-          donor.address.toLowerCase() === address?.toLowerCase()
+        const found = leaderboardData.find(
+          (donor: any) => donor.address.toLowerCase() === address?.toLowerCase()
         );
 
         if (found) {
@@ -170,11 +198,10 @@ export default function DonorDashboardPage() {
             amount: ethers.formatUnits(found.amount, 18),
           });
         } else {
-          setUserLeaderboardInfo({ rank: "unranked", amount: "0" });
+          setUserLeaderboardInfo({ rank: 'unranked', amount: '0' });
         }
-
       } catch (error) {
-        console.error("Error fetching leaderboard:", error);
+        console.error('Error fetching leaderboard:', error);
       }
     };
 
@@ -187,16 +214,18 @@ export default function DonorDashboardPage() {
     // Fetch organization data by wallet address
     const fetchOrgData = async () => {
       try {
-        const response = await fetch(`/api/donors/getByWallet?walletAddress=${address}`);
+        const response = await fetch(
+          `/api/donors/getByWallet?walletAddress=${address}`
+        );
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch organization data");
+          throw new Error(data.error || 'Failed to fetch organization data');
         }
 
         setOrgData(data);
       } catch (err) {
-        console.error("Error fetching organization data:", err);
+        console.error('Error fetching organization data:', err);
       }
     };
 
@@ -207,16 +236,16 @@ export default function DonorDashboardPage() {
   useEffect(() => {
     const fetchOrganizations = async () => {
       try {
-        const response = await fetch("/api/organizations/getAllOrganizations");
+        const response = await fetch('/api/organizations/getAllOrganizations');
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch organizations");
+          throw new Error(data.error || 'Failed to fetch organizations');
         }
 
         setOrganizations(data);
       } catch (err) {
-        console.error("Error fetching organizations:", err);
+        console.error('Error fetching organizations:', err);
       }
     };
 
@@ -225,8 +254,8 @@ export default function DonorDashboardPage() {
 
   useEffect(() => {
     const fetchCampaignsDetails = async () => {
-      if (typeof window.ethereum === "undefined") {
-        console.error("MetaMask not detected. Please install a wallet.");
+      if (typeof window.ethereum === 'undefined') {
+        console.error('MetaMask not detected. Please install a wallet.');
         return;
       }
 
@@ -235,7 +264,7 @@ export default function DonorDashboardPage() {
         const provider = new ethers.BrowserProvider(window.ethereum);
 
         // Request wallet connection
-        await window.ethereum.request({ method: "eth_requestAccounts" });
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
 
         // Get signer
         const signer = await provider.getSigner();
@@ -271,31 +300,44 @@ export default function DonorDashboardPage() {
               const donorsList = await campaignContract.getAllDonors();
               donorsCount = donorsList.length;
             } catch (error) {
-              console.error("Error fetching donors for campaign:", error);
+              console.error('Error fetching donors for campaign:', error);
             }
 
             // Get user-specific donation data if connected
-            let userDonation = "0";
+            let userDonation = '0';
             if (address) {
               try {
                 const donorInfo = await campaignContract.donors(signer.address);
-                userDonation = ethers.formatEther(donorInfo.totalDonated || "0");
+                userDonation = ethers.formatEther(
+                  donorInfo.totalDonated || '0'
+                );
               } catch (error) {
-                console.error("Error fetching user donation for campaign:", error);
+                console.error(
+                  'Error fetching user donation for campaign:',
+                  error
+                );
               }
             }
 
             // Calculate days left (mock calculation based on campaign state)
             // In a real implementation, you might store campaign end dates
-            const daysLeft = Number(details._state) === 0 ?
-              Math.floor(30 - (parseFloat(ethers.formatEther(details._totalDonated)) / parseFloat(ethers.formatEther(details._goal))) * 30) :
-              0;
+            const daysLeft =
+              Number(details._state) === 0
+                ? Math.floor(
+                    30 -
+                      (parseFloat(ethers.formatEther(details._totalDonated)) /
+                        parseFloat(ethers.formatEther(details._goal))) *
+                        30
+                  )
+                : 0;
 
             // Process images from IPFS if available
             let campaignImages: string[] = [];
             if (details._campaignImageURI) {
               try {
-                const imageData = await fetchIPFSData(details._campaignImageURI);
+                const imageData = await fetchIPFSData(
+                  details._campaignImageURI
+                );
                 if (imageData && Array.isArray(imageData.images)) {
                   campaignImages = imageData.images;
                 } else if (details._campaignImageURI.startsWith('ipfs://')) {
@@ -303,7 +345,10 @@ export default function DonorDashboardPage() {
                   campaignImages = [details._campaignImageURI];
                 }
               } catch (error) {
-                console.error(`Error fetching images for campaign ${address}:`, error);
+                console.error(
+                  `Error fetching images for campaign ${address}:`,
+                  error
+                );
               }
             }
 
@@ -326,11 +371,13 @@ export default function DonorDashboardPage() {
         );
 
         // Filter only campaigns where state === 0 (convert BigInt to Number)
-        const activeCampaigns = detailedCampaigns.filter((campaign) => Number(campaign.state) === 0);
+        const activeCampaigns = detailedCampaigns.filter(
+          (campaign) => Number(campaign.state) === 0
+        );
 
         // Filter campaigns that user has donated to
-        const userDonatedCampaigns = activeCampaigns.filter(campaign =>
-          parseFloat(campaign.userDonation) > 0
+        const userDonatedCampaigns = activeCampaigns.filter(
+          (campaign) => parseFloat(campaign.userDonation) > 0
         );
 
         // Update state with detailed campaigns
@@ -338,38 +385,40 @@ export default function DonorDashboardPage() {
         setUserCampaigns(userDonatedCampaigns);
 
         // Calculate total user donations across all campaigns
-        const totalUserDonations = detailedCampaigns.reduce((total, campaign) => {
-          return total + parseFloat(campaign.userDonation || "0");
-        }, 0);
+        const totalUserDonations = detailedCampaigns.reduce(
+          (total, campaign) => {
+            return total + parseFloat(campaign.userDonation || '0');
+          },
+          0
+        );
 
         // Update user's total donation amount if not already set by leaderboard
-        if (userLeaderboardInfo.amount === "0" && totalUserDonations > 0) {
-          setUserLeaderboardInfo(prev => ({
+        if (userLeaderboardInfo.amount === '0' && totalUserDonations > 0) {
+          setUserLeaderboardInfo((prev) => ({
             ...prev,
-            amount: totalUserDonations.toString()
+            amount: totalUserDonations.toString(),
           }));
         }
 
-        console.log("Detailed Campaigns:", detailedCampaigns);
-        console.log("User Donated Campaigns:", userDonatedCampaigns);
+        console.log('Detailed Campaigns:', detailedCampaigns);
+        console.log('User Donated Campaigns:', userDonatedCampaigns);
 
         // Generate recent donations from real campaign data
         const userDonations: ChatbotDonation[] = detailedCampaigns
-          .filter(campaign => parseFloat(campaign.userDonation) > 0)
-          .map(campaign => ({
+          .filter((campaign) => parseFloat(campaign.userDonation) > 0)
+          .map((campaign) => ({
             campaignId: campaign.address,
             campaignName: campaign.name,
             amount: campaign.userDonation,
-            date: new Date().toLocaleDateString() // Use current date as a placeholder
+            date: new Date().toLocaleDateString(), // Use current date as a placeholder
           }));
 
         // If we have real donations from the blockchain, use them
         if (userDonations.length > 0) {
-          console.log("Found user donations:", userDonations);
+          console.log('Found user donations:', userDonations);
         }
-
       } catch (error) {
-        console.error("Error fetching campaign details:", error);
+        console.error('Error fetching campaign details:', error);
       }
     };
 
@@ -377,25 +426,29 @@ export default function DonorDashboardPage() {
   }, [address]);
 
   // Get donor dashboard data from mockData
-  const donorData = getDonorDashboardData(DEMO_DONOR_ID)
+  const donorData = getDonorDashboardData(DEMO_DONOR_ID);
 
   if (!donorData) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center">
         <h1 className="text-2xl font-bold">Donor not found</h1>
-        <p className="text-muted-foreground">The donor dashboard you are looking for does not exist.</p>
+        <p className="text-muted-foreground">
+          The donor dashboard you are looking for does not exist.
+        </p>
       </div>
-    )
+    );
   }
 
-  const { donor, recentDonations, activeCampaigns, impactMetrics } = donorData
+  const { donor, recentDonations, activeCampaigns, impactMetrics } = donorData;
   // Now activeCampaignCount represents the number of campaigns the user has donated to
   const activeCampaignCount = userCampaigns.length;
 
   // Function to get organization name by wallet address
   const getOrgNameByAddress = (walletAddress: string) => {
-    if (!walletAddress || !organizations.length) return "Unknown Organization"; // Early return if no address or organizations
-    const org = organizations.find((o) => o?.walletAddress?.toLowerCase() === walletAddress.toLowerCase());
+    if (!walletAddress || !organizations.length) return 'Unknown Organization'; // Early return if no address or organizations
+    const org = organizations.find(
+      (o) => o?.walletAddress?.toLowerCase() === walletAddress.toLowerCase()
+    );
     return org?.name || walletAddress; // Return name if found, otherwise fallback to address
   };
 
@@ -406,7 +459,7 @@ export default function DonorDashboardPage() {
     setIsLoadingDonationHistory(true);
     try {
       const response = await fetch(
-        'https://api.studio.thegraph.com/query/105145/denate/version/latest',
+        'https://api.studio.thegraph.com/query/105145/fundit-8-2/version/latest',
         {
           method: 'POST',
           headers: {
@@ -445,29 +498,32 @@ export default function DonorDashboardPage() {
         // Update user's total donation amount from graph data if available
         if (graphDonorData.totalDonated) {
           const totalDonated = ethers.formatEther(graphDonorData.totalDonated);
-          setUserLeaderboardInfo(prev => ({
+          setUserLeaderboardInfo((prev) => ({
             ...prev,
-            amount: totalDonated
+            amount: totalDonated,
           }));
         }
 
         // Generate recentDonations for donor chatbot from real donation data
         if (graphDonorData.donations.length > 0) {
-          const formattedDonations: ChatbotDonation[] = graphDonorData.donations.map((donation: GraphQLDonation) => ({
-            campaignId: donation.campaign.id,
-            campaignName: donation.campaign.name,
-            amount: ethers.formatEther(donation.amount),
-            date: new Date(Number(donation.timestamp) * 1000).toLocaleDateString()
-          }));
+          const formattedDonations: ChatbotDonation[] =
+            graphDonorData.donations.map((donation: GraphQLDonation) => ({
+              campaignId: donation.campaign.id,
+              campaignName: donation.campaign.name,
+              amount: ethers.formatEther(donation.amount),
+              date: new Date(
+                Number(donation.timestamp) * 1000
+              ).toLocaleDateString(),
+            }));
 
           // Log the formatted donations
           if (formattedDonations.length > 0) {
-            console.log("Found donation history:", formattedDonations);
+            console.log('Found donation history:', formattedDonations);
           }
         }
       }
     } catch (error) {
-      console.error("Error fetching donation history:", error);
+      console.error('Error fetching donation history:', error);
     } finally {
       setIsLoadingDonationHistory(false);
     }
@@ -489,9 +545,7 @@ export default function DonorDashboardPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <section
-        className="w-full py-12 md:py-16 bg-black relative bg-[url('/donors.png')] bg-cover bg-center"
-      >
+      <section className="w-full py-12 md:py-16 bg-black relative bg-[url('/donors.png')] bg-cover bg-center">
         {/* Overlay for readability */}
         <div className="absolute inset-0 bg-black/80"></div>
 
@@ -503,10 +557,13 @@ export default function DonorDashboardPage() {
               <div className="relative w-20 h-20 md:w-24 md:h-24">
                 <Avatar className="w-full h-full border-4 border-gray-800 shadow-lg">
                   {orgData?.avatar ? (
-                    <AvatarImage src={orgData.avatar} alt="Organization Avatar" />
+                    <AvatarImage
+                      src={orgData.avatar}
+                      alt="Organization Avatar"
+                    />
                   ) : (
                     <AvatarFallback className="bg-gradient-to-br from-gray-800 to-gray-900 text-white text-lg">
-                      {orgData?.name?.charAt(0) || "?"}
+                      {orgData?.name?.charAt(0) || '?'}
                     </AvatarFallback>
                   )}
                 </Avatar>
@@ -521,14 +578,16 @@ export default function DonorDashboardPage() {
                   <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-4xl md:text-5xl">
                     Welcome, {orgData?.name || donor.name}
                   </h1>
-                  {userLeaderboardInfo.rank !== "unranked" && (
+                  {userLeaderboardInfo.rank !== 'unranked' && (
                     <Badge className="bg-amber-500/90 text-black font-medium ml-2 py-1 flex items-center">
-                      <Award className="h-3.5 w-3.5 mr-1" /> Rank #{userLeaderboardInfo.rank}
+                      <Award className="h-3.5 w-3.5 mr-1" /> Rank #
+                      {userLeaderboardInfo.rank}
                     </Badge>
                   )}
                 </div>
                 <p className="text-gray-400 max-w-2xl">
-                  Track your donations, see your impact, and discover new campaigns that align with your values.
+                  Track your donations, see your impact, and discover new
+                  campaigns that align with your values.
                 </p>
               </div>
             </div>
@@ -536,7 +595,10 @@ export default function DonorDashboardPage() {
             {/* Actions */}
             <div className="flex items-center justify-end gap-4">
               <Link href="/donate">
-                <Button className="bg-white hover:bg-gray-100 text-black transition-all duration-300 group" size="lg">
+                <Button
+                  className="bg-white hover:bg-gray-100 text-black transition-all duration-300 group"
+                  size="lg"
+                >
                   <Heart className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                   <span className="group-hover:hidden">Donate Now</span>
                   <AnimatedGradientText className="font-semibold hidden group-hover:inline">
@@ -551,29 +613,50 @@ export default function DonorDashboardPage() {
 
       <section className="w-full py-8 md:py-12 bg-black text-white">
         <div className="container px-4 md:px-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <div className="flex justify-between items-center mb-6">
               <TabsList className="bg-gray-900 p-1 border border-gray-800">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-black">
+                <TabsTrigger
+                  value="overview"
+                  className="data-[state=active]:bg-white data-[state=active]:text-black"
+                >
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Overview
                 </TabsTrigger>
-                <TabsTrigger value="campaigns" className="data-[state=active]:bg-white data-[state=active]:text-black">
+                <TabsTrigger
+                  value="campaigns"
+                  className="data-[state=active]:bg-white data-[state=active]:text-black"
+                >
                   <Heart className="h-4 w-4 mr-2" />
                   Active Campaigns
                 </TabsTrigger>
-                <TabsTrigger value="history" className="data-[state=active]:bg-white data-[state=active]:text-black">
+                <TabsTrigger
+                  value="history"
+                  className="data-[state=active]:bg-white data-[state=active]:text-black"
+                >
                   <History className="h-4 w-4 mr-2" />
                   Donation History
                 </TabsTrigger>
               </TabsList>
 
               <div className="hidden md:flex gap-3">
-                <Button variant="outline" size="sm" className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
                   <Gift className="h-4 w-4 mr-2" />
                   Gift a Donation
                 </Button>
-                <Button variant="outline" size="sm" className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
                   <Users className="h-4 w-4 mr-2" />
                   Invite Friends
                 </Button>
@@ -591,8 +674,12 @@ export default function DonorDashboardPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">{userLeaderboardInfo.amount} ETH</div>
-                    <p className="text-xs text-gray-500 mt-1">Lifetime contribution</p>
+                    <div className="text-2xl font-bold text-white">
+                      {userLeaderboardInfo.amount} ETH
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Lifetime contribution
+                    </p>
                   </CardContent>
                 </Card>
 
@@ -604,8 +691,14 @@ export default function DonorDashboardPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">{userLeaderboardInfo.rank === "unranked" ? "Unranked" : `#${userLeaderboardInfo.rank}`}</div>
-                    <p className="text-xs text-gray-500 mt-1">Among all donors</p>
+                    <div className="text-2xl font-bold text-white">
+                      {userLeaderboardInfo.rank === 'unranked'
+                        ? 'Unranked'
+                        : `#${userLeaderboardInfo.rank}`}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Among all donors
+                    </p>
                   </CardContent>
                 </Card>
 
@@ -617,8 +710,12 @@ export default function DonorDashboardPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">{activeCampaignCount}</div>
-                    <p className="text-xs text-gray-500 mt-1">Currently supporting</p>
+                    <div className="text-2xl font-bold text-white">
+                      {activeCampaignCount}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Currently supporting
+                    </p>
                   </CardContent>
                 </Card>
 
@@ -631,15 +728,19 @@ export default function DonorDashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-white">
-                      <Badge variant="outline" className="text-xs font-medium bg-green-500/10 text-green-400 border-green-800">
-                        {parseFloat(userLeaderboardInfo.amount) > 0 ? "Active" : "New"}
+                      <Badge
+                        variant="outline"
+                        className="text-xs font-medium bg-green-500/10 text-green-400 border-green-800"
+                      >
+                        {parseFloat(userLeaderboardInfo.amount) > 0
+                          ? 'Active'
+                          : 'New'}
                       </Badge>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
                       {parseFloat(userLeaderboardInfo.amount) > 0
-                        ? "Account in good standing"
-                        : "Make your first donation"
-                      }
+                        ? 'Account in good standing'
+                        : 'Make your first donation'}
                     </p>
                   </CardContent>
                 </Card>
@@ -651,11 +752,19 @@ export default function DonorDashboardPage() {
                   <CardHeader className="bg-gray-800/50 border-b border-gray-800 pb-3">
                     <div className="flex justify-between items-center">
                       <div>
-                        <CardTitle className="text-white">Active Campaigns</CardTitle>
-                        <CardDescription className="text-gray-400">Campaigns you're currently supporting</CardDescription>
+                        <CardTitle className="text-white">
+                          Active Campaigns
+                        </CardTitle>
+                        <CardDescription className="text-gray-400">
+                          Campaigns you're currently supporting
+                        </CardDescription>
                       </div>
                       <Link href="/donate">
-                        <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-gray-800">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-gray-300 hover:text-white hover:bg-gray-800"
+                        >
                           View All
                         </Button>
                       </Link>
@@ -666,13 +775,18 @@ export default function DonorDashboardPage() {
                       {userCampaigns.length > 0 ? (
                         userCampaigns.slice(0, 3).map((campaign, index) => {
                           // Calculate if user has donated to this campaign
-                          const hasUserDonated = parseFloat(campaign.userDonation || "0") > 0;
+                          const hasUserDonated =
+                            parseFloat(campaign.userDonation || '0') > 0;
 
                           return (
-                            <div key={index} className="flex flex-col md:flex-row gap-4 p-4 rounded-xl bg-gray-800/40 border border-gray-700 hover:bg-gray-800/70 transition-colors">
+                            <div
+                              key={index}
+                              className="flex flex-col md:flex-row gap-4 p-4 rounded-xl bg-gray-800/40 border border-gray-700 hover:bg-gray-800/70 transition-colors"
+                            >
                               {/* Campaign image */}
                               <div className="h-32 w-full md:w-32 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
-                                {campaign.images && campaign.images.length > 0 ? (
+                                {campaign.images &&
+                                campaign.images.length > 0 ? (
                                   <ImageCarousel images={campaign.images} />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center bg-gray-700 text-gray-400">
@@ -684,41 +798,65 @@ export default function DonorDashboardPage() {
                               <div className="flex-1 space-y-2">
                                 <div className="flex justify-between">
                                   <div>
-                                    <h3 className="font-medium text-lg text-white">{campaign.name}</h3>
+                                    <h3 className="font-medium text-lg text-white">
+                                      {campaign.name}
+                                    </h3>
                                     <p className="text-sm text-gray-400">
-                                      {getOrgNameByAddress(campaign.charityAddress)}
+                                      {getOrgNameByAddress(
+                                        campaign.charityAddress
+                                      )}
                                       <Badge className="ml-2 bg-blue-500/20 text-blue-400 border-blue-900 text-xs">
                                         You've Donated
                                       </Badge>
                                     </p>
                                   </div>
                                   <div className="text-right">
-                                    <p className="font-medium text-white">{campaign.userDonation} ETH</p>
-                                    <p className="text-sm text-gray-400">Your donation</p>
+                                    <p className="font-medium text-white">
+                                      {campaign.userDonation} ETH
+                                    </p>
+                                    <p className="text-sm text-gray-400">
+                                      Your donation
+                                    </p>
                                   </div>
                                 </div>
 
                                 <div className="space-y-1">
                                   <div className="flex justify-between text-xs">
                                     <span className="flex items-center gap-1">
-                                      <Badge variant="outline" className="bg-black text-green-400 border-gray-700 text-xs">
+                                      <Badge
+                                        variant="outline"
+                                        className="bg-black text-green-400 border-gray-700 text-xs"
+                                      >
                                         {campaign.daysLeft} days left
                                       </Badge>
                                     </span>
-                                    <span className="text-gray-400">{campaign.totalDonated}/{campaign.goal} ETH</span>
+                                    <span className="text-gray-400">
+                                      {campaign.totalDonated}/{campaign.goal}{' '}
+                                      ETH
+                                    </span>
                                   </div>
                                   <Progress
-                                    value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100}
+                                    value={
+                                      (parseFloat(campaign.totalDonated) /
+                                        parseFloat(campaign.goal)) *
+                                      100
+                                    }
                                     className="h-2 bg-gray-700"
                                   />
 
                                   {/* Additional campaign stats */}
                                   <div className="flex gap-4 pt-2 text-xs text-gray-400">
                                     <span className="flex items-center gap-1">
-                                      <Users className="h-3 w-3" /> {campaign.donors} donors
+                                      <Users className="h-3 w-3" />{' '}
+                                      {campaign.donors} donors
                                     </span>
                                     <span>
-                                      {Math.round((parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100)}% funded
+                                      {Math.round(
+                                        (parseFloat(campaign.totalDonated) /
+                                          parseFloat(campaign.goal)) *
+                                          100
+                                      )}
+                                      % funded
                                     </span>
                                   </div>
                                 </div>
@@ -728,9 +866,16 @@ export default function DonorDashboardPage() {
                         })
                       ) : (
                         <div className="text-center py-6">
-                          <p className="text-gray-400">You haven't donated to any campaigns yet</p>
+                          <p className="text-gray-400">
+                            You haven't donated to any campaigns yet
+                          </p>
                           <Link href="/donate">
-                            <Button variant="outline" className="mt-2 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">Explore Campaigns</Button>
+                            <Button
+                              variant="outline"
+                              className="mt-2 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                            >
+                              Explore Campaigns
+                            </Button>
                           </Link>
                         </div>
                       )}
@@ -738,9 +883,15 @@ export default function DonorDashboardPage() {
                   </CardContent>
                   <CardFooter className="bg-gray-800/30 border-t border-gray-800 px-6 py-4">
                     <Link href="/donate" className="w-full">
-                      <Button variant="default" className="w-full bg-white text-black hover:bg-gray-100 transition-all duration-300 group" size="lg">
+                      <Button
+                        variant="default"
+                        className="w-full bg-white text-black hover:bg-gray-100 transition-all duration-300 group"
+                        size="lg"
+                      >
                         <Heart className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
-                        <span className="group-hover:hidden">Donate to More Campaigns</span>
+                        <span className="group-hover:hidden">
+                          Donate to More Campaigns
+                        </span>
                         <AnimatedGradientText className="font-semibold hidden group-hover:inline">
                           Donate to More Campaigns
                         </AnimatedGradientText>
@@ -754,14 +905,18 @@ export default function DonorDashboardPage() {
                   <CardHeader className="bg-gray-800/50 border-b border-gray-800 pb-3">
                     <div className="flex justify-between items-center">
                       <div>
-                        <CardTitle className="text-white">Recent Donations</CardTitle>
-                        <CardDescription className="text-gray-400">Your latest contributions</CardDescription>
+                        <CardTitle className="text-white">
+                          Recent Donations
+                        </CardTitle>
+                        <CardDescription className="text-gray-400">
+                          Your latest contributions
+                        </CardDescription>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
                         className="text-gray-300 hover:text-white hover:bg-gray-800"
-                        onClick={() => setActiveTab("history")}
+                        onClick={() => setActiveTab('history')}
                       >
                         View All
                       </Button>
@@ -772,23 +927,37 @@ export default function DonorDashboardPage() {
                       {isLoadingDonationHistory ? (
                         <div className="text-center py-4">
                           <div className="inline-block h-6 w-6 animate-spin rounded-full border-3 border-solid border-current border-r-transparent border-white/30 align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-                          <p className="mt-2 text-gray-400">Loading your donation history...</p>
+                          <p className="mt-2 text-gray-400">
+                            Loading your donation history...
+                          </p>
                         </div>
                       ) : donationHistory && donationHistory.length > 0 ? (
                         donationHistory.slice(0, 3).map((donation, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-gray-700 bg-gray-800/40 hover:bg-gray-800/70 transition-colors">
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-3 rounded-lg border border-gray-700 bg-gray-800/40 hover:bg-gray-800/70 transition-colors"
+                          >
                             <div className="flex items-center gap-3">
                               <div className="h-9 w-9 rounded-full bg-gray-800 flex items-center justify-center">
                                 <Heart className="h-4 w-4 text-red-400" />
                               </div>
                               <div>
-                                <h4 className="font-medium text-white text-sm">{donation.campaign.name}</h4>
-                                <p className="text-xs text-gray-400">{formatDate(donation.timestamp)}</p>
+                                <h4 className="font-medium text-white text-sm">
+                                  {donation.campaign.name}
+                                </h4>
+                                <p className="text-xs text-gray-400">
+                                  {formatDate(donation.timestamp)}
+                                </p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="font-medium text-white font-mono text-sm">{formatAmount(donation.amount)} ETH</p>
-                              <Badge variant="outline" className="bg-gray-800 text-green-400 border-gray-700 text-[10px]">
+                              <p className="font-medium text-white font-mono text-sm">
+                                {formatAmount(donation.amount)} ETH
+                              </p>
+                              <Badge
+                                variant="outline"
+                                className="bg-gray-800 text-green-400 border-gray-700 text-[10px]"
+                              >
                                 Completed
                               </Badge>
                             </div>
@@ -796,9 +965,16 @@ export default function DonorDashboardPage() {
                         ))
                       ) : (
                         <div className="text-center py-6">
-                          <p className="text-gray-400">No donation history available</p>
+                          <p className="text-gray-400">
+                            No donation history available
+                          </p>
                           <Link href="/donate">
-                            <Button variant="outline" className="mt-2 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">Make Your First Donation</Button>
+                            <Button
+                              variant="outline"
+                              className="mt-2 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                            >
+                              Make Your First Donation
+                            </Button>
                           </Link>
                         </div>
                       )}
@@ -811,7 +987,7 @@ export default function DonorDashboardPage() {
                         variant="ghost"
                         size="sm"
                         className="h-8 px-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
-                        onClick={() => setActiveTab("history")}
+                        onClick={() => setActiveTab('history')}
                       >
                         <History className="mr-2 h-3.5 w-3.5" />
                         View Full History
@@ -825,18 +1001,29 @@ export default function DonorDashboardPage() {
             <TabsContent value="campaigns">
               <Card className="border-none shadow-lg overflow-hidden bg-gray-900 border border-gray-800">
                 <CardHeader className="bg-gray-800/50 border-b border-gray-800">
-                  <CardTitle className="text-white">Your Supported Campaigns</CardTitle>
-                  <CardDescription className="text-gray-400">Detailed view of all campaigns you've donated to</CardDescription>
+                  <CardTitle className="text-white">
+                    Your Supported Campaigns
+                  </CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Detailed view of all campaigns you've donated to
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-6">
                     {userCampaigns.length > 0 ? (
                       userCampaigns.map((campaign, index) => {
                         // Calculate contribution percentage
-                        const userContributionPercentage = Math.round((parseFloat(campaign.userDonation) / parseFloat(campaign.totalDonated)) * 100);
+                        const userContributionPercentage = Math.round(
+                          (parseFloat(campaign.userDonation) /
+                            parseFloat(campaign.totalDonated)) *
+                            100
+                        );
 
                         return (
-                          <div key={index} className="flex flex-col md:flex-row gap-4 p-4 rounded-xl bg-gray-800/40 border border-gray-700 hover:bg-gray-800/70 transition-colors">
+                          <div
+                            key={index}
+                            className="flex flex-col md:flex-row gap-4 p-4 rounded-xl bg-gray-800/40 border border-gray-700 hover:bg-gray-800/70 transition-colors"
+                          >
                             {/* Campaign image */}
                             <div className="h-32 w-full md:w-32 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
                               {campaign.images && campaign.images.length > 0 ? (
@@ -851,10 +1038,17 @@ export default function DonorDashboardPage() {
                             <div className="flex-1 space-y-2">
                               <div className="flex justify-between">
                                 <div>
-                                  <h3 className="font-medium text-lg text-white">{campaign.name}</h3>
+                                  <h3 className="font-medium text-lg text-white">
+                                    {campaign.name}
+                                  </h3>
                                   <p className="text-sm text-gray-400 flex items-center gap-1">
-                                    {getOrgNameByAddress(campaign.charityAddress)}
-                                    <Badge variant="outline" className="bg-black text-green-400 border-gray-700 text-[10px] ml-2">
+                                    {getOrgNameByAddress(
+                                      campaign.charityAddress
+                                    )}
+                                    <Badge
+                                      variant="outline"
+                                      className="bg-black text-green-400 border-gray-700 text-[10px] ml-2"
+                                    >
                                       {campaign.daysLeft} days left
                                     </Badge>
                                     <Badge className="ml-2 bg-blue-500/20 text-blue-400 border-blue-900 text-[10px]">
@@ -863,29 +1057,42 @@ export default function DonorDashboardPage() {
                                   </p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="font-medium text-white">{campaign.userDonation} ETH</p>
+                                  <p className="font-medium text-white">
+                                    {campaign.userDonation} ETH
+                                  </p>
                                   <p className="text-sm text-gray-400">
-                                    {userContributionPercentage > 0 ?
-                                      `${userContributionPercentage}% of total` :
-                                      'Your contribution'
-                                    }
+                                    {userContributionPercentage > 0
+                                      ? `${userContributionPercentage}% of total`
+                                      : 'Your contribution'}
                                   </p>
                                 </div>
                               </div>
 
                               <p className="text-sm text-gray-400 max-w-md line-clamp-2">
-                                {campaign.description || "No description available for this campaign."}
+                                {campaign.description ||
+                                  'No description available for this campaign.'}
                               </p>
 
                               <div className="space-y-1">
                                 <div className="flex justify-between text-xs text-gray-400">
                                   <span>
-                                    {Math.round((parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100)}% funded
+                                    {Math.round(
+                                      (parseFloat(campaign.totalDonated) /
+                                        parseFloat(campaign.goal)) *
+                                        100
+                                    )}
+                                    % funded
                                   </span>
-                                  <span>{campaign.totalDonated}/{campaign.goal} ETH</span>
+                                  <span>
+                                    {campaign.totalDonated}/{campaign.goal} ETH
+                                  </span>
                                 </div>
                                 <Progress
-                                  value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100}
+                                  value={
+                                    (parseFloat(campaign.totalDonated) /
+                                      parseFloat(campaign.goal)) *
+                                    100
+                                  }
                                   className="h-2 bg-gray-700"
                                 />
 
@@ -893,16 +1100,22 @@ export default function DonorDashboardPage() {
                                 <div className="flex justify-between pt-2 text-xs text-gray-400">
                                   <div className="flex items-center gap-4">
                                     <span className="flex items-center gap-1">
-                                      <Users className="h-3 w-3" /> {campaign.donors} donors
+                                      <Users className="h-3 w-3" />{' '}
+                                      {campaign.donors} donors
                                     </span>
                                     {userContributionPercentage > 10 && (
                                       <span className="flex items-center gap-1 text-amber-400">
-                                        <Award className="h-3 w-3" /> Top contributor
+                                        <Award className="h-3 w-3" /> Top
+                                        contributor
                                       </span>
                                     )}
                                   </div>
                                   <Link href={`/donate/${campaign.address}`}>
-                                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 px-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800"
+                                    >
                                       View Details
                                     </Button>
                                   </Link>
@@ -915,12 +1128,18 @@ export default function DonorDashboardPage() {
                     ) : (
                       <div className="text-center py-12">
                         <Heart className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-                        <h3 className="text-lg font-medium mb-1 text-white">You haven't made any donations yet</h3>
+                        <h3 className="text-lg font-medium mb-1 text-white">
+                          You haven't made any donations yet
+                        </h3>
                         <p className="text-gray-400 max-w-md mx-auto">
-                          Start your giving journey by supporting a campaign to see your donations here.
+                          Start your giving journey by supporting a campaign to
+                          see your donations here.
                         </p>
                         <Link href="/donate">
-                          <Button variant="outline" className="mt-4 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+                          <Button
+                            variant="outline"
+                            className="mt-4 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                          >
                             Explore All Campaigns
                           </Button>
                         </Link>
@@ -935,30 +1154,46 @@ export default function DonorDashboardPage() {
               <Card className="border-none shadow-lg overflow-hidden bg-gray-900 border border-gray-800">
                 <CardHeader className="bg-gray-800/50 border-b border-gray-800">
                   <CardTitle className="text-white">Donation History</CardTitle>
-                  <CardDescription className="text-gray-400">Record of all your past donations</CardDescription>
+                  <CardDescription className="text-gray-400">
+                    Record of all your past donations
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     {isLoadingDonationHistory ? (
                       <div className="text-center py-8">
                         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent border-white/30 align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-                        <p className="mt-2 text-gray-400">Loading your donation history...</p>
+                        <p className="mt-2 text-gray-400">
+                          Loading your donation history...
+                        </p>
                       </div>
                     ) : donationHistory && donationHistory.length > 0 ? (
                       donationHistory.map((donation, index) => (
-                        <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-gray-700 bg-gray-800/40">
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-4 rounded-lg border border-gray-700 bg-gray-800/40"
+                        >
                           <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-full bg-gray-800 flex items-center justify-center">
                               <Heart className="h-5 w-5 text-red-400" />
                             </div>
                             <div>
-                              <h4 className="font-medium text-white">{donation.campaign.name}</h4>
-                              <p className="text-sm text-gray-400">{formatDate(donation.timestamp)}</p>
+                              <h4 className="font-medium text-white">
+                                {donation.campaign.name}
+                              </h4>
+                              <p className="text-sm text-gray-400">
+                                {formatDate(donation.timestamp)}
+                              </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium text-white font-mono">{formatAmount(donation.amount)} ETH</p>
-                            <Badge variant="outline" className="bg-gray-800 text-green-400 border-gray-700 text-xs">
+                            <p className="font-medium text-white font-mono">
+                              {formatAmount(donation.amount)} ETH
+                            </p>
+                            <Badge
+                              variant="outline"
+                              className="bg-gray-800 text-green-400 border-gray-700 text-xs"
+                            >
                               Completed
                             </Badge>
                           </div>
@@ -967,19 +1202,28 @@ export default function DonorDashboardPage() {
                     ) : (
                       <div className="text-center py-12">
                         <History className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-                        <h3 className="text-lg font-medium mb-1 text-white">No donation history yet</h3>
+                        <h3 className="text-lg font-medium mb-1 text-white">
+                          No donation history yet
+                        </h3>
                         <p className="text-gray-400 max-w-md mx-auto">
-                          You haven't made any donations yet. Start your giving journey by supporting a campaign.
+                          You haven't made any donations yet. Start your giving
+                          journey by supporting a campaign.
                         </p>
                         <div className="flex justify-center gap-4 mt-6">
                           <Link href="/donate">
-                            <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+                            <Button
+                              variant="outline"
+                              className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                            >
                               <Heart className="mr-2 h-4 w-4" />
                               Find Campaigns
                             </Button>
                           </Link>
                           <Link href="/leaderboard">
-                            <Button variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+                            <Button
+                              variant="outline"
+                              className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                            >
                               <TrendingUp className="mr-2 h-4 w-4" />
                               View Leaderboard
                             </Button>
@@ -992,10 +1236,14 @@ export default function DonorDashboardPage() {
                 {donationHistory && donationHistory.length > 0 && (
                   <CardFooter className="bg-gray-800/30 border-t border-gray-800 px-6 py-4 flex justify-between">
                     <div className="text-sm text-gray-400">
-                      Total Donations: <span className="text-white font-medium">{donationHistory.length}</span>
+                      Total Donations:{' '}
+                      <span className="text-white font-medium">
+                        {donationHistory.length}
+                      </span>
                     </div>
                     <div className="text-sm text-gray-400">
-                      Total Amount: <span className="text-white font-medium">
+                      Total Amount:{' '}
+                      <span className="text-white font-medium">
                         {userLeaderboardInfo.amount} ETH
                       </span>
                     </div>
@@ -1010,27 +1258,27 @@ export default function DonorDashboardPage() {
       {/* Add the DonorChatbot at the end of the return statement */}
       {isConnected && address && (
         <DonorChatbot
-          donorName={orgData?.name || donor.name || "Donor"}
+          donorName={orgData?.name || donor.name || 'Donor'}
           walletAddress={address}
           totalDonated={userLeaderboardInfo.amount}
           donationsCount={donationHistory.length || recentDonations.length}
-          recentDonations={donationHistory.length > 0
-            ? donationHistory.map(donation => ({
-              campaignId: donation.campaign.id,
-              campaignName: donation.campaign.name,
-              amount: formatAmount(donation.amount),
-              date: formatDate(donation.timestamp)
-            }))
-            : recentDonations.map(donation => ({
-              campaignId: donation.campaignId || "",
-              campaignName: donation.campaignTitle || "",
-              amount: donation.amount.toString(),
-              date: donation.date
-            }))
+          recentDonations={
+            donationHistory.length > 0
+              ? donationHistory.map((donation) => ({
+                  campaignId: donation.campaign.id,
+                  campaignName: donation.campaign.name,
+                  amount: formatAmount(donation.amount),
+                  date: formatDate(donation.timestamp),
+                }))
+              : recentDonations.map((donation) => ({
+                  campaignId: donation.campaignId || '',
+                  campaignName: donation.campaignTitle || '',
+                  amount: donation.amount.toString(),
+                  date: donation.date,
+                }))
           }
         />
       )}
     </div>
-  )
+  );
 }
-

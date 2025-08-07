@@ -1,20 +1,40 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { use } from "react";
-import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Heart, Clock, Users, Share2, ExternalLink, ChevronLeft, ChevronRight, Trophy, ArrowDownCircle, ArrowUpCircle, Copy, Check } from "lucide-react";
-import { ethers } from "ethers";
-import { charityCampaigns_ABI } from "@/config/contractABI";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { use } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAccount } from 'wagmi';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import {
+  Heart,
+  Clock,
+  Users,
+  Share2,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  Trophy,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Copy,
+  Check,
+} from 'lucide-react';
+import { ethers } from 'ethers';
+import { charityCampaigns_ABI } from '@/config/contractABI';
+import axios from 'axios';
 import {
   Table,
   TableBody,
@@ -22,14 +42,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import DonorChatbot from "@/components/dashboard/DonorChatbot";
-import { toast } from "react-toastify";
+} from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import DonorChatbot from '@/components/dashboard/DonorChatbot';
+import { toast } from 'react-toastify';
 import { convertEthToMYR } from '@/utils/ethToMYR';
-import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
-import { AuroraText } from "@/components/magicui/aurora-text";
-import DarkVeil from "@/components/ui/dark-veil";
+import { AnimatedGradientText } from '@/components/magicui/animated-gradient-text';
+import { AuroraText } from '@/components/magicui/aurora-text';
+import DarkVeil from '@/components/ui/dark-veil';
 
 interface Campaign {
   address: string;
@@ -151,7 +176,9 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
             {images.map((_, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full ${currentImageIndex === index ? 'bg-white' : 'bg-white/60'}`}
+                className={`w-2 h-2 rounded-full ${
+                  currentImageIndex === index ? 'bg-white' : 'bg-white/60'
+                }`}
                 onClick={() => setCurrentImageIndex(index)}
               />
             ))}
@@ -176,7 +203,11 @@ const fetchIPFSData = async (uri: string) => {
   }
 };
 
-export default function CampaignDetailPage({ params }: { params: Promise<{ address: string }> }) {
+export default function CampaignDetailPage({
+  params,
+}: {
+  params: Promise<{ address: string }>;
+}) {
   const resolvedParams = use(params);
   const campaignAddress = resolvedParams.address;
 
@@ -191,9 +222,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
     charityAddress: '',
     daysLeft: 30,
     donors: 0,
-    images: []
+    images: [],
   });
-  const [donationAmount, setDonationAmount] = useState<string>("");
+  const [donationAmount, setDonationAmount] = useState<string>('');
   const [milestones, setMilestones] = useState<{
     targets: string[];
     reached: boolean[];
@@ -204,13 +235,19 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   const [donationError, setDonationError] = useState<string | null>(null);
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [imageCarouselImages, setImageCarouselImages] = useState<string[]>([]);
-  const [leaderboardDonors, setLeaderboardDonors] = useState<LeaderboardDonor[]>([]);
+  const [leaderboardDonors, setLeaderboardDonors] = useState<
+    LeaderboardDonor[]
+  >([]);
   const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(false);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [fundsReleased, setFundsReleased] = useState<FundRelease[]>([]);
-  const [combinedTransactions, setCombinedTransactions] = useState<Transaction[]>([]);
+  const [combinedTransactions, setCombinedTransactions] = useState<
+    Transaction[]
+  >([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
-  const [copiedAddresses, setCopiedAddresses] = useState<{ [key: string]: boolean }>({});
+  const [copiedAddresses, setCopiedAddresses] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [ethToMYRRate, setEthToMYRRate] = useState<number | null>(null);
   const [donationMYR, setDonationMYR] = useState<number | null>(null);
   const router = useRouter();
@@ -218,14 +255,14 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
   // Fetch campaign details, milestones, and donors
   const fetchCampaignData = async () => {
-    if (typeof window.ethereum === "undefined") {
-      console.error("MetaMask not detected. Please install a wallet.");
+    if (typeof window.ethereum === 'undefined') {
+      console.error('MetaMask not detected. Please install a wallet.');
       return;
     }
 
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
       const signer = await provider.getSigner();
 
       const campaignInterface = new ethers.Interface(charityCampaigns_ABI);
@@ -260,7 +297,10 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
             setImageCarouselImages(imageData.images);
           }
         } catch (error) {
-          console.error(`Error fetching images for campaign ${campaignData.address}:`, error);
+          console.error(
+            `Error fetching images for campaign ${campaignData.address}:`,
+            error
+          );
         }
       }
 
@@ -270,20 +310,29 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
       try {
         const milestoneData = await campaignContract.getMilestones();
 
-        if (!milestoneData || !milestoneData.targets || !milestoneData.reached || !milestoneData.fundsReleased) {
-          console.error("Invalid milestone data structure:", milestoneData);
+        if (
+          !milestoneData ||
+          !milestoneData.targets ||
+          !milestoneData.reached ||
+          !milestoneData.fundsReleased
+        ) {
+          console.error('Invalid milestone data structure:', milestoneData);
           return;
         }
 
         const formattedMilestones = {
-          targets: Array.from(milestoneData.targets as bigint[]).map((target: bigint) => ethers.formatEther(target)),
+          targets: Array.from(milestoneData.targets as bigint[]).map(
+            (target: bigint) => ethers.formatEther(target)
+          ),
           reached: Array.from(milestoneData.reached as unknown[]).map(Boolean),
-          fundsReleased: Array.from(milestoneData.fundsReleased as unknown[]).map(Boolean),
+          fundsReleased: Array.from(
+            milestoneData.fundsReleased as unknown[]
+          ).map(Boolean),
         };
 
         setMilestones(formattedMilestones);
       } catch (error) {
-        console.error("Error fetching milestones:", error);
+        console.error('Error fetching milestones:', error);
       }
 
       try {
@@ -293,14 +342,16 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
         const donorsInfo: Donor[] = await Promise.all(
           donorAddresses.map(async (donorAddress: string) => {
             const donorData = await campaignContract.donors(donorAddress);
-            const donorName = donorNames.find((d) => d.address === donorAddress)?.name || "Anonymous";
+            const donorName =
+              donorNames.find((d) => d.address === donorAddress)?.name ||
+              'Anonymous';
 
             return {
               donorAddress,
               donorName,
               totalDonated: ethers.formatEther(donorData.totalDonated),
               isTopDonor: Boolean(donorData.isTopDonor),
-              date: new Date().toLocaleDateString()
+              date: new Date().toLocaleDateString(),
             };
           })
         );
@@ -314,35 +365,37 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
         campaignData.donors = donorAddresses.length;
         setCampaignDetails(campaignData);
       } catch (error) {
-        console.error("Error fetching donors:", error);
+        console.error('Error fetching donors:', error);
       }
-
     } catch (error) {
-      console.error("Error fetching campaign data:", error);
+      console.error('Error fetching campaign data:', error);
     }
   };
 
   // Fetch donors
   const fetchDonorNames = async (addresses: string[]) => {
     try {
-      const response = await fetch("/api/campaign/get-recent-donors");
-      if (!response.ok) throw new Error("Failed to fetch donor names");
+      const response = await fetch('/api/campaign/get-recent-donors');
+      if (!response.ok) throw new Error('Failed to fetch donor names');
       const donors = await response.json();
 
-      const addressToNameMap = donors.reduce((map: Record<string, string>, donor: any) => {
-        map[donor.walletAddress.toLowerCase()] = donor.name || "Anonymous";
-        return map;
-      }, {});
+      const addressToNameMap = donors.reduce(
+        (map: Record<string, string>, donor: any) => {
+          map[donor.walletAddress.toLowerCase()] = donor.name || 'Anonymous';
+          return map;
+        },
+        {}
+      );
 
       return addresses.map((address) => ({
         address,
-        name: addressToNameMap[address.toLowerCase()] || "Anonymous",
+        name: addressToNameMap[address.toLowerCase()] || 'Anonymous',
       }));
     } catch (error) {
-      console.error("Error fetching donor names:", error);
+      console.error('Error fetching donor names:', error);
       return addresses.map((address) => ({
         address,
-        name: "Anonymous",
+        name: 'Anonymous',
       }));
     }
   };
@@ -352,7 +405,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
     setIsLoadingLeaderboard(true);
     try {
       const response = await fetch(
-        'https://api.studio.thegraph.com/query/105145/denate/version/latest',
+        'https://api.studio.thegraph.com/query/105145/fundit-8-2/version/latest',
         {
           method: 'POST',
           headers: {
@@ -387,24 +440,28 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
           return {
             address: item.donor.address,
             totalDonated: ethers.formatEther(donationInWei),
-            rank: item.rank
+            rank: item.rank,
           };
         });
 
-        const donorsWithNames = await fetchDonorNames(donorsData.map((d: any) => d.address));
+        const donorsWithNames = await fetchDonorNames(
+          donorsData.map((d: any) => d.address)
+        );
 
         const enrichedDonors = donorsData.map((donor: any) => {
-          const matchingDonor = donorsWithNames.find(d => d.address.toLowerCase() === donor.address.toLowerCase());
+          const matchingDonor = donorsWithNames.find(
+            (d) => d.address.toLowerCase() === donor.address.toLowerCase()
+          );
           return {
             ...donor,
-            name: matchingDonor?.name || "Anonymous",
+            name: matchingDonor?.name || 'Anonymous',
           };
         });
 
         setLeaderboardDonors(enrichedDonors);
       }
     } catch (error) {
-      console.error("Error fetching leaderboard data:", error);
+      console.error('Error fetching leaderboard data:', error);
     } finally {
       setIsLoadingLeaderboard(false);
     }
@@ -415,7 +472,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
     setIsLoadingTransactions(true);
     try {
       const response = await fetch(
-        'https://api.studio.thegraph.com/query/105145/denate/version/latest',
+        'https://api.studio.thegraph.com/query/105145/fundit-8-2/version/latest',
         {
           method: 'POST',
           headers: {
@@ -461,28 +518,32 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
         const campaignData = result.data.campaign;
 
         // Process donations
-        const processedDonations = campaignData.donations.map((donation: any) => {
-          const donationInWei = BigInt(donation.amount);
-          const date = new Date(Number(donation.timestamp) * 1000); // Convert to milliseconds
+        const processedDonations = campaignData.donations.map(
+          (donation: any) => {
+            const donationInWei = BigInt(donation.amount);
+            const date = new Date(Number(donation.timestamp) * 1000); // Convert to milliseconds
 
-          return {
-            ...donation,
-            formattedAmount: ethers.formatEther(donationInWei),
-            formattedDate: date.toLocaleString()
-          };
-        });
+            return {
+              ...donation,
+              formattedAmount: ethers.formatEther(donationInWei),
+              formattedDate: date.toLocaleString(),
+            };
+          }
+        );
 
         // Process fund releases
-        const processedReleases = campaignData.fundsReleased.map((release: any) => {
-          const amountInWei = BigInt(release.amount);
-          const date = new Date(Number(release.timestamp) * 1000);
+        const processedReleases = campaignData.fundsReleased.map(
+          (release: any) => {
+            const amountInWei = BigInt(release.amount);
+            const date = new Date(Number(release.timestamp) * 1000);
 
-          return {
-            ...release,
-            formattedAmount: ethers.formatEther(amountInWei),
-            formattedDate: date.toLocaleString()
-          };
-        });
+            return {
+              ...release,
+              formattedAmount: ethers.formatEther(amountInWei),
+              formattedDate: date.toLocaleString(),
+            };
+          }
+        );
 
         // Create combined transactions list
         const allTransactions: Transaction[] = [
@@ -492,7 +553,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
             timestamp: donation.timestamp,
             address: donation.donor.address,
             formattedAmount: donation.formattedAmount,
-            formattedDate: donation.formattedDate
+            formattedDate: donation.formattedDate,
           })),
           ...processedReleases.map((release: any) => ({
             type: 'release',
@@ -501,13 +562,13 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
             address: release.recipient,
             milestoneIndex: release.milestoneIndex,
             formattedAmount: release.formattedAmount,
-            formattedDate: release.formattedDate
-          }))
+            formattedDate: release.formattedDate,
+          })),
         ];
 
         // Sort by timestamp descending (most recent first)
-        allTransactions.sort((a, b) =>
-          Number(b.timestamp) - Number(a.timestamp)
+        allTransactions.sort(
+          (a, b) => Number(b.timestamp) - Number(a.timestamp)
         );
 
         setDonations(processedDonations);
@@ -515,7 +576,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
         setCombinedTransactions(allTransactions);
       }
     } catch (error) {
-      console.error("Error fetching transaction history:", error);
+      console.error('Error fetching transaction history:', error);
     } finally {
       setIsLoadingTransactions(false);
     }
@@ -533,16 +594,16 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   useEffect(() => {
     const fetchOrganizations = async () => {
       try {
-        const response = await fetch("/api/organizations/getAllOrganizations");
+        const response = await fetch('/api/organizations/getAllOrganizations');
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch organizations");
+          throw new Error(data.error || 'Failed to fetch organizations');
         }
 
         setOrganizations(data);
       } catch (err) {
-        console.error("Error fetching organizations:", err);
+        console.error('Error fetching organizations:', err);
       }
     };
 
@@ -561,12 +622,12 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   // Handle donation
   const handleDonate = async () => {
     if (!donationAmount || parseFloat(donationAmount) <= 0) {
-      setDonationError("Please enter a valid donation amount greater than 0.");
+      setDonationError('Please enter a valid donation amount greater than 0.');
       return;
     }
 
-    if (typeof window.ethereum === "undefined") {
-      setDonationError("MetaMask not detected. Please install a wallet.");
+    if (typeof window.ethereum === 'undefined') {
+      setDonationError('MetaMask not detected. Please install a wallet.');
       return;
     }
 
@@ -575,7 +636,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
       const signer = await provider.getSigner();
 
       const campaignInterface = new ethers.Interface(charityCampaigns_ABI);
@@ -588,29 +649,34 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
       const tx = await campaignContract.donate({
         value: ethers.parseEther(donationAmount),
       });
-      console.log("Transaction sent:", tx.hash);
+      console.log('Transaction sent:', tx.hash);
 
       const receipt = await tx.wait();
-      console.log("Transaction confirmed:", receipt);
+      console.log('Transaction confirmed:', receipt);
 
       await fetchCampaignData();
-      setDonationAmount("");
-      toast.success("🎉 Donation successful! Thank you for your contribution.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      setDonationAmount('');
+      toast.success(
+        '🎉 Donation successful! Thank you for your contribution.',
+        {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     } catch (error: any) {
-      console.error("Error donating:", error);
+      console.error('Error donating:', error);
 
-      if (error.code === "ACTION_REJECTED" || error.code === 4001) {
+      if (error.code === 'ACTION_REJECTED' || error.code === 4001) {
         // User rejected the transaction
-        setDonationError("Transaction cancelled. No funds were sent.");
+        setDonationError('Transaction cancelled. No funds were sent.');
       } else {
-        setDonationError(error.message || "Failed to process donation. Please try again.");
+        setDonationError(
+          error.message || 'Failed to process donation. Please try again.'
+        );
       }
     } finally {
       setIsDonating(false);
@@ -619,8 +685,10 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
   // Function to get organization name by wallet address
   const getOrgNameByAddress = (walletAddress: string) => {
-    if (!walletAddress || !organizations.length) return "Unknown Organization"; // Early return if no address or organizations
-    const org = organizations.find((o) => o?.walletAddress?.toLowerCase() === walletAddress.toLowerCase());
+    if (!walletAddress || !organizations.length) return 'Unknown Organization'; // Early return if no address or organizations
+    const org = organizations.find(
+      (o) => o?.walletAddress?.toLowerCase() === walletAddress.toLowerCase()
+    );
     return org?.name || walletAddress; // Return name if found, otherwise fallback to address
   };
 
@@ -630,25 +698,26 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
   };
 
   const calculateProgressPercentage = () => {
-    const goalValue = parseFloat(campaignDetails.goal || "0");
-    const donatedValue = parseFloat(campaignDetails.totalDonated || "0");
+    const goalValue = parseFloat(campaignDetails.goal || '0');
+    const donatedValue = parseFloat(campaignDetails.totalDonated || '0');
 
     if (goalValue <= 0) return 0;
     return Math.min((donatedValue / goalValue) * 100, 100);
   };
 
   const copyToClipboard = (address: string) => {
-    navigator.clipboard.writeText(address)
-      .then(() => {
-        setCopiedAddresses({ ...copiedAddresses, [address]: true });
-        setTimeout(() => {
-          setCopiedAddresses({ ...copiedAddresses, [address]: false });
-        }, 2000);
-      });
+    navigator.clipboard.writeText(address).then(() => {
+      setCopiedAddresses({ ...copiedAddresses, [address]: true });
+      setTimeout(() => {
+        setCopiedAddresses({ ...copiedAddresses, [address]: false });
+      }, 2000);
+    });
   };
 
   const formatAddress = (address: string) => {
-    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+    return `${address.substring(0, 6)}...${address.substring(
+      address.length - 4
+    )}`;
   };
 
   const formatDonation = (amount: string) => {
@@ -688,7 +757,15 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
   return (
     <div className="flex flex-col min-h-screen bg-black relative">
-      <div style={{ width: '100%', height: '100vh', position: 'absolute', top: 0, left: 0 }}>
+      <div
+        style={{
+          width: '100%',
+          height: '100vh',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+        }}
+      >
         <DarkVeil />
       </div>
 
@@ -718,10 +795,16 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
             <div className="flex flex-col space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">
+                  <Badge
+                    variant="outline"
+                    className="bg-green-500/10 text-green-400 border-green-500/20"
+                  >
                     Active Campaign
                   </Badge>
-                  <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20">
+                  <Badge
+                    variant="outline"
+                    className="bg-blue-500/10 text-blue-400 border-blue-500/20"
+                  >
                     {campaignDetails.daysLeft} days left
                   </Badge>
                 </div>
@@ -734,7 +817,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
                     <Heart className="h-4 w-4 text-white" />
                   </div>
-                  <span className="font-medium">{getOrgNameByAddress(campaignDetails.charityAddress)}</span>
+                  <span className="font-medium">
+                    {getOrgNameByAddress(campaignDetails.charityAddress)}
+                  </span>
                 </div>
 
                 <p className="text-lg text-gray-300 leading-relaxed max-w-2xl">
@@ -772,11 +857,15 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
               {/* Quick Stats */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center p-4 rounded-xl bg-gray-800/30 border border-gray-700/50">
-                  <div className="text-2xl font-bold text-white">{campaignDetails.donors || 0}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {campaignDetails.donors || 0}
+                  </div>
                   <div className="text-sm text-gray-400">Donors</div>
                 </div>
                 <div className="text-center p-4 rounded-xl bg-gray-800/30 border border-gray-700/50">
-                  <div className="text-2xl font-bold text-white">{campaignDetails.daysLeft}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {campaignDetails.daysLeft}
+                  </div>
                   <div className="text-sm text-gray-400">Days Left</div>
                 </div>
                 <div className="text-center p-4 rounded-xl bg-gray-800/30 border border-gray-700/50">
@@ -801,7 +890,8 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                   <AuroraText>Make a Donation</AuroraText>
                 </CardTitle>
                 <CardDescription className="text-gray-400 text-lg">
-                  Your donation will be securely processed via blockchain technology
+                  Your donation will be securely processed via blockchain
+                  technology
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -866,7 +956,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                 ) : (
                   <Button
                     className="w-full h-12 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold"
-                    onClick={() => router.push("/login")}
+                    onClick={() => router.push('/login')}
                   >
                     <Heart className="mr-2 h-5 w-5" />
                     Connect Wallet to Donate
@@ -877,11 +967,19 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
 
             {/* Action Buttons */}
             <div className="flex gap-4 mt-6 justify-center">
-              <Button variant="outline" size="lg" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+              >
                 <Share2 className="mr-2 h-4 w-4" />
                 Share Campaign
               </Button>
-              <Button variant="outline" size="lg" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+              >
                 <ExternalLink className="mr-2 h-4 w-4" />
                 View on Blockchain
               </Button>
@@ -896,16 +994,28 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
           <Tabs defaultValue="about" className="w-full">
             <div className="flex justify-center mb-8">
               <TabsList className="bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 p-1 rounded-xl">
-                <TabsTrigger value="about" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg">
+                <TabsTrigger
+                  value="about"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg"
+                >
                   About
                 </TabsTrigger>
-                <TabsTrigger value="milestones" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg">
+                <TabsTrigger
+                  value="milestones"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg"
+                >
                   Milestones
                 </TabsTrigger>
-                <TabsTrigger value="transactions" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg">
+                <TabsTrigger
+                  value="transactions"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg"
+                >
                   Transactions
                 </TabsTrigger>
-                <TabsTrigger value="donors" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg">
+                <TabsTrigger
+                  value="donors"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg"
+                >
                   Donors
                 </TabsTrigger>
               </TabsList>
@@ -928,11 +1038,15 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center mb-4">
                         <Heart className="h-6 w-6 text-white" />
                       </div>
-                      <CardTitle className="text-xl text-white">Impact</CardTitle>
+                      <CardTitle className="text-xl text-white">
+                        Impact
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-300 leading-relaxed">
-                        This project will provide clean water access to over 5,000 people across multiple communities, creating lasting positive change.
+                        This project will provide clean water access to over
+                        5,000 people across multiple communities, creating
+                        lasting positive change.
                       </p>
                     </CardContent>
                   </Card>
@@ -942,11 +1056,15 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mb-4">
                         <Users className="h-6 w-6 text-white" />
                       </div>
-                      <CardTitle className="text-xl text-white">Sustainability</CardTitle>
+                      <CardTitle className="text-xl text-white">
+                        Sustainability
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-300 leading-relaxed">
-                        Local communities will be trained to maintain the water systems, ensuring long-term sustainability and self-reliance.
+                        Local communities will be trained to maintain the water
+                        systems, ensuring long-term sustainability and
+                        self-reliance.
                       </p>
                     </CardContent>
                   </Card>
@@ -956,11 +1074,15 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mb-4">
                         <Trophy className="h-6 w-6 text-white" />
                       </div>
-                      <CardTitle className="text-xl text-white">Transparency</CardTitle>
+                      <CardTitle className="text-xl text-white">
+                        Transparency
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-300 leading-relaxed">
-                        All funds are managed through smart contracts, ensuring complete transparency and accountability in every transaction.
+                        All funds are managed through smart contracts, ensuring
+                        complete transparency and accountability in every
+                        transaction.
                       </p>
                     </CardContent>
                   </Card>
@@ -975,79 +1097,112 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                     <AuroraText>Project Milestones</AuroraText>
                   </h2>
                   <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-                    Funds are released to the organization as each milestone is completed and verified through blockchain technology.
+                    Funds are released to the organization as each milestone is
+                    completed and verified through blockchain technology.
                   </p>
                 </div>
 
                 <div className="space-y-6">
-                  {milestones && milestones.targets.map((target: string, index: number) => {
-                    const targetValue = parseFloat(target);
-                    const totalDonated = parseFloat(campaignDetails.totalDonated || "0");
-                    const progress = Math.min((totalDonated / targetValue) * 100, 100);
-                    const isReached = milestones.reached[index];
-                    const isFundsReleased = milestones.fundsReleased[index];
+                  {milestones &&
+                    milestones.targets.map((target: string, index: number) => {
+                      const targetValue = parseFloat(target);
+                      const totalDonated = parseFloat(
+                        campaignDetails.totalDonated || '0'
+                      );
+                      const progress = Math.min(
+                        (totalDonated / targetValue) * 100,
+                        100
+                      );
+                      const isReached = milestones.reached[index];
+                      const isFundsReleased = milestones.fundsReleased[index];
 
-                    return (
-                      <Card key={index} className={`border-none shadow-xl overflow-hidden transition-all duration-300 ${isReached
-                        ? "bg-green-900/20 border-green-500/30"
-                        : "bg-gray-900/50 border-gray-700/50"
-                        } backdrop-blur-sm border`}>
-                        <CardHeader>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isReached
-                                ? "bg-green-500/20 border border-green-500/50"
-                                : "bg-gray-700/50 border border-gray-600/50"
-                                }`}>
-                                <span className={`text-lg font-bold ${isReached ? "text-green-400" : "text-gray-400"
-                                  }`}>
-                                  {index + 1}
-                                </span>
+                      return (
+                        <Card
+                          key={index}
+                          className={`border-none shadow-xl overflow-hidden transition-all duration-300 ${
+                            isReached
+                              ? 'bg-green-900/20 border-green-500/30'
+                              : 'bg-gray-900/50 border-gray-700/50'
+                          } backdrop-blur-sm border`}
+                        >
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <div
+                                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                                    isReached
+                                      ? 'bg-green-500/20 border border-green-500/50'
+                                      : 'bg-gray-700/50 border border-gray-600/50'
+                                  }`}
+                                >
+                                  <span
+                                    className={`text-lg font-bold ${
+                                      isReached
+                                        ? 'text-green-400'
+                                        : 'text-gray-400'
+                                    }`}
+                                  >
+                                    {index + 1}
+                                  </span>
+                                </div>
+                                <div>
+                                  <CardTitle className="text-xl text-white">
+                                    Milestone {index + 1}
+                                  </CardTitle>
+                                  <CardDescription className="text-gray-400">
+                                    Target: {targetValue.toFixed(6)} ETH
+                                    {isFundsReleased && (
+                                      <span className="ml-2 text-green-400">
+                                        ✓ Funds Released
+                                      </span>
+                                    )}
+                                  </CardDescription>
+                                </div>
                               </div>
-                              <div>
-                                <CardTitle className="text-xl text-white">Milestone {index + 1}</CardTitle>
-                                <CardDescription className="text-gray-400">
-                                  Target: {targetValue.toFixed(6)} ETH
-                                  {isFundsReleased && (
-                                    <span className="ml-2 text-green-400">✓ Funds Released</span>
-                                  )}
-                                </CardDescription>
-                              </div>
+                              <Badge
+                                variant={isReached ? 'default' : 'outline'}
+                                className={
+                                  isReached
+                                    ? 'bg-green-500/20 text-green-400 border-green-500/50'
+                                    : 'bg-gray-700/50 text-gray-400 border-gray-600/50'
+                                }
+                              >
+                                {isReached ? '✓ Reached' : 'Pending'}
+                              </Badge>
                             </div>
-                            <Badge variant={isReached ? "default" : "outline"} className={
-                              isReached
-                                ? "bg-green-500/20 text-green-400 border-green-500/50"
-                                : "bg-gray-700/50 text-gray-400 border-gray-600/50"
-                            }>
-                              {isReached ? "✓ Reached" : "Pending"}
-                            </Badge>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <Progress
-                            value={progress}
-                            className={`h-3 ${isReached ? "bg-green-900/50" : "bg-gray-700/50"
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <Progress
+                              value={progress}
+                              className={`h-3 ${
+                                isReached ? 'bg-green-900/50' : 'bg-gray-700/50'
                               }`}
-                          />
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">
-                              {totalDonated.toFixed(6)} / {targetValue.toFixed(6)} ETH
-                            </span>
-                            <span className={`font-medium ${isReached ? "text-green-400" : "text-gray-400"
-                              }`}>
-                              {progress.toFixed(1)}% complete
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                  {(!milestones || (milestones.targets.length === 0)) && (
+                            />
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">
+                                {totalDonated.toFixed(6)} /{' '}
+                                {targetValue.toFixed(6)} ETH
+                              </span>
+                              <span
+                                className={`font-medium ${
+                                  isReached ? 'text-green-400' : 'text-gray-400'
+                                }`}
+                              >
+                                {progress.toFixed(1)}% complete
+                              </span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  {(!milestones || milestones.targets.length === 0) && (
                     <div className="text-center py-12">
                       <div className="w-16 h-16 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-4">
                         <Trophy className="h-8 w-8 text-gray-500" />
                       </div>
-                      <p className="text-gray-400 text-lg">No milestones defined for this campaign.</p>
+                      <p className="text-gray-400 text-lg">
+                        No milestones defined for this campaign.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1060,7 +1215,8 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                     <AuroraText>Campaign Transaction History</AuroraText>
                   </h2>
                   <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-                    All financial activity for this campaign, tracked transparently on the blockchain
+                    All financial activity for this campaign, tracked
+                    transparently on the blockchain
                   </p>
                 </div>
 
@@ -1068,7 +1224,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                   <div className="flex justify-center py-12">
                     <div className="flex flex-col items-center space-y-4">
                       <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-                      <p className="text-gray-400">Loading transaction history...</p>
+                      <p className="text-gray-400">
+                        Loading transaction history...
+                      </p>
                     </div>
                   </div>
                 ) : (
@@ -1076,9 +1234,12 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                     {/* Combined transaction history */}
                     <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
                       <CardHeader className="bg-gray-800/30 border-b border-gray-700/50">
-                        <CardTitle className="text-xl text-white">All Transactions</CardTitle>
+                        <CardTitle className="text-xl text-white">
+                          All Transactions
+                        </CardTitle>
                         <CardDescription className="text-gray-400">
-                          Combined chronological transaction history from the blockchain
+                          Combined chronological transaction history from the
+                          blockchain
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="p-0">
@@ -1086,16 +1247,27 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                           <Table>
                             <TableHeader>
                               <TableRow className="border-gray-700/50 hover:bg-gray-800/30">
-                                <TableHead className="text-gray-300 font-semibold">Type</TableHead>
-                                <TableHead className="text-gray-300 font-semibold">Date</TableHead>
-                                <TableHead className="text-gray-300 font-semibold">Address</TableHead>
-                                <TableHead className="text-right text-gray-300 font-semibold">Amount</TableHead>
+                                <TableHead className="text-gray-300 font-semibold">
+                                  Type
+                                </TableHead>
+                                <TableHead className="text-gray-300 font-semibold">
+                                  Date
+                                </TableHead>
+                                <TableHead className="text-gray-300 font-semibold">
+                                  Address
+                                </TableHead>
+                                <TableHead className="text-right text-gray-300 font-semibold">
+                                  Amount
+                                </TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
                               {combinedTransactions.length > 0 ? (
                                 combinedTransactions.map((tx, index) => (
-                                  <TableRow key={index} className="border-gray-700/30 hover:bg-gray-800/30 transition-colors">
+                                  <TableRow
+                                    key={index}
+                                    className="border-gray-700/30 hover:bg-gray-800/30 transition-colors"
+                                  >
                                     <TableCell>
                                       <div className="flex items-center gap-3">
                                         {tx.type === 'donation' ? (
@@ -1103,16 +1275,26 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                             <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
                                               <ArrowDownCircle className="h-4 w-4 text-green-400" />
                                             </div>
-                                            <span className="text-green-400 font-medium">Donation</span>
+                                            <span className="text-green-400 font-medium">
+                                              Donation
+                                            </span>
                                           </>
                                         ) : (
                                           <>
                                             <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
                                               <ArrowUpCircle className="h-4 w-4 text-red-400" />
                                             </div>
-                                            <span className="text-red-400 font-medium">Funds Released</span>
-                                            <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/30">
-                                              Milestone {(tx.milestoneIndex !== undefined ? tx.milestoneIndex + 1 : '?')}
+                                            <span className="text-red-400 font-medium">
+                                              Funds Released
+                                            </span>
+                                            <Badge
+                                              variant="outline"
+                                              className="bg-blue-500/10 text-blue-400 border-blue-500/30"
+                                            >
+                                              Milestone{' '}
+                                              {tx.milestoneIndex !== undefined
+                                                ? tx.milestoneIndex + 1
+                                                : '?'}
                                             </Badge>
                                           </>
                                         )}
@@ -1124,28 +1306,49 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                     <TableCell>
                                       <div className="flex flex-col">
                                         <span className="text-gray-400 text-sm">
-                                          {tx.type === 'donation' ? 'From' : 'To'}
+                                          {tx.type === 'donation'
+                                            ? 'From'
+                                            : 'To'}
                                         </span>
                                         {tx.type === 'donation' ? (
-                                          <span className="text-sm font-mono text-gray-300">{formatAddress(tx.address)}</span>
+                                          <span className="text-sm font-mono text-gray-300">
+                                            {formatAddress(tx.address)}
+                                          </span>
                                         ) : (
                                           <div className="group flex items-center">
-                                            <span className="text-sm font-mono text-gray-300">{formatAddress(tx.address)}</span>
+                                            <span className="text-sm font-mono text-gray-300">
+                                              {formatAddress(tx.address)}
+                                            </span>
                                             <TooltipProvider>
                                               <Tooltip>
                                                 <TooltipTrigger asChild>
                                                   <button
-                                                    onClick={() => copyToClipboard(tx.address)}
+                                                    onClick={() =>
+                                                      copyToClipboard(
+                                                        tx.address
+                                                      )
+                                                    }
                                                     className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
                                                   >
-                                                    {copiedAddresses[tx.address] ?
-                                                      <Check className="h-3.5 w-3.5 text-green-400" /> :
+                                                    {copiedAddresses[
+                                                      tx.address
+                                                    ] ? (
+                                                      <Check className="h-3.5 w-3.5 text-green-400" />
+                                                    ) : (
                                                       <Copy className="h-3.5 w-3.5 text-gray-500 hover:text-gray-400" />
-                                                    }
+                                                    )}
                                                   </button>
                                                 </TooltipTrigger>
-                                                <TooltipContent side="top" align="center" className="px-3 py-1.5 text-xs">
-                                                  <p>{copiedAddresses[tx.address] ? 'Copied!' : 'Copy address'}</p>
+                                                <TooltipContent
+                                                  side="top"
+                                                  align="center"
+                                                  className="px-3 py-1.5 text-xs"
+                                                >
+                                                  <p>
+                                                    {copiedAddresses[tx.address]
+                                                      ? 'Copied!'
+                                                      : 'Copy address'}
+                                                  </p>
                                                 </TooltipContent>
                                               </Tooltip>
                                             </TooltipProvider>
@@ -1155,14 +1358,22 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                     </TableCell>
                                     <TableCell className="text-right">
                                       <div className="font-mono">
-                                        <span className={`font-medium ${tx.type === 'donation' ? 'text-green-400' : 'text-red-400'
-                                          }`}>
-                                          {tx.type === 'donation' ? '+' : '-'}{tx.formattedAmount} ETH
+                                        <span
+                                          className={`font-medium ${
+                                            tx.type === 'donation'
+                                              ? 'text-green-400'
+                                              : 'text-red-400'
+                                          }`}
+                                        >
+                                          {tx.type === 'donation' ? '+' : '-'}
+                                          {tx.formattedAmount} ETH
                                         </span>
                                         {ethToMYRRate && (
                                           <div className="text-xs text-gray-500 mt-1">
-                                            ≈ RM {(
-                                              parseFloat(tx.formattedAmount) * ethToMYRRate
+                                            ≈ RM{' '}
+                                            {(
+                                              parseFloat(tx.formattedAmount) *
+                                              ethToMYRRate
                                             ).toFixed(2)}
                                           </div>
                                         )}
@@ -1172,12 +1383,17 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                 ))
                               ) : (
                                 <TableRow>
-                                  <TableCell colSpan={4} className="text-center py-12">
+                                  <TableCell
+                                    colSpan={4}
+                                    className="text-center py-12"
+                                  >
                                     <div className="flex flex-col items-center space-y-3">
                                       <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center">
                                         <ArrowDownCircle className="h-6 w-6 text-gray-500" />
                                       </div>
-                                      <p className="text-gray-400">No transaction history available</p>
+                                      <p className="text-gray-400">
+                                        No transaction history available
+                                      </p>
                                     </div>
                                   </TableCell>
                                 </TableRow>
@@ -1197,7 +1413,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                               <ArrowDownCircle className="h-5 w-5 text-green-400" />
                             </div>
                             <div>
-                              <CardTitle className="text-lg text-white">Incoming Donations</CardTitle>
+                              <CardTitle className="text-lg text-white">
+                                Incoming Donations
+                              </CardTitle>
                               <CardDescription className="text-green-400">
                                 Money received from donors
                               </CardDescription>
@@ -1208,17 +1426,27 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                           {donations.length > 0 ? (
                             <div className="space-y-4">
                               {donations.map((donation, index) => (
-                                <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-gray-800/30 border border-gray-700/30">
+                                <div
+                                  key={index}
+                                  className="flex justify-between items-center p-3 rounded-lg bg-gray-800/30 border border-gray-700/30"
+                                >
                                   <div className="flex flex-col">
-                                    <span className="font-medium text-gray-300">{formatAddress(donation.donor.address)}</span>
-                                    <span className="text-xs text-gray-500">{donation.formattedDate}</span>
+                                    <span className="font-medium text-gray-300">
+                                      {formatAddress(donation.donor.address)}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      {donation.formattedDate}
+                                    </span>
                                   </div>
                                   <div className="font-mono text-green-400 font-medium">
                                     +{donation.formattedAmount} ETH
                                     {ethToMYRRate && (
                                       <div className="text-xs text-gray-500 mt-1">
-                                        ≈ RM {(
-                                          parseFloat(donation.formattedAmount ?? '0') * ethToMYRRate
+                                        ≈ RM{' '}
+                                        {(
+                                          parseFloat(
+                                            donation.formattedAmount ?? '0'
+                                          ) * ethToMYRRate
                                         ).toFixed(2)}
                                       </div>
                                     )}
@@ -1244,7 +1472,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                               <ArrowUpCircle className="h-5 w-5 text-red-400" />
                             </div>
                             <div>
-                              <CardTitle className="text-lg text-white">Funds Released</CardTitle>
+                              <CardTitle className="text-lg text-white">
+                                Funds Released
+                              </CardTitle>
                               <CardDescription className="text-red-400">
                                 Money sent to campaign recipients
                               </CardDescription>
@@ -1255,22 +1485,35 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                           {fundsReleased.length > 0 ? (
                             <div className="space-y-4">
                               {fundsReleased.map((release, index) => (
-                                <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-gray-800/30 border border-gray-700/30">
+                                <div
+                                  key={index}
+                                  className="flex justify-between items-center p-3 rounded-lg bg-gray-800/30 border border-gray-700/30"
+                                >
                                   <div className="flex flex-col">
                                     <div className="flex items-center gap-2">
-                                      <span className="font-medium text-gray-300">{formatAddress(release.recipient)}</span>
-                                      <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-xs">
+                                      <span className="font-medium text-gray-300">
+                                        {formatAddress(release.recipient)}
+                                      </span>
+                                      <Badge
+                                        variant="outline"
+                                        className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-xs"
+                                      >
                                         Milestone {release.milestoneIndex + 1}
                                       </Badge>
                                     </div>
-                                    <span className="text-xs text-gray-500">{release.formattedDate}</span>
+                                    <span className="text-xs text-gray-500">
+                                      {release.formattedDate}
+                                    </span>
                                   </div>
                                   <div className="font-mono text-red-400 font-medium">
                                     -{release.formattedAmount} ETH
                                     {ethToMYRRate && (
                                       <div className="text-xs text-gray-500 mt-1">
-                                        ≈ RM {(
-                                          parseFloat(release.formattedAmount ?? '0') * ethToMYRRate
+                                        ≈ RM{' '}
+                                        {(
+                                          parseFloat(
+                                            release.formattedAmount ?? '0'
+                                          ) * ethToMYRRate
                                         ).toFixed(2)}
                                       </div>
                                     )}
@@ -1283,7 +1526,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                               <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center mx-auto mb-3">
                                 <ArrowUpCircle className="h-6 w-6 text-gray-500" />
                               </div>
-                              <p className="text-gray-400">No funds released yet</p>
+                              <p className="text-gray-400">
+                                No funds released yet
+                              </p>
                             </div>
                           )}
                         </CardContent>
@@ -1301,13 +1546,16 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                     <AuroraText>Campaign Community</AuroraText>
                   </h2>
                   <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-                    Meet the generous donors who are making this campaign possible
+                    Meet the generous donors who are making this campaign
+                    possible
                   </p>
                 </div>
 
                 {/* Recent Donors */}
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-6">Recent Donors</h3>
+                  <h3 className="text-2xl font-bold text-white mb-6">
+                    Recent Donors
+                  </h3>
                   <Card className="border-none shadow-xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
                     <CardContent className="p-0">
                       <div className="overflow-hidden">
@@ -1318,10 +1566,19 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                         </div>
                         <div className="divide-y divide-gray-700/30">
                           {donorsData.slice(0, 5).map((donor, index) => (
-                            <div key={index} className="p-6 grid grid-cols-3 hover:bg-gray-800/30 transition-colors">
-                              <div className="text-gray-300">{donor.donorName}</div>
-                              <div className="text-center text-gray-300">{donor.totalDonated} ETH</div>
-                              <div className="text-right text-gray-400">{donor.date}</div>
+                            <div
+                              key={index}
+                              className="p-6 grid grid-cols-3 hover:bg-gray-800/30 transition-colors"
+                            >
+                              <div className="text-gray-300">
+                                {donor.donorName}
+                              </div>
+                              <div className="text-center text-gray-300">
+                                {donor.totalDonated} ETH
+                              </div>
+                              <div className="text-right text-gray-400">
+                                {donor.date}
+                              </div>
                             </div>
                           ))}
                           {donorsData.length === 0 && (
@@ -1338,7 +1595,10 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                   </Card>
                   {donorsData.length > 5 && (
                     <div className="flex justify-center mt-6">
-                      <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white">
+                      <Button
+                        variant="outline"
+                        className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                      >
                         View All Donors
                       </Button>
                     </div>
@@ -1351,13 +1611,17 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                     <Trophy className="mr-3 h-6 w-6 text-yellow-500" />
                     Campaign Leaderboard
                   </h3>
-                  <p className="text-gray-400 mb-6">Top donors for this campaign</p>
+                  <p className="text-gray-400 mb-6">
+                    Top donors for this campaign
+                  </p>
 
                   {isLoadingLeaderboard ? (
                     <div className="text-center py-12">
                       <div className="flex flex-col items-center space-y-4">
                         <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-                        <p className="text-gray-400">Loading leaderboard data...</p>
+                        <p className="text-gray-400">
+                          Loading leaderboard data...
+                        </p>
                       </div>
                     </div>
                   ) : (
@@ -1367,48 +1631,84 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                           <Table>
                             <TableHeader>
                               <TableRow className="border-gray-700/50 hover:bg-gray-800/30">
-                                <TableHead className="w-[100px] text-gray-300 font-semibold">Rank</TableHead>
-                                <TableHead className="text-gray-300 font-semibold">Donor</TableHead>
-                                <TableHead className="text-right text-gray-300 font-semibold">Total Donated</TableHead>
+                                <TableHead className="w-[100px] text-gray-300 font-semibold">
+                                  Rank
+                                </TableHead>
+                                <TableHead className="text-gray-300 font-semibold">
+                                  Donor
+                                </TableHead>
+                                <TableHead className="text-right text-gray-300 font-semibold">
+                                  Total Donated
+                                </TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
                               {leaderboardDonors.length > 0 ? (
                                 leaderboardDonors.map((donor, index) => {
-                                  const isCurrentUser = isConnected && address && donor.address.toLowerCase() === address.toLowerCase();
+                                  const isCurrentUser =
+                                    isConnected &&
+                                    address &&
+                                    donor.address.toLowerCase() ===
+                                      address.toLowerCase();
 
                                   return (
-                                    <TableRow key={index} className={`border-gray-700/30 transition-colors ${isCurrentUser ? "bg-green-900/20 hover:bg-green-900/30" : "hover:bg-gray-800/30"
-                                      }`}>
+                                    <TableRow
+                                      key={index}
+                                      className={`border-gray-700/30 transition-colors ${
+                                        isCurrentUser
+                                          ? 'bg-green-900/20 hover:bg-green-900/30'
+                                          : 'hover:bg-gray-800/30'
+                                      }`}
+                                    >
                                       <TableCell className="font-medium">
                                         {index < 3 ? (
-                                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full 
-                                            ${index === 0 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50' :
-                                              index === 1 ? 'bg-gray-500/20 text-gray-400 border border-gray-500/50' :
-                                                'bg-amber-500/20 text-amber-400 border border-amber-500/50'}`}>
+                                          <span
+                                            className={`inline-flex items-center justify-center w-8 h-8 rounded-full 
+                                            ${
+                                              index === 0
+                                                ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50'
+                                                : index === 1
+                                                ? 'bg-gray-500/20 text-gray-400 border border-gray-500/50'
+                                                : 'bg-amber-500/20 text-amber-400 border border-amber-500/50'
+                                            }`}
+                                          >
                                             {index + 1}
                                           </span>
                                         ) : (
-                                          <span className="text-gray-400">{index + 1}</span>
+                                          <span className="text-gray-400">
+                                            {index + 1}
+                                          </span>
                                         )}
                                       </TableCell>
                                       <TableCell>
                                         <div className="flex flex-col">
-                                          <span className={`${isCurrentUser ? "text-green-400 font-medium" : "text-gray-300"}`}>
-                                            {donor.name || "Anonymous"}{isCurrentUser ? " (You)" : ""}
+                                          <span
+                                            className={`${
+                                              isCurrentUser
+                                                ? 'text-green-400 font-medium'
+                                                : 'text-gray-300'
+                                            }`}
+                                          >
+                                            {donor.name || 'Anonymous'}
+                                            {isCurrentUser ? ' (You)' : ''}
                                           </span>
-                                          <span className="text-xs text-gray-500">{formatAddress(donor.address)}</span>
+                                          <span className="text-xs text-gray-500">
+                                            {formatAddress(donor.address)}
+                                          </span>
                                         </div>
                                       </TableCell>
                                       <TableCell className="text-right">
                                         <div className="font-mono">
                                           <span className="font-medium text-gray-300">
-                                            {formatDonation(donor.totalDonated)} ETH
+                                            {formatDonation(donor.totalDonated)}{' '}
+                                            ETH
                                           </span>
                                           {ethToMYRRate && (
                                             <div className="text-xs text-gray-500 mt-1">
-                                              ≈ RM {(
-                                                parseFloat(donor.totalDonated) * ethToMYRRate
+                                              ≈ RM{' '}
+                                              {(
+                                                parseFloat(donor.totalDonated) *
+                                                ethToMYRRate
                                               ).toFixed(2)}
                                             </div>
                                           )}
@@ -1419,12 +1719,17 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
                                 })
                               ) : (
                                 <TableRow>
-                                  <TableCell colSpan={3} className="text-center py-12">
+                                  <TableCell
+                                    colSpan={3}
+                                    className="text-center py-12"
+                                  >
                                     <div className="flex flex-col items-center space-y-3">
                                       <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center">
                                         <Trophy className="h-6 w-6 text-gray-500" />
                                       </div>
-                                      <p className="text-gray-400">No leaderboard data available</p>
+                                      <p className="text-gray-400">
+                                        No leaderboard data available
+                                      </p>
                                     </div>
                                   </TableCell>
                                 </TableRow>
@@ -1445,17 +1750,28 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ addre
       {/* Add DonorChatbot */}
       {isConnected && address && (
         <DonorChatbot
-          donorName={donorsData.find(d => d.donorAddress.toLowerCase() === address.toLowerCase())?.donorName || "Donor"}
+          donorName={
+            donorsData.find(
+              (d) => d.donorAddress.toLowerCase() === address.toLowerCase()
+            )?.donorName || 'Donor'
+          }
           walletAddress={address}
-          totalDonated={donorsData.find(d => d.donorAddress.toLowerCase() === address.toLowerCase())?.totalDonated || "0"}
+          totalDonated={
+            donorsData.find(
+              (d) => d.donorAddress.toLowerCase() === address.toLowerCase()
+            )?.totalDonated || '0'
+          }
           donationsCount={1}
           recentDonations={[
             {
               campaignId: campaignAddress,
               campaignName: campaignDetails.name,
-              amount: donorsData.find(d => d.donorAddress.toLowerCase() === address.toLowerCase())?.totalDonated || "0",
-              date: new Date().toLocaleDateString()
-            }
+              amount:
+                donorsData.find(
+                  (d) => d.donorAddress.toLowerCase() === address.toLowerCase()
+                )?.totalDonated || '0',
+              date: new Date().toLocaleDateString(),
+            },
           ]}
         />
       )}
