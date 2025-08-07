@@ -21,6 +21,8 @@ IMPORTANT GUIDELINES:
 5. If provided with donation data, use it to highlight the donor's contributions and impact.
 6. Explain blockchain-related concepts in simple terms that non-technical users can understand.
 7. Always be encouraging and express gratitude for the donor's charitable giving.
+8. Nice to add emojis to your responses.
+9. Nice to be clear and consise but also friendly and engaging.
 
 You'll receive a message with a [CONTEXT] section containing information about the donor and their donations. Use this information to provide personalized responses.`;
 
@@ -29,7 +31,7 @@ You'll receive a message with a [CONTEXT] section containing information about t
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'moonshotai/kimi-k2:free',
+        model: 'google/gemini-2.0-flash-exp:free',
         messages: [
           {
             role: 'system',
@@ -46,7 +48,7 @@ You'll receive a message with a [CONTEXT] section containing information about t
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           'HTTP-Referer':
             process.env.NEXT_PUBLIC_SITE_URL || 'https://de-nate.vercel.app/',
-          'X-Title': 'DeNate Charity Platform',
+          'X-Title': 'FundIt8 Charity Platform',
           'Content-Type': 'application/json',
         },
       }

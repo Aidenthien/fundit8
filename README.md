@@ -106,7 +106,7 @@ FundIt8 automates milestone-based fund distribution using **Chainlink Keepers**,
    - Campaign description, media, and timeline
 
 3. **Automated Fund Management**  
-   DeNate auto-deploys a **smart contract** with **Chainlink Automation** to handle fund release upon milestone completion.
+   FundIt8 auto-deploys a **smart contract** with **Chainlink Automation** to handle fund release upon milestone completion.
 
 4. **Monitor in Real-Time**  
    Track donations, donor activity, and milestone progress via your Organization Dashboard.

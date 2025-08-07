@@ -591,7 +591,7 @@ export default function AboutPage() {
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
               >
-                The People Behind DeNate
+                The People Behind FundIt8
               </Typography>
             </div>
             <Typography

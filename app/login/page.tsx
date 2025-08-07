@@ -131,7 +131,7 @@ export default function LoginPage() {
             </motion.div>
 
             <h1 className="text-4xl font-bold text-white mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Welcome to FundIt
+              Welcome to FundIt8
             </h1>
 
             <p className="text-gray-300 text-lg mb-6">
@@ -210,7 +210,7 @@ export default function LoginPage() {
 
                     <div className="text-center pt-4 border-t border-white/10">
                       <p className="text-gray-300 text-sm">
-                        New to FundIt? Connect your wallet to create your donor profile
+                        New to FundIt8? Connect your wallet to create your donor profile
                       </p>
                     </div>
                   </TabsContent>

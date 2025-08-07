@@ -880,7 +880,7 @@ export const mockTestimonials: Testimonial[] = [
     name: 'Sarah Johnson',
     role: 'Donor',
     content:
-      'DeNate has transformed how I give to charity. The transparency gives me confidence that my donations are making a real impact. Being able to track progress and see milestones completed is incredible!',
+      'FundIt8 has transformed how I give to charity. The transparency gives me confidence that my donations are making a real impact. Being able to track progress and see milestones completed is incredible!',
     avatar: '/avatars/avatar-1.jpg',
     rating: 5,
   },
@@ -889,7 +889,7 @@ export const mockTestimonials: Testimonial[] = [
     name: 'Michael Chen',
     role: 'Regular Donor',
     content:
-      "As someone who donates regularly, I've always worried about where my money actually goes. With DeNate's blockchain verification, I can finally see the real impact of every dollar I contribute.",
+      "As someone who donates regularly, I've always worried about where my money actually goes. With FundIt8's blockchain verification, I can finally see the real impact of every dollar I contribute.",
     avatar: '/avatars/avatar-2.jpg',
     rating: 5,
   },
@@ -898,7 +898,7 @@ export const mockTestimonials: Testimonial[] = [
     name: 'Emily Davis',
     role: 'Volunteer',
     content:
-      "The transparency that DeNate provides has brought a new level of trust to charitable giving. I've seen firsthand how this platform bridges the gap between donors and the communities they're helping.",
+      "The transparency that FundIt8 provides has brought a new level of trust to charitable giving. I've seen firsthand how this platform bridges the gap between donors and the communities they're helping.",
     avatar: '/avatars/avatar-3.jpg',
     rating: 4,
   },
@@ -907,7 +907,7 @@ export const mockTestimonials: Testimonial[] = [
     name: 'David Rodriguez',
     role: 'Organization Director',
     content:
-      "DeNate has revolutionized how our organization handles donations. The smart contract system ensures we're accountable, while the milestone tracking helps us communicate our impact effectively.",
+      "FundIt8 has revolutionized how our organization handles donations. The smart contract system ensures we're accountable, while the milestone tracking helps us communicate our impact effectively.",
     avatar: '/avatars/avatar-4.jpg',
     rating: 5,
   },
@@ -916,7 +916,7 @@ export const mockTestimonials: Testimonial[] = [
     name: 'Lisa Thompson',
     role: 'Community Leader',
     content:
-      "Our community has benefited enormously from projects funded through DeNate. The platform's transparency has attracted more donors and allowed us to complete projects that would have been impossible otherwise.",
+      "Our community has benefited enormously from projects funded through FundIt8. The platform's transparency has attracted more donors and allowed us to complete projects that would have been impossible otherwise.",
     avatar: '/avatars/avatar-5.jpg',
     rating: 5,
   },

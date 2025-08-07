@@ -96,7 +96,7 @@ export function MainNav() {
       shadow={false}
       fullWidth
       blurred={false}
-      color={isScrolling ? "white" : "transparent"}
+      color={isScrolling ? 'white' : 'transparent'}
       className="fixed top-0 z-50 border-0"
       placeholder={null}
       onPointerEnterCapture={undefined}
@@ -106,8 +106,8 @@ export function MainNav() {
         {/* Logo (retained from your current navbar) */}
         <Link href="/" className="flex items-center space-x-2">
           <Image
-            src={isScrolling ? "/testing.png" : "/testing.png"}
-            alt="DeNate Logo"
+            src={isScrolling ? '/testing.png' : '/testing.png'}
+            alt="FundIt8 Logo"
             width={120}
             height={40}
             className="h-10 w-auto"
@@ -117,7 +117,7 @@ export function MainNav() {
         {/* Navigation Links (About Us, Donate, Leaderboard) */}
         <ul
           className={`ml-16 hidden items-center gap-6 lg:flex ${
-            isScrolling ? "text-gray-900" : "text-white"
+            isScrolling ? 'text-gray-900' : 'text-white'
           }`}
         >
           {NAV_MENU.map(({ name, iconClass, href }) => (
@@ -140,7 +140,7 @@ export function MainNav() {
             <>
               <Link href="/login">
                 <Button
-                  color={isScrolling ? "gray" : "white"}
+                  color={isScrolling ? 'gray' : 'white'}
                   variant="outline"
                   className="hidden sm:flex"
                 >
@@ -150,7 +150,7 @@ export function MainNav() {
               </Link>
               <Link href="/kyb-form">
                 <MTButton
-                  color={isScrolling ? "gray" : "white"}
+                  color={isScrolling ? 'gray' : 'white'}
                   placeholder={null}
                   onPointerEnterCapture={undefined}
                   onPointerLeaveCapture={undefined}
@@ -165,7 +165,7 @@ export function MainNav() {
         {/* Mobile Menu Toggle Button */}
         <IconButton
           variant="text"
-          color={isScrolling ? "gray" : "white"}
+          color={isScrolling ? 'gray' : 'white'}
           onClick={handleOpen}
           className="ml-auto inline-block lg:hidden"
           placeholder={null}

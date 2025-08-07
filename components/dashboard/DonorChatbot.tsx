@@ -56,6 +56,13 @@ export default function DonorChatbot({
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [campaignDetails, setCampaignDetails] = useState<Campaign[]>([]);
   const [activeDonations, setActiveDonations] = useState<Donation[]>([]);
+
+  const [donorTotalDonated, setDonorTotalDonated] = useState<string>(
+    totalDonated || '0'
+  );
+  const [recentDonationsFromGraph, setRecentDonationsFromGraph] = useState<
+    Donation[]
+  >([]);
   
   // Determine the actual wallet address to use - from props or wagmi hook
   const walletAddress = propWalletAddress || address || "";
@@ -104,93 +111,207 @@ export default function DonorChatbot({
   }, [walletAddress, isConnected, propDonorName, messages.length]);
 
   // Fetch active campaigns
+  // useEffect(() => {
+  //   const fetchCampaignDetails = async () => {
+  //     if (typeof window.ethereum === "undefined") {
+  //       console.error("MetaMask not detected. Please install a wallet.");
+  //       return;
+  //     }
+
+  //     try {
+  //       const provider = new ethers.BrowserProvider(window.ethereum);
+  //       await window.ethereum.request({ method: 'eth_requestAccounts' });
+  //       const signer = await provider.getSigner();
+
+  //       const centralContract = new ethers.Contract(
+  //         charityCentral_CA,
+  //         charityCentral_ABI,
+  //         signer
+  //       );
+
+  //       const campaignAddresses = await centralContract.getAllCampaigns();
+        
+  //       const campaignInterface = new ethers.Interface(charityCampaigns_ABI);
+
+  //       const detailedCampaigns = await Promise.all(
+  //         campaignAddresses.map(async (address: string) => {
+  //           const campaignContract = new ethers.Contract(
+  //             address,
+  //             campaignInterface,
+  //             signer
+  //           );
+
+  //           const details = await campaignContract.getCampaignDetails();
+            
+  //           // Check if this donor has donated to this campaign
+  //           let donorInfo = { totalDonated: "0" };
+  //           try {
+  //             if (walletAddress) {
+  //               donorInfo = await campaignContract.donors(walletAddress);
+  //             }
+  //           } catch (error) {
+  //             console.error("Error fetching donor info for campaign:", error);
+  //           }
+
+  //           return {
+  //             address,
+  //             name: details._name,
+  //             description: details._description,
+  //             imageURI: details._campaignImageURI || '',
+  //             goal: ethers.formatEther(details._goal),
+  //             totalDonated: ethers.formatEther(details._totalDonated),
+  //             state: Number(details._state),
+  //             charityAddress: details._charityAddress,
+  //             donors: Math.floor(Math.random() * 100), // Placeholder value
+  //             daysLeft: Math.floor(Math.random() * 50), // Placeholder value
+  //             userDonation: ethers.formatEther(donorInfo.totalDonated || "0"),
+  //           };
+  //         })
+  //       );
+
+  //       // Filter active campaigns (state === 0)
+  //       const activeCampaigns = detailedCampaigns.filter(
+  //         (campaign) => campaign.state === 0
+  //       );
+
+  //       setCampaignDetails(activeCampaigns);
+        
+  //       // Find campaigns this donor has supported
+  //       const userDonations = detailedCampaigns
+  //         .filter(campaign => parseFloat(campaign.userDonation) > 0)
+  //         .map(campaign => ({
+  //           campaignId: campaign.address,
+  //           campaignName: campaign.name,
+  //           amount: campaign.userDonation,
+  //           date: new Date().toLocaleDateString() // Placeholder date
+  //         }));
+        
+  //       setActiveDonations(userDonations);
+        
+  //     } catch (error) {
+  //       console.error("Error fetching campaign details:", error);
+  //     }
+  //   };
+
+  //   if (walletAddress) {
+  //     fetchCampaignDetails();
+  //   }
+  // }, [walletAddress]);
+
+  //fetching kmowledge base data from the graph for chatbot context
   useEffect(() => {
-    const fetchCampaignDetails = async () => {
-      if (typeof window.ethereum === "undefined") {
-        console.error("MetaMask not detected. Please install a wallet.");
-        return;
-      }
+    const fetchData = async () => {
+      if (!walletAddress) return;
+
+      const SUBGRAPH_URL =
+        'https://api.studio.thegraph.com/query/105145/fundit-8-2/version/latest';
 
       try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const signer = await provider.getSigner();
-
-        const centralContract = new ethers.Contract(
-          charityCentral_CA,
-          charityCentral_ABI,
-          signer
-        );
-
-        const campaignAddresses = await centralContract.getAllCampaigns();
-        
-        const campaignInterface = new ethers.Interface(charityCampaigns_ABI);
-
-        const detailedCampaigns = await Promise.all(
-          campaignAddresses.map(async (address: string) => {
-            const campaignContract = new ethers.Contract(
-              address,
-              campaignInterface,
-              signer
-            );
-
-            const details = await campaignContract.getCampaignDetails();
-            
-            // Check if this donor has donated to this campaign
-            let donorInfo = { totalDonated: "0" };
-            try {
-              if (walletAddress) {
-                donorInfo = await campaignContract.donors(walletAddress);
+        // Fetch donor data with recent donations
+        const donorQuery = `
+          query GetDonorData($donorAddress: Bytes!) {
+            donor(id: $donorAddress) {
+              id
+              totalDonated
+              donations(first: 5, orderBy: timestamp, orderDirection: desc) {
+                id
+                amount
+                timestamp
+                campaign {
+                  id
+                  name
+                  charity {
+                    name
+                  }
+                }
               }
-            } catch (error) {
-              console.error("Error fetching donor info for campaign:", error);
             }
+          }
+        `;
 
-            return {
-              address,
-              name: details._name,
-              description: details._description,
-              imageURI: details._campaignImageURI || '',
-              goal: ethers.formatEther(details._goal),
-              totalDonated: ethers.formatEther(details._totalDonated),
-              state: Number(details._state),
-              charityAddress: details._charityAddress,
-              donors: Math.floor(Math.random() * 100), // Placeholder value
-              daysLeft: Math.floor(Math.random() * 50), // Placeholder value
-              userDonation: ethers.formatEther(donorInfo.totalDonated || "0"),
-            };
+        const donorRes = await fetch(SUBGRAPH_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: donorQuery,
+            variables: { donorAddress: walletAddress.toLowerCase() },
+          }),
+        });
+
+        const donorData = await donorRes.json();
+        const donor = donorData.data?.donor;
+
+        // Fetch active campaigns with donor contributions
+        const campaignsQuery = `
+          query GetActiveCampaigns($donorAddress: Bytes!) {
+            campaigns(where: { state: "Active" }) {
+              id
+              name
+              description
+              goal
+              totalDonated
+              state
+              charity {
+                address
+                name
+              }
+              donors(where: { donor: $donorAddress }) {
+                totalDonated
+              }
+            }
+          }
+        `;
+
+        const campaignsRes = await fetch(SUBGRAPH_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: campaignsQuery,
+            variables: { donorAddress: walletAddress.toLowerCase() },
+          }),
+        });
+
+        const campaignsData = await campaignsRes.json();
+        const activeCampaigns = campaignsData.data?.campaigns || [];
+
+        // Transform data for frontend
+        const campaignDetails: Campaign[] = activeCampaigns.map((c: any) => ({
+          address: c.id,
+          name: c.name,
+          description: c.description,
+          goal: ethers.formatEther(c.goal),
+          totalDonated: ethers.formatEther(c.totalDonated),
+          state: 0, // Active state
+          charityAddress: c.charity.address,
+          userDonation: c.donors[0]?.totalDonated
+            ? ethers.formatEther(c.donors[0].totalDonated)
+            : '0',
+        }));
+
+        const recentDonations: Donation[] = (donor?.donations || []).map(
+          (d: any) => ({
+            campaignId: d.campaign.id,
+            campaignName: d.campaign.name,
+            amount: ethers.formatEther(d.amount),
+            date: new Date(Number(d.timestamp) * 1000).toLocaleDateString(),
           })
         );
 
-        // Filter active campaigns (state === 0)
-        const activeCampaigns = detailedCampaigns.filter(
-          (campaign) => campaign.state === 0
-        );
+        setCampaignDetails(campaignDetails);
+        setRecentDonationsFromGraph(recentDonations);
 
-        setCampaignDetails(activeCampaigns);
-        
-        // Find campaigns this donor has supported
-        const userDonations = detailedCampaigns
-          .filter(campaign => parseFloat(campaign.userDonation) > 0)
-          .map(campaign => ({
-            campaignId: campaign.address,
-            campaignName: campaign.name,
-            amount: campaign.userDonation,
-            date: new Date().toLocaleDateString() // Placeholder date
-          }));
-        
-        setActiveDonations(userDonations);
-        
+        // Update donor total if available
+        if (donor?.totalDonated) {
+          const formattedTotal = ethers.formatEther(donor.totalDonated);
+          setDonorTotalDonated(formattedTotal);
+        }
       } catch (error) {
-        console.error("Error fetching campaign details:", error);
+        console.error('Error fetching subgraph data:', error);
       }
     };
 
-    if (walletAddress) {
-      fetchCampaignDetails();
-    }
+    fetchData();
   }, [walletAddress]);
-
   // Hide tooltip after 20 seconds
   useEffect(() => {
     const tooltipTimer = setTimeout(() => {
@@ -209,47 +330,99 @@ export default function DonorChatbot({
   ];
 
   // Send message to the AI API
+  // const sendMessageToAPI = async (userMessage: string) => {
+  //   setIsLoading(true);
+  //   try {
+  //     // Get the donor name from orgData if available, otherwise fallback to props
+  //     const donorName = orgData?.name || propDonorName || "Anonymous";
+      
+  //     // Use a combination of prop donations and fetched active donations
+  //     const donationsList = recentDonations.length > 0 
+  //       ? recentDonations 
+  //       : activeDonations;
+
+  //     // Find total donated amount across all campaigns
+  //     const totalUserDonations = campaignDetails.reduce((total, campaign) => {
+  //       return total + parseFloat(campaign.userDonation || "0");
+  //     }, 0);
+      
+  //     // Prepare context data to send with the request
+  //     const contextData = {
+  //       donorName: donorName,
+  //       walletAddress: walletAddress,
+  //       totalDonated: totalUserDonations > 0 ? totalUserDonations.toString() : totalDonated,
+  //       donationsCount: donationsList.length || donationsCount,
+  //       // Include recent donations
+  //       recentDonations: donationsList.map(donation => ({
+  //         campaignName: donation.campaignName,
+  //         amount: donation.amount,
+  //         date: donation.date
+  //       })),
+  //       // Include active campaigns data
+  //       activeCampaigns: campaignDetails.map(campaign => ({
+  //         name: campaign.name,
+  //         description: campaign.description,
+  //         goal: campaign.goal,
+  //         totalDonated: campaign.totalDonated,
+  //         userDonation: campaign.userDonation,
+  //         organization: campaign.charityAddress,
+  //         state: campaign.state === 0 ? "Active" : "Completed"
+  //       }))
+  //     };
+
+  //     // Add context to the user message
+  //     const enhancedUserMessage = `
+  //       [CONTEXT]
+  //       Donor: ${contextData.donorName}
+  //       Wallet Address: ${contextData.walletAddress}
+  //       Total Donated: ${contextData.totalDonated} ETH
+  //       Donations Count: ${contextData.donationsCount}
+        
+  //       Recent Donations: ${JSON.stringify(contextData.recentDonations)}
+        
+  //       Active Campaigns: ${JSON.stringify(contextData.activeCampaigns)}
+  //       [/CONTEXT]
+        
+  //       User Query: ${userMessage}
+  //     `;
+
+  //     const response = await axios.post("/api/donors/chatbot-api", {
+  //       query: enhancedUserMessage
+  //     });
+
+  //     return response.data.response;
+  //   } catch (error) {
+  //     console.error("Error sending message to API:", error);
+  //     return "Sorry, I encountered an error processing your request. Please try again later.";
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const sendMessageToAPI = async (userMessage: string) => {
     setIsLoading(true);
     try {
-      // Get the donor name from orgData if available, otherwise fallback to props
-      const donorName = orgData?.name || propDonorName || "Anonymous";
-      
-      // Use a combination of prop donations and fetched active donations
-      const donationsList = recentDonations.length > 0 
-        ? recentDonations 
-        : activeDonations;
+      // Use a combination of prop donations and fetched donations
+      const donationsList =
+        recentDonations.length > 0 ? recentDonations : recentDonationsFromGraph;
 
-      // Find total donated amount across all campaigns
-      const totalUserDonations = campaignDetails.reduce((total, campaign) => {
-        return total + parseFloat(campaign.userDonation || "0");
-      }, 0);
-      
-      // Prepare context data to send with the request
+      // Prepare context data
       const contextData = {
-        donorName: donorName,
+        donorName: propDonorName || 'Anonymous',
         walletAddress: walletAddress,
-        totalDonated: totalUserDonations > 0 ? totalUserDonations.toString() : totalDonated,
+        totalDonated: donorTotalDonated,
         donationsCount: donationsList.length || donationsCount,
-        // Include recent donations
-        recentDonations: donationsList.map(donation => ({
-          campaignName: donation.campaignName,
-          amount: donation.amount,
-          date: donation.date
-        })),
-        // Include active campaigns data
-        activeCampaigns: campaignDetails.map(campaign => ({
+        recentDonations: donationsList,
+        activeCampaigns: campaignDetails.map((campaign) => ({
           name: campaign.name,
           description: campaign.description,
           goal: campaign.goal,
           totalDonated: campaign.totalDonated,
           userDonation: campaign.userDonation,
           organization: campaign.charityAddress,
-          state: campaign.state === 0 ? "Active" : "Completed"
-        }))
+          state: campaign.state === 0 ? 'Active' : 'Completed',
+        })),
       };
 
-      // Add context to the user message
       const enhancedUserMessage = `
         [CONTEXT]
         Donor: ${contextData.donorName}
@@ -265,14 +438,14 @@ export default function DonorChatbot({
         User Query: ${userMessage}
       `;
 
-      const response = await axios.post("/api/donors/chatbot-api", {
-        query: enhancedUserMessage
+      const response = await axios.post('/api/donors/chatbot-api', {
+        query: enhancedUserMessage,
       });
 
       return response.data.response;
     } catch (error) {
-      console.error("Error sending message to API:", error);
-      return "Sorry, I encountered an error processing your request. Please try again later.";
+      console.error('Error sending message to API:', error);
+      return 'Sorry, I encountered an error processing your request. Please try again later.';
     } finally {
       setIsLoading(false);
     }

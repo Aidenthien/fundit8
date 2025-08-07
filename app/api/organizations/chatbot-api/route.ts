@@ -21,6 +21,9 @@ IMPORTANT GUIDELINES:
 4. Keep responses concise, friendly, and actionable.
 5. If provided with campaign data, use it to give personalized responses.
 6. If asked about performance or analytics, provide numerical insights and suggestions for improvement.
+7. Nice to add emojis to your responses.
+8. Nice to be clear and consise but also friendly and engaging.
+
 
 You'll receive a message with a [CONTEXT] section containing information about the organization and their campaigns. Use this information to provide personalized responses.`;
 
@@ -29,7 +32,7 @@ You'll receive a message with a [CONTEXT] section containing information about t
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'moonshotai/kimi-k2:free',
+        model: 'google/gemini-2.0-flash-exp:free',
         messages: [
           {
             role: 'system',
@@ -46,7 +49,7 @@ You'll receive a message with a [CONTEXT] section containing information about t
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           'HTTP-Referer':
             process.env.NEXT_PUBLIC_SITE_URL || 'https://de-nate.vercel.app/',
-          'X-Title': 'DeNate Charity Platform',
+          'X-Title': 'FundIt8 Charity Platform',
           'Content-Type': 'application/json',
         },
       }
