@@ -91,7 +91,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
 
   const getDisplayUrl = (ipfsUrl: string) => {
     if (!ipfsUrl) return '/placeholder.svg';
-    return ipfsUrl.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
+    return ipfsUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
   };
 
   return (
@@ -144,7 +144,7 @@ const fetchIPFSData = async (uri: string) => {
   if (!uri || !uri.startsWith('ipfs://')) return null;
 
   try {
-    const url = uri.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
+    const url = uri.replace('ipfs://', 'https://ipfs.io/ipfs/');
     const response = await axios.get(url);
     return response.data;
   } catch (error) {

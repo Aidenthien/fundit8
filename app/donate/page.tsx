@@ -1,21 +1,44 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Heart, Clock, Users, ChevronLeft, ChevronRight, Search, Filter, Sparkles, TrendingUp, Shield, Eye } from "lucide-react"
-import { useEffect, useState } from "react"
-import { ethers } from "ethers"
-import { charityCentral_ABI, charityCentral_CA, charityCampaigns_ABI } from "@/config/contractABI"
-import axios from "axios"
-import DonorChatbot from "@/components/dashboard/DonorChatbot"
-import { useAccount } from "wagmi"
-import { AuroraText } from "@/components/magicui/aurora-text";
-import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import {
+  Heart,
+  Clock,
+  Users,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  Filter,
+  Sparkles,
+  TrendingUp,
+  Shield,
+  Eye,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import {
+  charityCentral_ABI,
+  charityCentral_CA,
+  charityCampaigns_ABI,
+} from '@/config/contractABI';
+import axios from 'axios';
+import DonorChatbot from '@/components/dashboard/DonorChatbot';
+import { useAccount } from 'wagmi';
+import { AuroraText } from '@/components/magicui/aurora-text';
+import { AnimatedGradientText } from '@/components/magicui/animated-gradient-text';
 
 interface Campaign {
   address: string;
@@ -46,7 +69,8 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
 
   const getDisplayUrl = (ipfsUrl: string) => {
     if (!ipfsUrl) return '/placeholder.svg';
-    return ipfsUrl.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
+    // Use ipfs.io gateway for better reliability
+    return ipfsUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
   };
 
   return (
@@ -83,10 +107,11 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
             {images.map((_, index) => (
               <button
                 key={index}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${currentImageIndex === index
-                  ? 'bg-white scale-125'
-                  : 'bg-white/60 hover:bg-white/80'
-                  }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  currentImageIndex === index
+                    ? 'bg-white scale-125'
+                    : 'bg-white/60 hover:bg-white/80'
+                }`}
                 onClick={() => setCurrentImageIndex(index)}
               />
             ))}
@@ -101,7 +126,7 @@ const fetchIPFSData = async (uri: string) => {
   if (!uri || !uri.startsWith('ipfs://')) return null;
 
   try {
-    const url = uri.replace('ipfs://', 'https://gateway.pinata.cloud/ipfs/');
+    const url = uri.replace('ipfs://', 'https://ipfs.io/ipfs/');
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
@@ -113,8 +138,8 @@ const fetchIPFSData = async (uri: string) => {
 export default function DonatePage() {
   const [campaignDetails, setCampaignDetails] = useState<Campaign[]>([]);
   const [organizations, setOrganizations] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('all');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -124,16 +149,16 @@ export default function DonatePage() {
   useEffect(() => {
     const fetchOrganizations = async () => {
       try {
-        const response = await fetch("/api/organizations/getAllOrganizations");
+        const response = await fetch('/api/organizations/getAllOrganizations');
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch organizations");
+          throw new Error(data.error || 'Failed to fetch organizations');
         }
 
         setOrganizations(data);
       } catch (err) {
-        console.error("Error fetching organizations:", err);
+        console.error('Error fetching organizations:', err);
       }
     };
 
@@ -142,8 +167,8 @@ export default function DonatePage() {
 
   useEffect(() => {
     const fetchCampaignsDetails = async () => {
-      if (typeof window.ethereum === "undefined") {
-        console.error("MetaMask not detected. Please install a wallet.");
+      if (typeof window.ethereum === 'undefined') {
+        console.error('MetaMask not detected. Please install a wallet.');
         return;
       }
 
@@ -177,7 +202,7 @@ export default function DonatePage() {
               const donorsList = await campaignContract.getAllDonors();
               donorsCount = donorsList.length;
             } catch (error) {
-              console.error("Error fetching donors for campaign:", error);
+              console.error('Error fetching donors for campaign:', error);
             }
 
             const campaign: Campaign = {
@@ -201,7 +226,10 @@ export default function DonatePage() {
                   campaign.images = imageData.images;
                 }
               } catch (error) {
-                console.error(`Error fetching images for campaign ${campaign.address}:`, error);
+                console.error(
+                  `Error fetching images for campaign ${campaign.address}:`,
+                  error
+                );
               }
             }
 
@@ -215,7 +243,7 @@ export default function DonatePage() {
 
         setCampaignDetails(activeCampaigns);
       } catch (error) {
-        console.error("Error fetching campaign details:", error);
+        console.error('Error fetching campaign details:', error);
       }
     };
 
@@ -223,14 +251,17 @@ export default function DonatePage() {
   }, []);
 
   const getOrgNameByAddress = (walletAddress: string) => {
-    if (!walletAddress || !organizations.length) return "Unknown Organization";
-    const org = organizations.find((o) => o?.walletAddress?.toLowerCase() === walletAddress.toLowerCase());
+    if (!walletAddress || !organizations.length) return 'Unknown Organization';
+    const org = organizations.find(
+      (o) => o?.walletAddress?.toLowerCase() === walletAddress.toLowerCase()
+    );
     return org?.name || walletAddress;
   };
 
-  const filteredCampaigns = campaignDetails.filter((campaign) =>
-    campaign.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    campaign.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCampaigns = campaignDetails.filter(
+    (campaign) =>
+      campaign.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      campaign.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -255,22 +286,29 @@ export default function DonatePage() {
 
               {/* Enhanced Description */}
               <p className="max-w-3xl text-xl md:text-2xl text-gray-300 font-medium leading-relaxed">
-                Browse active campaigns and donate to causes you care about. Track your impact in real-time with blockchain transparency.
+                Browse active campaigns and donate to causes you care about.
+                Track your impact in real-time with blockchain transparency.
               </p>
 
               {/* Web3 Stats */}
               <div className="flex flex-wrap justify-center gap-8 mt-8">
                 <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
                   <Shield className="h-5 w-5 text-blue-400" />
-                  <span className="text-white font-medium">Blockchain Verified</span>
+                  <span className="text-white font-medium">
+                    Blockchain Verified
+                  </span>
                 </div>
                 <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
                   <Eye className="h-5 w-5 text-green-400" />
-                  <span className="text-white font-medium">Transparent Tracking</span>
+                  <span className="text-white font-medium">
+                    Transparent Tracking
+                  </span>
                 </div>
                 <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
                   <TrendingUp className="h-5 w-5 text-purple-400" />
-                  <span className="text-white font-medium">Real-time Impact</span>
+                  <span className="text-white font-medium">
+                    Real-time Impact
+                  </span>
                 </div>
               </div>
             </div>
@@ -290,7 +328,8 @@ export default function DonatePage() {
                 </AnimatedGradientText>
               </h2>
               <p className="text-gray-300 text-lg">
-                Support these verified organizations and track your impact through blockchain.
+                Support these verified organizations and track your impact
+                through blockchain.
               </p>
             </div>
 
@@ -327,7 +366,10 @@ export default function DonatePage() {
           {/* Enhanced Campaign Grid */}
           <div className="grid gap-8 pt-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredCampaigns.map((campaign, index) => (
-              <Card key={index} className="group relative overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+              <Card
+                key={index}
+                className="group relative overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-500 hover:scale-105 hover:shadow-2xl"
+              >
                 {/* Enhanced Image Section */}
                 <div className="relative">
                   {campaign.images && campaign.images.length > 0 ? (
@@ -373,18 +415,23 @@ export default function DonatePage() {
                       <span className="font-medium text-white">
                         {parseFloat(campaign.totalDonated) > 0.0001
                           ? parseFloat(campaign.totalDonated).toFixed(4)
-                          : parseFloat(campaign.totalDonated).toFixed(6)
-                        } ETH raised
+                          : parseFloat(campaign.totalDonated).toFixed(6)}{' '}
+                        ETH raised
                       </span>
                       <span className="text-gray-400">
-                        of {parseFloat(campaign.goal) > 0.0001
+                        of{' '}
+                        {parseFloat(campaign.goal) > 0.0001
                           ? parseFloat(campaign.goal).toFixed(4)
-                          : parseFloat(campaign.goal).toFixed(6)
-                        } ETH goal
+                          : parseFloat(campaign.goal).toFixed(6)}{' '}
+                        ETH goal
                       </span>
                     </div>
                     <Progress
-                      value={(parseFloat(campaign.totalDonated) / parseFloat(campaign.goal)) * 100}
+                      value={
+                        (parseFloat(campaign.totalDonated) /
+                          parseFloat(campaign.goal)) *
+                        100
+                      }
                       className="h-3 bg-gray-700"
                     />
                     <div className="flex justify-between text-sm text-gray-400">
@@ -428,5 +475,5 @@ export default function DonatePage() {
         />
       )}
     </div>
-  )
+  );
 }

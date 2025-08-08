@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,8 +9,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   Loader2,
   PlusCircle,
@@ -23,18 +23,18 @@ import {
   Upload,
   ChevronLeft,
   ChevronRight as ChevronRightIcon,
-} from "lucide-react";
-import { Organization } from "@/lib/types";
-import Link from "next/link";
-import { Progress } from "@/components/ui/progress";
-import { useAccount } from "wagmi";
+} from 'lucide-react';
+import { Organization } from '@/lib/types';
+import Link from 'next/link';
+import { Progress } from '@/components/ui/progress';
+import { useAccount } from 'wagmi';
 import {
   charityCentral_CA,
   charityCentral_ABI,
   charityCampaigns_ABI,
-} from "@/config/contractABI";
-import { ethers } from "ethers";
-import Image from "next/image";
+} from '@/config/contractABI';
+import { ethers } from 'ethers';
+import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -43,16 +43,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import axios from "axios";
-import { CampaignPredictionChart } from "@/components/dashboard/CampaignPredictionChart";
-import OrgChatbot from "@/components/dashboard/OrgChatbot";
-import { toast } from "react-toastify";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import axios from 'axios';
+import { CampaignPredictionChart } from '@/components/dashboard/CampaignPredictionChart';
+import OrgChatbot from '@/components/dashboard/OrgChatbot';
+import { toast } from 'react-toastify';
 
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 
 // Campaign interface based on the contract structure
 interface Campaign {
@@ -95,8 +95,8 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
   };
 
   const getDisplayUrl = (ipfsUrl: string) => {
-    if (!ipfsUrl) return "";
-    return ipfsUrl.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
+    if (!ipfsUrl) return '';
+    return ipfsUrl.replace('ipfs://', 'https://ipfs.io/ipfs/');
   };
 
   return (
@@ -107,7 +107,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
           src={getDisplayUrl(images[currentImageIndex])}
           alt="Campaign image"
           fill
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: 'cover' }}
           className="transition-opacity duration-300"
         />
       </div>
@@ -136,7 +136,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
               <button
                 key={index}
                 className={`w-2 h-2 rounded-full ${
-                  currentImageIndex === index ? "bg-white" : "bg-white/60"
+                  currentImageIndex === index ? 'bg-white' : 'bg-white/60'
                 }`}
                 onClick={() => setCurrentImageIndex(index)}
               />
@@ -150,14 +150,14 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
 
 // Fetch and parse IPFS data
 const fetchIPFSData = async (uri: string) => {
-  if (!uri || !uri.startsWith("ipfs://")) return null;
+  if (!uri || !uri.startsWith('ipfs://')) return null;
 
   try {
-    const url = uri.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
+    const url = uri.replace('ipfs://', 'https://ipfs.io/ipfs/');
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
-    console.error("Error fetching IPFS data:", error);
+    console.error('Error fetching IPFS data:', error);
     return null;
   }
 };
@@ -166,17 +166,17 @@ export default function OrganizationDashboardPage() {
   const { address, isConnected } = useAccount();
   const [loading, setLoading] = useState(true);
   const [campaignsLoading, setCampaignsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [orgData, setOrgData] = useState<Partial<Organization> | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [activeCampaigns, setActiveCampaigns] = useState<Campaign[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [createCampaignLoading, setCreateCampaignLoading] = useState(false);
-  const [createCampaignError, setCreateCampaignError] = useState("");
+  const [createCampaignError, setCreateCampaignError] = useState('');
   const [campaignFormData, setCampaignFormData] = useState({
-    name: "",
-    description: "",
-    goal: "",
+    name: '',
+    description: '',
+    goal: '',
   });
   const [campaignImages, setCampaignImages] = useState<File[]>([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
@@ -187,7 +187,7 @@ export default function OrganizationDashboardPage() {
     description: number;
     average: number;
   }>(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   // Handle campaign form input change
   const handleCampaignInputChange = (
@@ -206,7 +206,7 @@ export default function OrganizationDashboardPage() {
     const files = Array.from(e.target.files);
     // Check if adding these files would exceed the limit
     if (campaignImages.length + files.length > 5) {
-      setCreateCampaignError("Maximum 5 images allowed");
+      setCreateCampaignError('Maximum 5 images allowed');
       return;
     }
 
@@ -215,9 +215,9 @@ export default function OrganizationDashboardPage() {
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
     setImagePreviewUrls((prev) => [...prev, ...newPreviewUrls]);
 
-    setCreateCampaignError("");
+    setCreateCampaignError('');
 
-    e.target.value = "";
+    e.target.value = '';
   };
 
   // Remove an image
@@ -232,81 +232,81 @@ export default function OrganizationDashboardPage() {
   // Reset form when dialog closes
   const resetCampaignForm = () => {
     setCampaignFormData({
-      name: "",
-      description: "",
-      goal: "",
+      name: '',
+      description: '',
+      goal: '',
     });
     imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
     setCampaignImages([]);
     setImagePreviewUrls([]);
-    setCreateCampaignError("");
+    setCreateCampaignError('');
     setCreateCampaignLoading(false);
   };
 
   // Upload file to Pinata and get IPFS hash
   const uploadToPinata = async (file: File): Promise<string> => {
-    const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
+    const url = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
     try {
       const response = await axios.post(url, formData, {
         headers: {
           pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
           pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET,
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
       const ipfsHash = response.data.IpfsHash;
       return `ipfs://${ipfsHash}`;
     } catch (error) {
-      console.error("Pinata upload error:", error);
-      throw new Error("Failed to upload image to Pinata");
+      console.error('Pinata upload error:', error);
+      throw new Error('Failed to upload image to Pinata');
     }
   };
 
   // Upload JSON metadata to Pinata
   const uploadJSONToPinata = async (jsonData: any): Promise<string> => {
-    const url = "https://api.pinata.cloud/pinning/pinJSONToIPFS";
+    const url = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
 
     try {
       const response = await axios.post(url, jsonData, {
         headers: {
           pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
           pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
       const ipfsHash = response.data.IpfsHash;
       return `ipfs://${ipfsHash}`;
     } catch (error) {
-      console.error("Pinata JSON upload error:", error);
-      throw new Error("Failed to upload metadata to Pinata");
+      console.error('Pinata JSON upload error:', error);
+      throw new Error('Failed to upload metadata to Pinata');
     }
   };
 
   const verifyInput = async (name: string, description: string) => {
     try {
-      const response = await axios.post("/api/ai/inputValidator", {
+      const response = await axios.post('/api/ai/inputValidator', {
         name: name,
         description: description,
       });
       return response.data;
     } catch (error) {
-      console.error("Error verifying input:", error);
-      throw new Error("Failed to verify input");
+      console.error('Error verifying input:', error);
+      throw new Error('Failed to verify input');
     }
   };
 
   // Handle campaign creation
   const handleCreateCampaign = async () => {
     if (!isConnected || !address) {
-      setCreateCampaignError("Please connect your wallet first");
+      setCreateCampaignError('Please connect your wallet first');
       return;
     }
 
     setCreateCampaignLoading(true);
-    setCreateCampaignError("");
+    setCreateCampaignError('');
     try {
       const response = await verifyInput(
         campaignFormData.name,
@@ -318,14 +318,14 @@ export default function OrganizationDashboardPage() {
         const { name, description, average } = response.scores;
         if (average < 80) {
           Swal.fire({
-            title: "Campaign Verification Results",
+            title: 'Campaign Verification Results',
             html: `
         <strong>Safety Scores:</strong><br />
         Average: <strong>${average}%</strong><br /><br />
         <em>${response.message}</em>
       `,
-            icon: average >= 50 ? "success" : "error",
-            confirmButtonText: "OK",
+            icon: average >= 50 ? 'success' : 'error',
+            confirmButtonText: 'OK',
           });
           setDialogOpen(false);
           resetCampaignForm();
@@ -343,11 +343,11 @@ export default function OrganizationDashboardPage() {
                 images: imageIPFSHashes,
               });
 
-              console.log("Campaign images uploaded to IPFS:", imagesIpfsLink);
+              console.log('Campaign images uploaded to IPFS:', imagesIpfsLink);
             } catch (error) {
-              console.error("Error uploading images to IPFS:", error);
+              console.error('Error uploading images to IPFS:', error);
               setCreateCampaignError(
-                "Failed to upload images. Please try again."
+                'Failed to upload images. Please try again.'
               );
               setCreateCampaignLoading(false);
               return;
@@ -371,14 +371,14 @@ export default function OrganizationDashboardPage() {
             campaignFormData.name,
             campaignFormData.description,
             goalInWei,
-            imagesIpfsLink || ""
+            imagesIpfsLink || ''
           );
 
-          console.log("Transaction sent:", tx);
+          console.log('Transaction sent:', tx);
           const receipt = await tx.wait();
-          console.log("Transaction confirmed:", receipt);
-          toast.success("Campaign created successfully!", {
-            position: "top-right",
+          console.log('Transaction confirmed:', receipt);
+          toast.success('Campaign created successfully!', {
+            position: 'top-right',
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -394,16 +394,16 @@ export default function OrganizationDashboardPage() {
             fetchCampaignData(address);
           }
         } catch (err: any) {
-          console.error("Error creating campaign:", err);
+          console.error('Error creating campaign:', err);
           setCreateCampaignError(
-            err instanceof Error ? err.message : "Failed to create campaign"
+            err instanceof Error ? err.message : 'Failed to create campaign'
           );
         } finally {
           setCreateCampaignLoading(false);
         }
       }
     } catch (error) {
-      console.log("Input verification error: ", error);
+      console.log('Input verification error: ', error);
     }
   };
 
@@ -411,7 +411,7 @@ export default function OrganizationDashboardPage() {
   useEffect(() => {
     // Get wallet address from connected wallet
     if (!isConnected || !address) {
-      setError("No wallet connected. Please connect your wallet.");
+      setError('No wallet connected. Please connect your wallet.');
       setLoading(false);
       return;
     }
@@ -425,16 +425,16 @@ export default function OrganizationDashboardPage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch organization data");
+          throw new Error(data.error || 'Failed to fetch organization data');
         }
 
         setOrgData(data);
       } catch (err) {
-        console.error("Error fetching organization data:", err);
+        console.error('Error fetching organization data:', err);
         setError(
           err instanceof Error
             ? err.message
-            : "Failed to fetch organization data"
+            : 'Failed to fetch organization data'
         );
       } finally {
         setLoading(false);
@@ -501,7 +501,7 @@ export default function OrganizationDashboardPage() {
             daysLeft: 30, // Default value
             donors: 0, // Will fetch separately
             state: parseInt(details._state),
-            imageURI: details._campaignImageURI || "", // Get the campaign image URI
+            imageURI: details._campaignImageURI || '', // Get the campaign image URI
           };
         }
       );
@@ -524,7 +524,7 @@ export default function OrganizationDashboardPage() {
 
             campaign.donations = [];
           } catch (error) {
-            console.error("Error fetching donors for campaign:", error);
+            console.error('Error fetching donors for campaign:', error);
             campaign.donations = [];
           }
 
@@ -535,11 +535,11 @@ export default function OrganizationDashboardPage() {
               (target: bigint, index: number) => ({
                 title: `Milestone ${index + 1}`,
                 amount: ethers.formatEther(target),
-                status: milestones.reached[index] ? "completed" : "pending",
+                status: milestones.reached[index] ? 'completed' : 'pending',
               })
             );
           } catch (error) {
-            console.error("Error fetching milestones for campaign:", error);
+            console.error('Error fetching milestones for campaign:', error);
           }
 
           // Fetch images from IPFS if available
@@ -564,7 +564,7 @@ export default function OrganizationDashboardPage() {
       const enhancedCampaigns = await Promise.all(enhancedCampaignsPromises);
       setCampaigns(enhancedCampaigns);
     } catch (error) {
-      console.error("Error fetching campaign data:", error);
+      console.error('Error fetching campaign data:', error);
     } finally {
       setCampaignsLoading(false);
     }
@@ -598,7 +598,7 @@ export default function OrganizationDashboardPage() {
           </div>
           <h1 className="text-2xl font-bold text-red-500 mb-2">Error</h1>
           <p className="text-muted-foreground mb-6">
-            {error || "Failed to load organization data"}
+            {error || 'Failed to load organization data'}
           </p>
           {!isConnected && (
             <div className="mt-4 text-center">
@@ -607,14 +607,17 @@ export default function OrganizationDashboardPage() {
               </p>
               <Button
                 className="bg-primary hover:bg-primary/90"
-                onClick={() => (window.location.href = "/")}
+                onClick={() => (window.location.href = '/')}
               >
                 Return to Home
               </Button>
             </div>
           )}
           {isConnected && !orgData && (
-            <Button className="bg-primary hover:bg-primary/90 mt-4" onClick={() => window.location.href = "/kyb-form"}>
+            <Button
+              className="bg-primary hover:bg-primary/90 mt-4"
+              onClick={() => (window.location.href = '/kyb-form')}
+            >
               Register Your Organization
             </Button>
           )}
@@ -631,7 +634,7 @@ export default function OrganizationDashboardPage() {
   const totalGoal = campaigns
     .reduce((sum, campaign) => sum + parseFloat(campaign.goal), 0)
     .toFixed(8);
-  console.log("Check goal: ", totalGoal);
+  console.log('Check goal: ', totalGoal);
   // Calculate the total donor count
   const totalDonors = campaigns.reduce(
     (sum, campaign) => sum + campaign.donors,
@@ -666,7 +669,9 @@ export default function OrganizationDashboardPage() {
 
             <div className="space-y-6">
               <div className="grid gap-2">
-                <Label htmlFor="name" className="text-base">Campaign Name</Label>
+                <Label htmlFor="name" className="text-base">
+                  Campaign Name
+                </Label>
                 <Input
                   id="name"
                   name="name"
@@ -679,7 +684,9 @@ export default function OrganizationDashboardPage() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="description" className="text-base">Description</Label>
+                <Label htmlFor="description" className="text-base">
+                  Description
+                </Label>
                 <Textarea
                   id="description"
                   name="description"
@@ -692,7 +699,9 @@ export default function OrganizationDashboardPage() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="goal" className="text-base">Funding Goal (ETH)</Label>
+                <Label htmlFor="goal" className="text-base">
+                  Funding Goal (ETH)
+                </Label>
                 <Input
                   id="goal"
                   name="goal"
@@ -712,9 +721,12 @@ export default function OrganizationDashboardPage() {
 
               {/* Campaign Images Upload */}
               <div className="grid gap-2">
-                <Label htmlFor="images" className="text-base">Campaign Images</Label>
+                <Label htmlFor="images" className="text-base">
+                  Campaign Images
+                </Label>
                 <p className="text-xs text-muted-foreground mb-3">
-                  Upload up to 5 high-quality images related to your campaign (PNG, JPG)
+                  Upload up to 5 high-quality images related to your campaign
+                  (PNG, JPG)
                 </p>
 
                 {/* Image previews */}
@@ -780,7 +792,9 @@ export default function OrganizationDashboardPage() {
                       className="w-full"
                     >
                       <Upload className="mr-2 h-4 w-4" />
-                      {imagePreviewUrls.length === 0 ? "Upload Images" : "Add More Images"}
+                      {imagePreviewUrls.length === 0
+                        ? 'Upload Images'
+                        : 'Add More Images'}
                     </Button>
                   </div>
                 )}
@@ -1000,154 +1014,9 @@ export default function OrganizationDashboardPage() {
                       Active Campaigns
                     </h3>
                     <div className="space-y-8">
-                      {campaigns.filter(campaign => campaign.state === 0).map((campaign) => (
-                        <div
-                          key={campaign.id}
-                          className="border border-border bg-gradient-to-br from-card/80 to-card/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
-                        >
-                          <div className="flex flex-col md:flex-row overflow-hidden">
-                            {/* Image section - takes 40% width on desktop */}
-                            <div className="md:w-2/5 relative">
-                              {campaign.images && campaign.images.length > 0 ? (
-                                <ImageCarousel images={campaign.images} />
-                              ) : (
-                                <div className="h-48 md:h-full min-h-[200px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                                  <div className="text-primary/50 text-4xl font-bold">{campaign.title?.charAt(0) || "C"}</div>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Content section - takes 60% width on desktop */}
-                            <div className="flex-1 p-6 flex flex-col h-full justify-between">
-                              <div>
-                                <div className="flex justify-between items-start mb-3">
-                                  <h3 className="font-bold text-xl text-foreground">{campaign.title}</h3>
-                                  <div className="flex items-center text-muted-foreground text-sm">
-                                    <Clock className="h-3.5 w-3.5 mr-1" />
-                                    <span>{campaign.daysLeft} days left</span>
-                                  </div>
-                                </div>
-
-                                <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                                  {campaign.description}
-                                </p>
-
-                                <div className="mb-4">
-                                  <div className="flex justify-between text-sm mb-2">
-                                    <span className="font-medium text-foreground">
-                                      {formatEthAmount(campaign.raised)} ETH raised
-                                    </span>
-                                    <span className="text-muted-foreground">
-                                      of {formatEthAmount(campaign.goal)} ETH goal
-                                    </span>
-                                  </div>
-                                  <div className="h-2.5 w-full bg-primary/10 rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
-                                      style={{
-                                        width: `${Math.min((parseFloat(campaign.raised) / parseFloat(campaign.goal)) * 100, 100)}%`,
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-
-                                <div className="flex flex-wrap gap-3 mb-4">
-                                  <div className="flex items-center bg-primary/10 text-primary rounded-full px-3 py-1.5 text-xs">
-                                    <Users className="mr-1.5 h-3.5 w-3.5" />
-                                    <span className="font-medium">{campaign.donors} donors</span>
-                                  </div>
-
-                                  <div className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                                    Active
-                                  </div>
-
-                                  <div className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                                    Malaysia
-                                  </div>
-
-                                  {/* Conditional milestone summary badge */}
-                                  {campaign.milestones && campaign.milestones.length > 0 && (
-                                    <div className="flex items-center bg-amber-500/10 text-amber-500 rounded-full px-3 py-1.5 text-xs">
-                                      <span className="font-medium">
-                                        {campaign.milestones.filter(m => m.status === 'completed').length} of {campaign.milestones.length} milestones completed
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="flex flex-col sm:flex-row gap-3 mt-2">
-                                <Link
-                                  href={`/organizations/campaigns/${campaign.id}`}
-                                  className="flex-1"
-                                >
-                                  <Button variant="default" size="sm" className="w-full">
-                                    View Details
-                                    <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
-                                  </Button>
-                                </Link>
-                                <Link
-                                  href={`/organizations/campaigns/${campaign.id}/edit`}
-                                  className="flex-1"
-                                >
-                                  <Button variant="outline" size="sm" className="w-full">
-                                    Manage Campaign
-                                  </Button>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Milestone section - conditionally rendered */}
-                          {campaign.milestones && campaign.milestones.length > 0 && (
-                            <div>
-                              <div className="flex items-center px-6 py-4 mb-2">
-                                <Award className="h-4 w-4 mr-1.5 text-amber-500" />
-                                <h4 className="text-sm font-medium text-foreground">
-                                  Project Milestones
-                                </h4>
-                              </div>
-                              <div className="grid grid-cols-3 gap-4 px-6 pb-6">
-                                {campaign.milestones.map((milestone, index) => (
-                                  <div
-                                    key={index}
-                                    className={`border text-center p-4 rounded-lg ${milestone.status === 'completed'
-                                      ? 'bg-green-950/10 border-green-800/30 text-green-500'
-                                      : 'bg-red-950/5 border-red-800/20 text-red-400'
-                                      }`}
-                                  >
-                                    <div className="font-medium mb-1">{milestone.title}</div>
-                                    <div className="text-sm font-bold mb-2">
-                                      {formatEthAmount(milestone.amount)} ETH
-                                    </div>
-                                    {milestone.status === 'completed' ? (
-                                      <div className="text-xs text-green-500 bg-green-950/20 inline-block px-2 py-0.5 rounded">
-                                        Completed
-                                      </div>
-                                    ) : (
-                                      <div className="text-xs text-red-400 bg-red-950/10 inline-block px-2 py-0.5 rounded">
-                                        Pending
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Completed Campaigns Section */}
-                  {campaigns.filter(campaign => campaign.state !== 0).length > 0 && (
-                    <div className="mt-10">
-                      <h3 className="text-lg font-semibold mb-4 flex items-center">
-                        <div className="mr-2 w-2 h-2 rounded-full bg-amber-500"></div>
-                        Completed Campaigns
-                      </h3>
-                      <div className="space-y-8">
-                        {campaigns.filter(campaign => campaign.state !== 0).map((campaign) => (
+                      {campaigns
+                        .filter((campaign) => campaign.state === 0)
+                        .map((campaign) => (
                           <div
                             key={campaign.id}
                             className="border border-border bg-gradient-to-br from-card/80 to-card/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
@@ -1155,11 +1024,14 @@ export default function OrganizationDashboardPage() {
                             <div className="flex flex-col md:flex-row overflow-hidden">
                               {/* Image section - takes 40% width on desktop */}
                               <div className="md:w-2/5 relative">
-                                {campaign.images && campaign.images.length > 0 ? (
+                                {campaign.images &&
+                                campaign.images.length > 0 ? (
                                   <ImageCarousel images={campaign.images} />
                                 ) : (
-                                  <div className="h-48 md:h-full min-h-[200px] bg-gradient-to-br from-amber-500/10 to-amber-500/5 flex items-center justify-center">
-                                    <div className="text-amber-500/50 text-4xl font-bold">{campaign.title?.charAt(0) || "C"}</div>
+                                  <div className="h-48 md:h-full min-h-[200px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                                    <div className="text-primary/50 text-4xl font-bold">
+                                      {campaign.title?.charAt(0) || 'C'}
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -1168,11 +1040,12 @@ export default function OrganizationDashboardPage() {
                               <div className="flex-1 p-6 flex flex-col h-full justify-between">
                                 <div>
                                   <div className="flex justify-between items-start mb-3">
-                                    <h3 className="font-bold text-xl text-foreground">{campaign.title}</h3>
-                                    <div className="flex items-center text-amber-500 text-sm">
-                                      <div className="flex items-center text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-500">
-                                        Completed
-                                      </div>
+                                    <h3 className="font-bold text-xl text-foreground">
+                                      {campaign.title}
+                                    </h3>
+                                    <div className="flex items-center text-muted-foreground text-sm">
+                                      <Clock className="h-3.5 w-3.5 mr-1" />
+                                      <span>{campaign.daysLeft} days left</span>
                                     </div>
                                   </div>
 
@@ -1183,27 +1056,60 @@ export default function OrganizationDashboardPage() {
                                   <div className="mb-4">
                                     <div className="flex justify-between text-sm mb-2">
                                       <span className="font-medium text-foreground">
-                                        {formatEthAmount(campaign.raised)} ETH raised
+                                        {formatEthAmount(campaign.raised)} ETH
+                                        raised
                                       </span>
                                       <span className="text-muted-foreground">
-                                        of {formatEthAmount(campaign.goal)} ETH goal
+                                        of {formatEthAmount(campaign.goal)} ETH
+                                        goal
                                       </span>
                                     </div>
-                                    <div className="h-2.5 w-full bg-amber-500/10 rounded-full overflow-hidden">
+                                    <div className="h-2.5 w-full bg-primary/10 rounded-full overflow-hidden">
                                       <div
-                                        className="h-full bg-gradient-to-r from-amber-500 to-amber-500/80 rounded-full transition-all duration-500"
+                                        className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
                                         style={{
-                                          width: `${Math.min((parseFloat(campaign.raised) / parseFloat(campaign.goal)) * 100, 100)}%`,
+                                          width: `${Math.min(
+                                            (parseFloat(campaign.raised) /
+                                              parseFloat(campaign.goal)) *
+                                              100,
+                                            100
+                                          )}%`,
                                         }}
                                       />
                                     </div>
                                   </div>
 
                                   <div className="flex flex-wrap gap-3 mb-4">
-                                    <div className="flex items-center bg-amber-500/10 text-amber-500 rounded-full px-3 py-1.5 text-xs">
+                                    <div className="flex items-center bg-primary/10 text-primary rounded-full px-3 py-1.5 text-xs">
                                       <Users className="mr-1.5 h-3.5 w-3.5" />
-                                      <span className="font-medium">{campaign.donors} donors</span>
+                                      <span className="font-medium">
+                                        {campaign.donors} donors
+                                      </span>
                                     </div>
+
+                                    <div className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                      Active
+                                    </div>
+
+                                    <div className="flex items-center text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                      Malaysia
+                                    </div>
+
+                                    {/* Conditional milestone summary badge */}
+                                    {campaign.milestones &&
+                                      campaign.milestones.length > 0 && (
+                                        <div className="flex items-center bg-amber-500/10 text-amber-500 rounded-full px-3 py-1.5 text-xs">
+                                          <span className="font-medium">
+                                            {
+                                              campaign.milestones.filter(
+                                                (m) => m.status === 'completed'
+                                              ).length
+                                            }{' '}
+                                            of {campaign.milestones.length}{' '}
+                                            milestones completed
+                                          </span>
+                                        </div>
+                                      )}
                                   </div>
                                 </div>
 
@@ -1212,9 +1118,25 @@ export default function OrganizationDashboardPage() {
                                     href={`/organizations/campaigns/${campaign.id}`}
                                     className="flex-1"
                                   >
-                                    <Button variant="default" size="sm" className="w-full">
+                                    <Button
+                                      variant="default"
+                                      size="sm"
+                                      className="w-full"
+                                    >
                                       View Details
                                       <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
+                                    </Button>
+                                  </Link>
+                                  <Link
+                                    href={`/organizations/campaigns/${campaign.id}/edit`}
+                                    className="flex-1"
+                                  >
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="w-full"
+                                    >
+                                      Manage Campaign
                                     </Button>
                                   </Link>
                                 </div>
@@ -1222,43 +1144,204 @@ export default function OrganizationDashboardPage() {
                             </div>
 
                             {/* Milestone section - conditionally rendered */}
-                            {campaign.milestones && campaign.milestones.length > 0 && (
-                              <div>
-                                <div className="flex items-center px-6 py-4 mb-2">
-                                  <Award className="h-4 w-4 mr-1.5 text-amber-500" />
-                                  <h4 className="text-sm font-medium text-foreground">
-                                    Project Milestones
-                                  </h4>
-                                </div>
-                                <div className="grid grid-cols-3 gap-4 px-6 pb-6">
-                                  {campaign.milestones.map((milestone, index) => (
-                                    <div
-                                      key={index}
-                                      className={`border text-center p-4 rounded-lg ${milestone.status === 'completed'
-                                        ? 'bg-green-950/10 border-green-800/30 text-green-500'
-                                        : 'bg-red-950/5 border-red-800/20 text-red-400'
-                                        }`}
-                                    >
-                                      <div className="font-medium mb-1">{milestone.title}</div>
-                                      <div className="text-sm font-bold mb-2">
-                                        {formatEthAmount(milestone.amount)} ETH
-                                      </div>
-                                      {milestone.status === 'completed' ? (
-                                        <div className="text-xs text-green-500 bg-green-950/20 inline-block px-2 py-0.5 rounded">
-                                          Completed
+                            {campaign.milestones &&
+                              campaign.milestones.length > 0 && (
+                                <div>
+                                  <div className="flex items-center px-6 py-4 mb-2">
+                                    <Award className="h-4 w-4 mr-1.5 text-amber-500" />
+                                    <h4 className="text-sm font-medium text-foreground">
+                                      Project Milestones
+                                    </h4>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-4 px-6 pb-6">
+                                    {campaign.milestones.map(
+                                      (milestone, index) => (
+                                        <div
+                                          key={index}
+                                          className={`border text-center p-4 rounded-lg ${
+                                            milestone.status === 'completed'
+                                              ? 'bg-green-950/10 border-green-800/30 text-green-500'
+                                              : 'bg-red-950/5 border-red-800/20 text-red-400'
+                                          }`}
+                                        >
+                                          <div className="font-medium mb-1">
+                                            {milestone.title}
+                                          </div>
+                                          <div className="text-sm font-bold mb-2">
+                                            {formatEthAmount(milestone.amount)}{' '}
+                                            ETH
+                                          </div>
+                                          {milestone.status === 'completed' ? (
+                                            <div className="text-xs text-green-500 bg-green-950/20 inline-block px-2 py-0.5 rounded">
+                                              Completed
+                                            </div>
+                                          ) : (
+                                            <div className="text-xs text-red-400 bg-red-950/10 inline-block px-2 py-0.5 rounded">
+                                              Pending
+                                            </div>
+                                          )}
                                         </div>
-                                      ) : (
-                                        <div className="text-xs text-red-400 bg-red-950/10 inline-block px-2 py-0.5 rounded">
-                                          Pending
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
+                                      )
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
                           </div>
                         ))}
+                    </div>
+                  </div>
+
+                  {/* Completed Campaigns Section */}
+                  {campaigns.filter((campaign) => campaign.state !== 0).length >
+                    0 && (
+                    <div className="mt-10">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center">
+                        <div className="mr-2 w-2 h-2 rounded-full bg-amber-500"></div>
+                        Completed Campaigns
+                      </h3>
+                      <div className="space-y-8">
+                        {campaigns
+                          .filter((campaign) => campaign.state !== 0)
+                          .map((campaign) => (
+                            <div
+                              key={campaign.id}
+                              className="border border-border bg-gradient-to-br from-card/80 to-card/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
+                            >
+                              <div className="flex flex-col md:flex-row overflow-hidden">
+                                {/* Image section - takes 40% width on desktop */}
+                                <div className="md:w-2/5 relative">
+                                  {campaign.images &&
+                                  campaign.images.length > 0 ? (
+                                    <ImageCarousel images={campaign.images} />
+                                  ) : (
+                                    <div className="h-48 md:h-full min-h-[200px] bg-gradient-to-br from-amber-500/10 to-amber-500/5 flex items-center justify-center">
+                                      <div className="text-amber-500/50 text-4xl font-bold">
+                                        {campaign.title?.charAt(0) || 'C'}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Content section - takes 60% width on desktop */}
+                                <div className="flex-1 p-6 flex flex-col h-full justify-between">
+                                  <div>
+                                    <div className="flex justify-between items-start mb-3">
+                                      <h3 className="font-bold text-xl text-foreground">
+                                        {campaign.title}
+                                      </h3>
+                                      <div className="flex items-center text-amber-500 text-sm">
+                                        <div className="flex items-center text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-500">
+                                          Completed
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                                      {campaign.description}
+                                    </p>
+
+                                    <div className="mb-4">
+                                      <div className="flex justify-between text-sm mb-2">
+                                        <span className="font-medium text-foreground">
+                                          {formatEthAmount(campaign.raised)} ETH
+                                          raised
+                                        </span>
+                                        <span className="text-muted-foreground">
+                                          of {formatEthAmount(campaign.goal)}{' '}
+                                          ETH goal
+                                        </span>
+                                      </div>
+                                      <div className="h-2.5 w-full bg-amber-500/10 rounded-full overflow-hidden">
+                                        <div
+                                          className="h-full bg-gradient-to-r from-amber-500 to-amber-500/80 rounded-full transition-all duration-500"
+                                          style={{
+                                            width: `${Math.min(
+                                              (parseFloat(campaign.raised) /
+                                                parseFloat(campaign.goal)) *
+                                                100,
+                                              100
+                                            )}%`,
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-3 mb-4">
+                                      <div className="flex items-center bg-amber-500/10 text-amber-500 rounded-full px-3 py-1.5 text-xs">
+                                        <Users className="mr-1.5 h-3.5 w-3.5" />
+                                        <span className="font-medium">
+                                          {campaign.donors} donors
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                                    <Link
+                                      href={`/organizations/campaigns/${campaign.id}`}
+                                      className="flex-1"
+                                    >
+                                      <Button
+                                        variant="default"
+                                        size="sm"
+                                        className="w-full"
+                                      >
+                                        View Details
+                                        <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
+                                      </Button>
+                                    </Link>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Milestone section - conditionally rendered */}
+                              {campaign.milestones &&
+                                campaign.milestones.length > 0 && (
+                                  <div>
+                                    <div className="flex items-center px-6 py-4 mb-2">
+                                      <Award className="h-4 w-4 mr-1.5 text-amber-500" />
+                                      <h4 className="text-sm font-medium text-foreground">
+                                        Project Milestones
+                                      </h4>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4 px-6 pb-6">
+                                      {campaign.milestones.map(
+                                        (milestone, index) => (
+                                          <div
+                                            key={index}
+                                            className={`border text-center p-4 rounded-lg ${
+                                              milestone.status === 'completed'
+                                                ? 'bg-green-950/10 border-green-800/30 text-green-500'
+                                                : 'bg-red-950/5 border-red-800/20 text-red-400'
+                                            }`}
+                                          >
+                                            <div className="font-medium mb-1">
+                                              {milestone.title}
+                                            </div>
+                                            <div className="text-sm font-bold mb-2">
+                                              {formatEthAmount(
+                                                milestone.amount
+                                              )}{' '}
+                                              ETH
+                                            </div>
+                                            {milestone.status ===
+                                            'completed' ? (
+                                              <div className="text-xs text-green-500 bg-green-950/20 inline-block px-2 py-0.5 rounded">
+                                                Completed
+                                              </div>
+                                            ) : (
+                                              <div className="text-xs text-red-400 bg-red-950/10 inline-block px-2 py-0.5 rounded">
+                                                Pending
+                                              </div>
+                                            )}
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}
@@ -1289,5 +1372,4 @@ export default function OrganizationDashboardPage() {
       )}
     </div>
   );
-  
 }
