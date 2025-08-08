@@ -14,8 +14,7 @@ export async function POST(request: NextRequest) {
 
         // Setup Provider and Signer (Backend Wallet)
         const provider = new ethers.JsonRpcProvider(
-          'https://sepolia.infura.io/v3/24a2c1ac498b4afca7ef6fde84826dde',
-          'sepolia'
+          'https://sepolia-rpc.scroll.io/'
         );
         const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider); // Ensure PRIVATE_KEY is in your .env file
 

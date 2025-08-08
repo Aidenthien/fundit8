@@ -1,12 +1,26 @@
-"use client";
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Send, X, MessageCircle, BarChart3, HelpCircle, Info, Wallet, Gift, History } from "lucide-react";
-import axios from "axios";
-import { useAccount } from "wagmi";
-import { Donor } from "@/lib/types";
-import { ethers } from "ethers";
-import { charityCentral_ABI, charityCentral_CA, charityCampaigns_ABI } from "@/config/contractABI";
+'use client';
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Send,
+  X,
+  MessageCircle,
+  BarChart3,
+  HelpCircle,
+  Info,
+  Wallet,
+  Gift,
+  History,
+} from 'lucide-react';
+import axios from 'axios';
+import { useAccount } from 'wagmi';
+import { Donor } from '@/lib/types';
+import { ethers } from 'ethers';
+import {
+  charityCentral_ABI,
+  charityCentral_CA,
+  charityCampaigns_ABI,
+} from '@/config/contractABI';
 
 interface Campaign {
   address: string;
@@ -38,20 +52,22 @@ interface DonorChatbotProps {
   recentDonations?: Donation[];
 }
 
-export default function DonorChatbot({ 
-  donorName: propDonorName, 
-  walletAddress: propWalletAddress, 
-  totalDonated = "0", 
-  donationsCount = 0, 
-  recentDonations = [] 
+export default function DonorChatbot({
+  donorName: propDonorName,
+  walletAddress: propWalletAddress,
+  totalDonated = '0',
+  donationsCount = 0,
+  recentDonations = [],
 }: DonorChatbotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { address, isConnected } = useAccount();
   const [showIcon, setShowIcon] = useState(true);
   const [showTooltip, setShowTooltip] = useState(true);
   const [orgData, setOrgData] = useState<Partial<Donor> | null>(null);
-  const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
-  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<{ sender: string; text: string }[]>(
+    []
+  );
+  const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [campaignDetails, setCampaignDetails] = useState<Campaign[]>([]);
@@ -63,45 +79,47 @@ export default function DonorChatbot({
   const [recentDonationsFromGraph, setRecentDonationsFromGraph] = useState<
     Donation[]
   >([]);
-  
+
   // Determine the actual wallet address to use - from props or wagmi hook
-  const walletAddress = propWalletAddress || address || "";
+  const walletAddress = propWalletAddress || address || '';
 
   // Fetch donor data by wallet address
   useEffect(() => {
     const fetchOrgData = async () => {
       if (!walletAddress) return;
-      
+
       try {
-        const response = await fetch(`/api/donors/getByWallet?walletAddress=${walletAddress}`);
+        const response = await fetch(
+          `/api/donors/getByWallet?walletAddress=${walletAddress}`
+        );
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch donor data");
+          throw new Error(data.error || 'Failed to fetch donor data');
         }
 
         setOrgData(data);
-        
+
         // Set initial welcome message now that we have the donor name
         if (messages.length === 0) {
-          const donorName = data?.name || propDonorName || "there";
+          const donorName = data?.name || propDonorName || 'there';
           setMessages([
-            { 
-              sender: "bot", 
-              text: `Hi ${donorName}! How can I help you with your donations today?` 
-            }
+            {
+              sender: 'bot',
+              text: `Hi ${donorName}! How can I help you with your donations today?`,
+            },
           ]);
         }
       } catch (err) {
-        console.error("Error fetching donor data:", err);
-        
+        console.error('Error fetching donor data:', err);
+
         // Set default welcome message if there was an error
         if (messages.length === 0) {
           setMessages([
-            { 
-              sender: "bot", 
-              text: `Hi there! How can I help you with your donations today?` 
-            }
+            {
+              sender: 'bot',
+              text: `Hi there! How can I help you with your donations today?`,
+            },
           ]);
         }
       }
@@ -130,7 +148,7 @@ export default function DonorChatbot({
   //       );
 
   //       const campaignAddresses = await centralContract.getAllCampaigns();
-        
+
   //       const campaignInterface = new ethers.Interface(charityCampaigns_ABI);
 
   //       const detailedCampaigns = await Promise.all(
@@ -142,7 +160,7 @@ export default function DonorChatbot({
   //           );
 
   //           const details = await campaignContract.getCampaignDetails();
-            
+
   //           // Check if this donor has donated to this campaign
   //           let donorInfo = { totalDonated: "0" };
   //           try {
@@ -175,7 +193,7 @@ export default function DonorChatbot({
   //       );
 
   //       setCampaignDetails(activeCampaigns);
-        
+
   //       // Find campaigns this donor has supported
   //       const userDonations = detailedCampaigns
   //         .filter(campaign => parseFloat(campaign.userDonation) > 0)
@@ -185,9 +203,9 @@ export default function DonorChatbot({
   //           amount: campaign.userDonation,
   //           date: new Date().toLocaleDateString() // Placeholder date
   //         }));
-        
+
   //       setActiveDonations(userDonations);
-        
+
   //     } catch (error) {
   //       console.error("Error fetching campaign details:", error);
   //     }
@@ -204,7 +222,7 @@ export default function DonorChatbot({
       if (!walletAddress) return;
 
       const SUBGRAPH_URL =
-        'https://api.studio.thegraph.com/query/105145/fundit-8-2/version/latest';
+        'https://api.studio.thegraph.com/query/105145/fund-it-8/version/latest';
 
       try {
         // Fetch donor data with recent donations
@@ -323,10 +341,26 @@ export default function DonorChatbot({
 
   // Quick action suggestions for donors
   const quickActions = [
-    { icon: <Gift className="w-4 h-4 mr-2" />, text: "How to donate?", value: "How do I make a donation?" },
-    { icon: <History className="w-4 h-4 mr-2" />, text: "My donation history", value: "Show me my donation history" },
-    { icon: <BarChart3 className="w-4 h-4 mr-2" />, text: "My impact", value: "What impact have my donations made?" },
-    { icon: <Wallet className="w-4 h-4 mr-2" />, text: "Tax benefits", value: "What are the tax benefits of donations?" }
+    {
+      icon: <Gift className="w-4 h-4 mr-2" />,
+      text: 'How to donate?',
+      value: 'How do I make a donation?',
+    },
+    {
+      icon: <History className="w-4 h-4 mr-2" />,
+      text: 'My donation history',
+      value: 'Show me my donation history',
+    },
+    {
+      icon: <BarChart3 className="w-4 h-4 mr-2" />,
+      text: 'My impact',
+      value: 'What impact have my donations made?',
+    },
+    {
+      icon: <Wallet className="w-4 h-4 mr-2" />,
+      text: 'Tax benefits',
+      value: 'What are the tax benefits of donations?',
+    },
   ];
 
   // Send message to the AI API
@@ -335,17 +369,17 @@ export default function DonorChatbot({
   //   try {
   //     // Get the donor name from orgData if available, otherwise fallback to props
   //     const donorName = orgData?.name || propDonorName || "Anonymous";
-      
+
   //     // Use a combination of prop donations and fetched active donations
-  //     const donationsList = recentDonations.length > 0 
-  //       ? recentDonations 
+  //     const donationsList = recentDonations.length > 0
+  //       ? recentDonations
   //       : activeDonations;
 
   //     // Find total donated amount across all campaigns
   //     const totalUserDonations = campaignDetails.reduce((total, campaign) => {
   //       return total + parseFloat(campaign.userDonation || "0");
   //     }, 0);
-      
+
   //     // Prepare context data to send with the request
   //     const contextData = {
   //       donorName: donorName,
@@ -377,12 +411,12 @@ export default function DonorChatbot({
   //       Wallet Address: ${contextData.walletAddress}
   //       Total Donated: ${contextData.totalDonated} ETH
   //       Donations Count: ${contextData.donationsCount}
-        
+
   //       Recent Donations: ${JSON.stringify(contextData.recentDonations)}
-        
+
   //       Active Campaigns: ${JSON.stringify(contextData.activeCampaigns)}
   //       [/CONTEXT]
-        
+
   //       User Query: ${userMessage}
   //     `;
 
@@ -453,26 +487,26 @@ export default function DonorChatbot({
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    
-    const userMessage = { sender: "user", text: input };
+
+    const userMessage = { sender: 'user', text: input };
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    setInput('');
 
     // Show loading state
-    setMessages((prev) => [...prev, { sender: "bot", text: "..." }]);
+    setMessages((prev) => [...prev, { sender: 'bot', text: '...' }]);
 
     // Send to the API and get response
     const botResponse = await sendMessageToAPI(input);
 
     // Remove loading indicator and add response
     setMessages((prev) => {
-      const updatedMessages = prev.filter(msg => msg.text !== "...");
-      return [...updatedMessages, { sender: "bot", text: botResponse }];
+      const updatedMessages = prev.filter((msg) => msg.text !== '...');
+      return [...updatedMessages, { sender: 'bot', text: botResponse }];
     });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") sendMessage();
+    if (e.key === 'Enter') sendMessage();
   };
 
   const handleQuickAction = (actionValue: string) => {
@@ -481,7 +515,7 @@ export default function DonorChatbot({
   };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const handleOpen = () => {
@@ -505,14 +539,12 @@ export default function DonorChatbot({
             initial={{ x: '100%', opacity: 0.5 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0.5 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
             className="pointer-events-auto h-full w-[350px] bg-card shadow-xl flex flex-col border-l border-border"
           >
             {/* Header */}
             <div className="bg-white text-black px-4 py-3 border-b border-border flex justify-between items-center">
-              <h3 className="font-bold">
-                Donation Assistant
-              </h3>
+              <h3 className="font-bold">Donation Assistant</h3>
               <button
                 onClick={handleClose}
                 className="p-1 rounded-full hover:bg-gray-100"
@@ -532,12 +564,12 @@ export default function DonorChatbot({
                 >
                   <div
                     className={`max-w-[80%] px-4 py-2 rounded-lg text-sm ${
-                      msg.sender === "user"
-                        ? "ml-auto bg-primary text-primary-foreground"
-                        : "mr-auto bg-muted text-foreground"
+                      msg.sender === 'user'
+                        ? 'ml-auto bg-primary text-primary-foreground'
+                        : 'mr-auto bg-muted text-foreground'
                     }`}
                   >
-                    {msg.text === "..." ? (
+                    {msg.text === '...' ? (
                       <div className="dots-fade">
                         <span>.</span>
                         <span>.</span>
@@ -545,7 +577,9 @@ export default function DonorChatbot({
                       </div>
                     ) : (
                       msg.text.split('\n').map((line, index) => (
-                        <p key={index} className="mb-1">{line}</p>
+                        <p key={index} className="mb-1">
+                          {line}
+                        </p>
                       ))
                     )}
                   </div>
@@ -605,7 +639,7 @@ export default function DonorChatbot({
               </div>
             </div>
           )}
-          
+
           <button
             onClick={() => {
               setShowTooltip(false);
@@ -670,23 +704,48 @@ export default function DonorChatbot({
         }
 
         @keyframes fadeInOut {
-          0%, 100% { opacity: 0.9; }
-          50% { opacity: 1; }
+          0%,
+          100% {
+            opacity: 0.9;
+          }
+          50% {
+            opacity: 1;
+          }
         }
 
         @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-6px); }
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-6px);
+          }
         }
 
         @keyframes wave {
-          0% { transform: rotate(0deg); }
-          10% { transform: rotate(14deg); }
-          20% { transform: rotate(-8deg); }
-          30% { transform: rotate(14deg); }
-          40% { transform: rotate(-4deg); }
-          50% { transform: rotate(10deg); }
-          60%, 100% { transform: rotate(0deg); }
+          0% {
+            transform: rotate(0deg);
+          }
+          10% {
+            transform: rotate(14deg);
+          }
+          20% {
+            transform: rotate(-8deg);
+          }
+          30% {
+            transform: rotate(14deg);
+          }
+          40% {
+            transform: rotate(-4deg);
+          }
+          50% {
+            transform: rotate(10deg);
+          }
+          60%,
+          100% {
+            transform: rotate(0deg);
+          }
         }
       `}</style>
     </div>

@@ -1,5 +1,5 @@
 // Variables for Charity Central Contract
-const charityCentral_CA = '0x6D5259B83626D603dA9252Bc28E32DED90Ab28E8';
+const charityCentral_CA = '0x0928823D8B60D0f442b3a04b946948c2880f8C53';
 const charityCentral_ABI = [
   {
     inputs: [

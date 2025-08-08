@@ -459,7 +459,7 @@ export default function DonorDashboardPage() {
     setIsLoadingDonationHistory(true);
     try {
       const response = await fetch(
-        'https://api.studio.thegraph.com/query/105145/fundit-8-2/version/latest',
+        'https://api.studio.thegraph.com/query/105145/fund-it-8/version/latest',
         {
           method: 'POST',
           headers: {
