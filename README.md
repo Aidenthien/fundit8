@@ -52,6 +52,18 @@ All contracts are deployed on **Scroll L2 (Sepolia Testnet)** for scalability an
 | **NFT Badge Contract**            | `0x00072fbb450DaeB68F5e209C270E8bC6afBC16DF`                            | [View on ScrollScan](https://sepolia.scrollscan.com/address/0x00072fbb450DaeB68F5e209C270E8bC6afBC16DF) |
 | **CampaignAutomationHandler**   | `0xc97AF1e0a420e515F9EB3E5c977E131D44c4E412`                            | [View on ScrollScan](https://sepolia.scrollscan.com/address/0xc97AF1e0a420e515F9EB3E5c977E131D44c4E412) |
 
+## 🔗 **The Graph**
+
+FundIt8 utilizes **The Graph** for querying blockchain data related to donors, campaigns, and other key metrics. The Graph enables efficient querying and indexing of blockchain data for faster and easier access to the platform's data.
+
+- **Subgraph URL**:  
+  [https://api.studio.thegraph.com/query/105145/fund-it-8/version/latest](https://api.studio.thegraph.com/query/105145/fund-it-8/version/latest)
+  
+- **Subgraph Repository**:  
+  [https://github.com/johnp2003/fund-it-8](https://github.com/johnp2003/fund-it-8)
+
+The Graph helps us query donor information and manage the leaderboard effectively, ensuring accurate and real-time data retrieval for our campaigns and donor engagement.
+
 ---
 ## ⚙️ Chainlink Automation – Trustless Fund Releases
 
