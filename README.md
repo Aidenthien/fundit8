@@ -24,6 +24,7 @@ The current charitable donation ecosystem is plagued by significant challenges, 
   1. **AI-Driven Donation Forecasts**: The Graph serves as a knowledge base for AI to predict campaign milestones.
   2. **Transaction History Tracking**: It traces all campaign transactions, providing a combined, chronological transaction history.
   3. **Leaderboard**: Real-time leaderboard of top donors, powered by data from The Graph.
+  4. **Chatbot Knowledge Base**: The Graph is also used to provide a knowledge base for the AI-powered chatbot.
      
 ---
 ## 🔧 Technologies Used
@@ -37,7 +38,7 @@ The current charitable donation ecosystem is plagued by significant challenges, 
 | **Blockchain**           | Ethereum (Solidity Smart Contracts)                                                 |
 | **L2 Scaling**           | **Scroll** – For fast, low-cost transactions on Sepolia Testnet                     |
 | **Database**             | **MongoDB** – Scalable storage for user and organization data                       |
-| **Blockchain Indexing**  | **The Graph** – Efficient querying of on-chain data (donors, campaigns, NFTs)       |
+| **Blockchain Indexing**  | **The Graph** – Efficient querying of on-chain data        |
 | **Automation**           | **Chainlink Automation** – Trustless execution of milestone-based fund releases     |
 | **AI Integration**       | Gemini API & Kimi K2 (via OpenRouter API) – For donation forecasting & insights |
 
@@ -63,6 +64,118 @@ FundIt8 utilizes **The Graph** for querying blockchain data related to donors, c
   [https://github.com/johnp2003/fund-it-8](https://github.com/johnp2003/fund-it-8)
 
 The Graph helps us query donor information and manage the leaderboard effectively, ensuring accurate and real-time data retrieval for our campaigns and donor engagement.
+
+---
+
+# Example Queries in Source Code
+
+## 1. Query for AI Campaign Prediction Knowledge Base
+
+```graphql
+query GetCampaignTransactions($campaignId: ID!) {
+  campaign(id: $campaignId) {
+    name
+    totalDonated
+    goal
+    milestones {
+      target
+    }
+    charity {
+      address
+    }
+    donations(orderBy: timestamp, orderDirection: desc) {
+      amount
+      timestamp
+      donor {
+        address
+      }
+    }
+  }
+}
+```
+
+## 2. Query to Get Detailed Transactions and Timeline for Transparency
+
+```graphql
+query GetCampaignTransactions($campaignId: ID!) {
+  campaign(id: $campaignId) {
+    name
+    totalDonated
+    charity {
+      address
+    }
+    donations(orderBy: timestamp, orderDirection: desc) {
+      amount
+      timestamp
+      donor {
+        address
+      }
+    }
+    fundsReleased(orderBy: timestamp, orderDirection: desc) {
+      amount
+      recipient
+      timestamp
+      milestoneIndex
+    }
+  }
+}
+```
+
+## 3. Query to Get Donor Information and Active Campaign Information for Personal Chatbot
+
+### Get Donor Data
+```graphql
+query GetDonorData($donorAddress: Bytes!) {
+  donor(id: $donorAddress) {
+    id
+    totalDonated
+    donations(first: 5, orderBy: timestamp, orderDirection: desc) {
+      id
+      amount
+      timestamp
+      campaign {
+        id
+        name
+        charity {
+          name
+        }
+      }
+    }
+  }
+}
+```
+
+### Get Active Campaigns
+```graphql
+query GetActiveCampaigns($donorAddress: Bytes!) {
+  campaigns(where: { state: "Active" }) {
+    id
+    name
+    description
+    goal
+    totalDonated
+    state
+    charity {
+      address
+      name
+    }
+    donors(where: { donor: $donorAddress }) {
+      totalDonated
+    }
+  }
+}
+```
+
+## 4. Leaderboard Query to Fetch Overall Leaderboard
+
+```graphql
+query GlobalLeaderboard {
+  donors(orderBy: totalDonated, orderDirection: desc, first: 100) {
+    address
+    totalDonated
+  }
+}
+```
 
 ---
 ## ⚙️ Chainlink Automation – Trustless Fund Releases
