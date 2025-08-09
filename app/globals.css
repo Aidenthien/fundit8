@@ -198,15 +198,12 @@ body {
   0% {
     transform: translate(0px, 0px) scale(1);
   }
-
   33% {
     transform: translate(30px, -50px) scale(1.1);
   }
-
   66% {
     transform: translate(-20px, 20px) scale(0.9);
   }
-
   100% {
     transform: translate(0px, 0px) scale(1);
   }
@@ -217,7 +214,6 @@ body {
     opacity: 0;
     transform: translateY(30px);
   }
-
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -225,24 +221,18 @@ body {
 }
 
 @keyframes float {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0px);
   }
-
   50% {
     transform: translateY(-20px);
   }
 }
 
 @keyframes glow {
-
-  0%,
-  100% {
+  0%, 100% {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
   }
-
   50% {
     box-shadow: 0 0 40px rgba(59, 130, 246, 0.8);
   }

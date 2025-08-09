@@ -121,149 +121,125 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen">
-      {/* Advanced Hero Section with Glassmorphism */}
-      <div className="relative min-h-screen w-full overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 w-full h-full">
-          {/* Primary gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800" />
-          
-          {/* Floating orbs with animations */}
-          <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
-          
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="1.5"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        </div>
-
-        {/* Glassmorphism Hero Content */}
-        <div className="relative z-10 min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-5xl mx-auto">
-            {/* Floating badge */}
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium mb-8 animate-fade-in-up">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-              <span>🚀 Revolutionizing Charity with Web3</span>
-            </div>
-
-            {/* Main heading with enhanced typography */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-tight mb-6 animate-fade-in-up animation-delay-200">
-              <span className="bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent">
-                FundIt8
-              </span>
-              <br />
-              <span className="text-white/95">Empowers</span>
-              <br />
-              <span className="bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent">
-                Charity
-              </span>
-            </h1>
-
-            {/* Subtitle with glassmorphism */}
-            <div className="max-w-3xl mx-auto mb-12 animate-fade-in-up animation-delay-400">
-              <p className="text-xl sm:text-2xl text-white/80 leading-relaxed font-light">
-                Experience the future of charitable giving with 
-                <span className="font-semibold text-cyan-300"> blockchain transparency</span>, 
-                <span className="font-semibold text-purple-300"> smart contracts</span>, and 
-                <span className="font-semibold text-pink-300"> community impact</span>
-              </p>
-            </div>
-
-            {/* CTA Buttons with enhanced styling */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in-up animation-delay-600">
+    <div className="bg-white">
+      <div className="relative min-h-screen w-full bg-[url('/landing-page2-bg2.png')] bg-cover bg-no-repeat">
+        {/* Hero Section */}
+        <div className="absolute inset-0 h-full w-full bg-gray-900/60" />
+        <div className="grid min-h-screen px-8">
+          <div className="container relative z-10 my-auto mx-auto grid place-items-center text-center">
+            <Typography
+              variant="h4"
+              color="white"
+              className="mb-2"
+              placeholder={null}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              Empowering Charitable @ FundIt8
+            </Typography>
+            <Typography
+              variant="h1"
+              color="white"
+              className="lg:max-w-3xl"
+              placeholder={null}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              Revolutionizing Charity Donations with Blockchain Transparency
+            </Typography>
+            <Typography
+              variant="lead"
+              color="white"
+              className="mt-1 mb-12 w-full md:max-w-full lg:max-w-2xl"
+              placeholder={null}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              Join our mission to increase accountability, and efficiency in
+              charitable giving through blockchain technology.
+            </Typography>
+            <div className="flex items-center gap-4">
               <Link href="/login">
-                <button className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/25">
-                  <span className="relative z-10 flex items-center gap-3">
-                    <Heart className="w-5 h-5" />
-                    Start Donating
-                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <Button
+                  variant="gradient"
+                  color="white"
+                  className="flex items-center group relative overflow-hidden"
+                  placeholder={null}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  <span className="relative z-10 flex items-center">
+                    <AnimatedGradientText className="font-semibold">
+                      Donate Now
+                    </AnimatedGradientText>
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </button>
+                </Button>
               </Link>
-              
               <Link href="/kyb-form">
-                <button className="group relative px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-lg rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:bg-white/20">
-                  <span className="relative z-10 flex items-center gap-3">
-                    <Shield className="w-5 h-5" />
-                    Register Organization
-                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <Button
+                  variant="outlined"
+                  className="rounded-full bg-white border-white text-black hover:bg-gray-50 transition-all duration-300 group"
+                  placeholder={null}
+                  onPointerEnterCapture={undefined}
+                  onPointerLeaveCapture={undefined}
+                >
+                  <span className="relative z-10">
+                    <AnimatedGradientText className="font-semibold">
+                      Register Organization
+                    </AnimatedGradientText>
                   </span>
-                </button>
+                </Button>
               </Link>
-            </div>
-
-            {/* Stats or features preview */}
-            <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 animate-fade-in-up animation-delay-800">
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center">
-                  <Shield className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-white font-bold text-xl mb-2">100% Transparent</h3>
-                <p className="text-white/70">Every donation tracked on blockchain</p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-white font-bold text-xl mb-2">Instant Impact</h3>
-                <p className="text-white/70">Real-time donation distribution</p>
-              </div>
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                  <BarChart3 className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-white font-bold text-xl mb-2">Track Progress</h3>
-                <p className="text-white/70">Monitor campaign milestones</p>
-              </div>
             </div>
           </div>
         </div>
       </div>
-      {/* Enhanced Sponsors Section */}
-      <section className="py-16 px-8 bg-white/50 backdrop-blur-sm border-y border-gray-200/50">
-        <div className="container mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 backdrop-blur-sm mb-12">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-            <h2 className="text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text tracking-wide uppercase">
-              Trusted By Leading Organizations
-            </h2>
-          </div>
+      {/* Sponsored by */}
+      <div>
+        <section className="py-8 px-8 lg:py-20">
+          <div className="container mx-auto text-center">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="mb-8"
+              placeholder={null}
+              onPointerEnterCapture={undefined}
+              onPointerLeaveCapture={undefined}
+            >
+              SPONSORED BY
+            </Typography>
 
-          <div className="relative overflow-hidden">
-            <div className="flex items-center gap-12 animate-marquee-infinite">
-              {SPONSORS.map((logo) => (
-                <div key={logo} className="group flex-shrink-0">
-                  <div className="relative p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200/50 hover:border-blue-300/50 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              <div className="relative overflow-hidden w-full">
+                <div className="flex items-center gap-8 animate-marquee-infinite">
+                  {SPONSORS.map((logo) => (
                     <Image
-                      width={160}
-                      height={80}
+                      key={logo}
+                      width={256}
+                      height={256}
                       src={`/logos/logo-${logo}.svg`}
                       alt={logo}
-                      className="w-32 h-16 object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                      className="w-40 flex-shrink-0"
                     />
-                  </div>
-                </div>
-              ))}
-              {/* Duplicate for seamless loop */}
-              {SPONSORS.map((logo) => (
-                <div key={`duplicate-${logo}`} className="group flex-shrink-0">
-                  <div className="relative p-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200/50 hover:border-blue-300/50 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                  ))}
+                  {/* Duplicate for seamless loop */}
+                  {SPONSORS.map((logo) => (
                     <Image
-                      width={160}
-                      height={80}
+                      key={`duplicate-${logo}`}
+                      width={256}
+                      height={256}
                       src={`/logos/logo-${logo}.svg`}
                       alt={logo}
-                      className="w-32 h-16 object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                      className="w-40 flex-shrink-0"
                     />
-                  </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
       <section className="container mx-auto flex flex-col items-center px-4 py-14 md:py-14 lg:py-8">
         {/* Enhanced Gradient Heading with better responsive design */}
         <div className="text-center mb-8 md:mb-12 lg:mb-16 max-w-5xl mx-auto relative">
